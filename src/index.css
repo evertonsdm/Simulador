@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;600&family=Outfit:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Crimson Pro", serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Outfit", sans-serif;
+  
+  --color-gold: #ffbf00; /* Amber */
+  --color-gold-hover: #d9a300;
+  --color-emerald-500: #10b981;
+  --color-carmine: #990000;
+  --color-ice: #f5f5f5;
+  --color-dark-bg: #0a0a0a;
+  --color-dark-surface: #121212;
+  --color-dark-border: #222222;
+  --color-text-dim: #888888;
+
+  --animate-spin-slow: spin 3s linear infinite;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-dark-bg);
+    color: var(--color-ice);
+    font-family: var(--font-sans);
+  }
+}
+
+@utility scan-lines {
+  background-image: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255, 191, 0, 0.03) 3px, rgba(255, 191, 0, 0.03) 4px);
+  background-size: 100% 4px;
+}
+
+@utility classified-pattern {
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(153, 0, 0, 0.05) 10px, rgba(153, 0, 0, 0.05) 11px);
+}
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-dark-border);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gold);
+    opacity: 0.5;
+  }
+}

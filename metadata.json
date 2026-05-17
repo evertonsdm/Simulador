@@ -1,0 +1,11 @@
+{
+  "name": "Remix: Remix: Motor Procedural v2.5",
+  "description": "Gerador de identidades complexas e perfis lógicos com rastro digital e bagagem relacional.",
+  "requestFramePermissions": [
+    "clipboard-read",
+    "clipboard-write"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
