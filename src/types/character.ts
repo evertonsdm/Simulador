@@ -228,6 +228,7 @@ export interface ConditionContext {
   transporte: string;
   habitacao: string;
   profissao: string;
+  tierMetropole: 'tier_alfa' | 'tier_beta' | 'tier_gama' | 'interior_alfa' | 'interior_beta' | 'interior_gama';
 }
 
 export interface CharacterCondition {

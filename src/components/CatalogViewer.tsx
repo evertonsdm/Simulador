@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { 
   Search, 
   Copy, 
@@ -88,6 +88,34 @@ export const CatalogViewer: React.FC = () => {
     { key: 'filhos', label: 'Dinâmica de Filhos', icon: Users },
   ];
 
+  const getRegistryInfo = useCallback((itemText: string): { key: string, category: string, data: any } | null => {
+    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
+    const key = normalize(itemText);
+    
+    const categoryMapping: Partial<Record<CategoryKey, string>> = {
+      'profissoes': 'profissoes',
+      'v_conditions': 'condicoesVisiveis',
+      'nv_conditions': 'condicoesNaoVisiveis',
+      'tribos': 'tribosUrbanas',
+      'shiny': 'shinies',
+      'fetiches': 'fetiches',
+      'rastros': 'rastro',
+      'contexto': 'contexto',
+      'relacional': 'relacional',
+      'papeisRelacionais': 'papeisRelacionais',
+      'filhos': 'filhos',
+      'logistica': 'logistica'
+    };
+
+    const registryKey = categoryMapping[selectedCategory];
+    if (!registryKey) return null;
+
+    const data = (RULES_REGISTRY as any)[registryKey]?.[key];
+    if (!data) return null;
+
+    return { key, category: registryKey, data };
+  }, [selectedCategory]);
+
   // Data Extraction Logic
   const data = useMemo(() => {
     let rawItems: any[] = [];
@@ -148,7 +176,8 @@ export const CatalogViewer: React.FC = () => {
           "Zona Rural/Remota", "Trabalho Braçal", "Setor Agro", "Cargos Altos",
           "Ansiedade", "Estresse", "Trabalha", "Estuda", "Estágio",
           "Capital", "Interior", "Sul", "Norte", "Nordeste", "Sudeste", "Centro-Oeste",
-          "Preta/Parda", "Branca", "Amarela", "Indígena"
+          "Preta/Parda", "Branca", "Amarela", "Indígena",
+          "tierMetropole: tier_alfa", "tierMetropole: tier_beta", "tierMetropole: tier_gama", "tierMetropole: interior"
         ];
         break;
       case 'relacional':
@@ -185,8 +214,17 @@ export const CatalogViewer: React.FC = () => {
         id: `${selectedCategory}-${idx}`,
         text: typeof item === 'string' ? item : (item.text || item.name || String(item))
       }))
-      .filter(item => item.text.toLowerCase().includes(searchQuery.toLowerCase()));
-  }, [selectedCategory, searchQuery]);
+      .filter(item => item.text.toLowerCase().includes(searchQuery.toLowerCase()))
+      .sort((a, b) => {
+        const aMigrated = !!getRegistryInfo(a.text);
+        const bMigrated = !!getRegistryInfo(b.text);
+        
+        if (aMigrated && !bMigrated) return -1;
+        if (!aMigrated && bMigrated) return 1;
+        
+        return a.text.localeCompare(b.text);
+      });
+  }, [selectedCategory, searchQuery, getRegistryInfo]);
 
   const handleCopyAll = () => {
     const textToCopy = data.map(item => item.text).join('\n');
@@ -197,7 +235,20 @@ export const CatalogViewer: React.FC = () => {
   };
 
   const handleCopyItem = (itemText: string) => {
-    const textToCopy = `Me mande toda a estrutura, gatilhos, funcionamentos, eventos e etc desse item: ${itemText}`;
+    const info = getRegistryInfo(itemText);
+    let textToCopy = "";
+
+    if (info) {
+      // Converted: Copy raw JSON
+      const jsonToCopy = {
+        [info.key]: info.data
+      };
+      textToCopy = JSON.stringify(jsonToCopy, null, 2);
+    } else {
+      // Non-converted: Copy pre-programmed text
+      textToCopy = `Me mande toda a estrutura, gatilhos, funcionamentos, eventos e etc desse item: ${itemText}`;
+    }
+
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopiedItem(itemText);
       setTimeout(() => setCopiedItem(null), 2000);
@@ -205,29 +256,43 @@ export const CatalogViewer: React.FC = () => {
   };
 
   const isItemMigrated = (itemText: string): boolean => {
-    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
-    const key = normalize(itemText);
-    
-    // Mapping between CatalogViewer categories and rulesRegistry categories
-    const categoryMapping: Partial<Record<CategoryKey, string>> = {
-      'profissoes': 'profissoes',
-      'v_conditions': 'condicoesVisiveis',
-      'nv_conditions': 'condicoesNaoVisiveis',
-      'tribos': 'tribosUrbanas',
-      'shiny': 'shinies',
-      'fetiches': 'fetiches',
-      'rastros': 'rastro',
-      'contexto': 'contexto',
-      'relacional': 'relacional',
-      'papeisRelacionais': 'papeisRelacionais',
-      'filhos': 'filhos',
-      'logistica': 'logistica'
-    };
+    return !!getRegistryInfo(itemText);
+  };
 
-    const registryKey = categoryMapping[selectedCategory];
-    if (!registryKey) return false;
+  const renderRuleText = (rule: any, index: number) => {
+    let propLabel = rule.property;
+    let valLabel = String(rule.value);
 
-    return !!RULES_REGISTRY[registryKey]?.[key];
+    if (rule.property === 'tierMetropole') {
+      propLabel = 'Metrópole';
+      const metropoleLabels: any = {
+        'tier_alfa': 'Capital Alfa (SP/RJ)',
+        'tier_beta': 'Capital Beta (MG/PR/RS...)',
+        'tier_gama': 'Capital Gama (Outros)',
+        'interior_alfa': 'Interior Alfa (SP/RJ)',
+        'interior_beta': 'Interior Beta (MG/PR/RS...)',
+        'interior_gama': 'Interior Gama (Outros)'
+      };
+      valLabel = metropoleLabels[rule.value] || rule.value;
+    }
+
+    const opLabel = rule.operator === '==' ? 'for igual a' : 
+                   rule.operator === '>=' ? 'for maior/igual a' :
+                   rule.operator === '<=' ? 'for menor/igual a' :
+                   rule.operator === '>' ? 'for maior que' :
+                   rule.operator === '<' ? 'for menor que' : rule.operator;
+
+    return (
+      <div key={`rule-${rule.property}-${rule.operator}-${rule.value}-${index}`} className="text-[10px] flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+        <span className="text-blue-500/50">•</span>
+        <span className="text-white/40">Se</span>
+        <span className="text-blue-400 font-mono">{propLabel}</span>
+        <span className="text-white/30">{opLabel}</span>
+        <span className="text-blue-300">{valLabel}</span>
+        <span className="text-white/20">→</span>
+        <span className="text-gold font-bold">x{rule.multiplier}</span>
+      </div>
+    );
   };
 
   const Icon = categories.find(c => c.key === selectedCategory)?.icon || Book;
@@ -299,11 +364,19 @@ export const CatalogViewer: React.FC = () => {
                     onClick={() => handleCopyItem(item.text)}
                     className="group flex items-center justify-between gap-4 p-4 bg-dark-surface/50 border border-dark-border rounded-lg hover:border-gold/30 hover:bg-gold/5 transition-all text-left"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-1.5 h-1.5 rounded-full transition-colors shrink-0 bg-white/10 group-hover:bg-gold" />
-                      <span className={`text-xs md:text-sm transition-colors leading-relaxed ${migrated ? 'text-blue-500 font-medium' : 'text-white/70 group-hover:text-ice'}`}>
-                        {item.text}
-                      </span>
+                    <div className="flex-1 flex flex-col gap-1 pr-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-1.5 h-1.5 rounded-full transition-colors shrink-0 bg-white/10 group-hover:bg-gold" />
+                        <span className={`text-xs md:text-sm transition-colors leading-relaxed ${migrated ? 'text-blue-500 font-medium' : 'text-white/70 group-hover:text-ice'}`}>
+                          {item.text}
+                        </span>
+                      </div>
+                      
+                      {migrated && (
+                        <div className="pl-6 space-y-0.5 mt-1 border-l border-white/5 ml-0.5">
+                          {getRegistryInfo(item.text)?.data.rules?.map((rule: any, index: number) => renderRuleText(rule, index))}
+                        </div>
+                      )}
                     </div>
                     
                     <AnimatePresence mode="wait">

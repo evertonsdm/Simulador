@@ -1,6 +1,6 @@
 export interface RuleModifier {
   property: string; // e.g., 'idade', 'capital', 'bioSex'
-  operator: '==' | '!=' | '>' | '<' | 'includes';
+  operator: '==' | '!=' | '>' | '<' | '>=' | '<=' | 'includes';
   value: any;
   multiplier: number;
 }
@@ -599,13 +599,33 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
       ]
     },
     "amputação(dedosoupartedamão)": {
-      name: "Amputação (Dedos ou Parte da Mão)",
-      baseWeight: 1.0,
-      rules: [
-        { "property": "perdeuMembroAcidente", "operator": "==", "value": true, "multiplier": 15 },
-        { "property": "trabalhoRisco", "operator": "==", "value": true, "multiplier": 2.5 },
-        { "property": "braçal", "operator": "==", "value": true, "multiplier": 2 },
-        { "property": "acidenteTransito", "operator": "==", "value": true, "multiplier": 3 }
+      "name": "Amputação (Dedos ou Parte da Mão)",
+      "baseWeight": 1,
+      "rules": [
+        {
+          "property": "perdeuMembroAcidente",
+          "operator": "==",
+          "value": true,
+          "multiplier": 15
+        },
+        {
+          "property": "trabalhoRisco",
+          "operator": "==",
+          "value": true,
+          "multiplier": 2.5
+        },
+        {
+          "property": "braçal",
+          "operator": "==",
+          "value": true,
+          "multiplier": 2
+        },
+        {
+          "property": "acidenteTransito",
+          "operator": "==",
+          "value": true,
+          "multiplier": 3
+        }
       ]
     },
     "câncerdepróstata(estágioinicial)": {
@@ -807,43 +827,73 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
   profissoes: {
     "trabalhadordazonafranca": {
       "name": "Trabalhador da Zona Franca",
-      "baseWeight": 1,
+      "baseWeight": 0.5,
       "rules": [
         {
           "property": "estado",
           "operator": "!=",
           "value": "AM",
-          "multiplier": 0
+          "multiplier": 0.0
         },
         {
-          "property": "capital",
-          "operator": "==",
-          "value": false,
-          "multiplier": 0
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "tier_",
+          "multiplier": 4.0
         },
         {
-          "property": "sexo",
-          "operator": "==",
-          "value": "Masculino",
-          "multiplier": 10
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "interior_",
+          "multiplier": 1.0
         },
         {
-          "property": "sexo",
+          "property": "idade",
+          "operator": "<",
+          "value": 18,
+          "multiplier": 0.0
+        },
+        {
+          "property": "classe",
           "operator": "==",
-          "value": "Feminino",
-          "multiplier": 0.05
+          "value": "Elite",
+          "multiplier": 0.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Alta",
+          "multiplier": 0.7
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Baixa",
+          "multiplier": 0.9
         },
         {
           "property": "idade",
           "operator": ">",
           "value": 24,
-          "multiplier": 3
+          "multiplier": 0.99
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 34,
+          "multiplier": 0.9
         },
         {
           "property": "idade",
           "operator": "<",
-          "value": 36,
-          "multiplier": 3
+          "value": 24,
+          "multiplier": 0.99
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": 20,
+          "multiplier": 0.96
         }
       ]
     },
@@ -890,10 +940,93 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
       ]
     },
     "guiaturísticonaamazônia": {
-      baseWeight: 1,
-      rules: [
-        { "property": "regiao", "operator": "==", "value": "Norte", "multiplier": 10 },
-        { "property": "classe", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 5 }
+      "name": "Guia Turístico na Amazônia",
+      "baseWeight": 0.5,
+      "rules": [
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "AM",
+          "multiplier": 15.0
+        },
+        {
+          "property": "estado",
+          "operator": "!=",
+          "value": "AM",
+          "multiplier": 0.0
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "tier_",
+          "multiplier": 1.35
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "interior_",
+          "multiplier": 1.0
+        },
+        {
+          "property": "classe",
+          "operator": "==",
+          "value": "Elite",
+          "multiplier": 0.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Base Precarizada",
+          "multiplier": 0.75
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Alta",
+          "multiplier": 0.90
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Baixa",
+          "multiplier": 1.0
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": 16,
+          "multiplier": 0.0
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 60,
+          "multiplier": 0.0
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 25,
+          "multiplier": 0.99
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 35,
+          "multiplier": 0.90
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": 25,
+          "multiplier": 0.99
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": 20,
+          "multiplier": 0.95
+        }
       ]
     },
     "vendedorlojista": {
@@ -1000,21 +1133,135 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
       ]
     },
     "costureiradefacção(trabalhoinformal)": {
-      baseWeight: 1,
-      rules: [
-        { property: "sexo", operator: "==", value: "Feminino", multiplier: 5.0 },
-        { property: "classe", operator: "==", value: "Base Precarizada / Vulnerável", multiplier: 10.0 },
-        { property: "braçal", operator: "==", value: true, multiplier: 5.0 },
-        { property: "periferico", operator: "==", value: true, multiplier: 3.0 }
+      "name": "Costureira de Facção (Trabalho Informal)",
+      "baseWeight": 1,
+      "rules": [
+        {
+          "property": "sexo",
+          "operator": "==",
+          "value": "Masculino",
+          "multiplier": 0
+        },
+        {
+          "property": "sexo",
+          "operator": "==",
+          "value": "Feminino",
+          "multiplier": 5
+        },
+        {
+          "property": "classe",
+          "operator": "==",
+          "value": "Base Precarizada / Vulnerável",
+          "multiplier": 10
+        },
+        {
+          "property": "braçal",
+          "operator": "==",
+          "value": true,
+          "multiplier": 5
+        },
+        {
+          "property": "periferico",
+          "operator": "==",
+          "value": true,
+          "multiplier": 3
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "tier_alfa",
+          "multiplier": 1
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "interior_alfa",
+          "multiplier": 0.95
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "tier_gama",
+          "multiplier": 1.05
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "interior_gama",
+          "multiplier": 1.07
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "tier_beta",
+          "multiplier": 0.94
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "interior_beta",
+          "multiplier": 0.94
+        }
       ]
     },
     "comerciantena25demarço": {
-      baseWeight: 1,
-      rules: [
-        { property: "regiao", operator: "==", value: "Sudeste", multiplier: 2 },
-        { property: "estado", operator: "==", value: "SP", multiplier: 2 },
-        { property: "perfil", operator: "==", value: "Capital", multiplier: 2 },
-        { property: "classe", operator: "==", value: "Classe Média Baixa", multiplier: 3 }
+      "name": "Comerciante na 25 de Março",
+      "baseWeight": 0.5,
+      "rules": [
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "SP",
+          "multiplier": 10.0
+        },
+        {
+          "property": "estado",
+          "operator": "!=",
+          "value": "SP",
+          "multiplier": 0.0
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "tier_alfa",
+          "multiplier": 9.0
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "interior_alfa",
+          "multiplier": 1.0
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "beta",
+          "multiplier": 0.0
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "gama",
+          "multiplier": 0.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média",
+          "multiplier": 3.0
+        },
+        {
+          "property": "classe",
+          "operator": "==",
+          "value": "Elite",
+          "multiplier": 1.2
+        },
+        {
+          "property": "classe",
+          "operator": "==",
+          "value": "Base Precarizada",
+          "multiplier": 1.2
+        }
       ]
     },
     "agrônomoespecialistaemirrigação": {
@@ -1028,11 +1275,39 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
       ]
     },
     "barãodasoja": {
-      baseWeight: 1,
-      rules: [
-        { "property": "regiao", "operator": "==", "value": "Centro-Oeste", "multiplier": 2 },
-        { "property": "classe", "operator": "includes", "value": "Elite", "multiplier": 2 },
-        { "property": "capital", "operator": "==", "value": false, "multiplier": 1.5 }
+      "name": "Barão da Soja",
+      "baseWeight": 0.1,
+      "rules": [
+        {
+          "property": "regiao",
+          "operator": "==",
+          "value": "Centro-Oeste",
+          "multiplier": 15.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Elite",
+          "multiplier": 5.0
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "interior_gama",
+          "multiplier": 3.0
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "==",
+          "value": "interior_beta",
+          "multiplier": 2.0
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "tier_",
+          "multiplier": 0.0
+        }
       ]
     },
     "frentista": {

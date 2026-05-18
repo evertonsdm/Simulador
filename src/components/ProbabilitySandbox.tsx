@@ -145,6 +145,20 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
     const selTrans = getSelected('logistica', OP_LOGISTICA_TRANSPORTE);
     const selHab = getSelected('logistica', ["Residência Padrão", "Condomínio Fechado", "Zeladoria", "Pensão/Quitinete", "Ocupação/Favela", "Zona Rural/Sítio"]);
 
+    const getTierMetropole = (estado: string, isCapital: boolean): 'tier_alfa' | 'tier_beta' | 'tier_gama' | 'interior_alfa' | 'interior_beta' | 'interior_gama' => {
+      const alfa = ['SP', 'RJ'];
+      const beta = ['DF', 'MG', 'PR', 'RS', 'BA', 'PE', 'CE'];
+      if (isCapital) {
+        if (alfa.includes(estado)) return 'tier_alfa';
+        if (beta.includes(estado)) return 'tier_beta';
+        return 'tier_gama';
+      } else {
+        if (alfa.includes(estado)) return 'interior_alfa';
+        if (beta.includes(estado)) return 'interior_beta';
+        return 'interior_gama';
+      }
+    };
+
     // Age derivation
     let idadeVal = 30;
     if (selIdade === "Jovem (15-25)") idadeVal = 20;
@@ -161,6 +175,7 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
       orientacao: (selOri as any) || 'Heterossexual',
       classe: (selClasse as any) || classes[0],
       regiao: (selRegiao as any) || 'Sudeste',
+      profissao: "", 
       capital: selPerfil === 'Capital',
       transporte: selTrans || 'Público/Alternativo',
       habitacao: selHab || 'Residência Padrão',
@@ -227,6 +242,7 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
       tecnologia: dashboardLocks.fisico.includes("Foco Tech"),
       setor: "",
       estado: "SP",
+      tierMetropole: getTierMetropole("SP", selPerfil === 'Capital'),
       geneticaFamiliar: false,
       braçal: dashboardLocks.contexto.includes("Trabalho Braçal"),
       sop: false,

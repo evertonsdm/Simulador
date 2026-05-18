@@ -138,6 +138,8 @@ export const calculateDeclarativeWeight = (
       case '!=': matches = target !== val; break;
       case '>': matches = Number(ctxValue) > Number(rule.value); break;
       case '<': matches = Number(ctxValue) < Number(rule.value); break;
+      case '>=': matches = Number(ctxValue) >= Number(rule.value); break;
+      case '<=': matches = Number(ctxValue) <= Number(rule.value); break;
       case 'includes': matches = target.toLowerCase().includes(val.toLowerCase()); break;
     }
     
@@ -179,6 +181,21 @@ const addConditionWithExclusivity = (name: string, conditionsV: string[], condit
 };
 
 // --- Core Logic Helpers ---
+
+const getTierMetropole = (estado: string, isCapital: boolean): 'tier_alfa' | 'tier_beta' | 'tier_gama' | 'interior_alfa' | 'interior_beta' | 'interior_gama' => {
+  const alfa = ['SP', 'RJ'];
+  const beta = ['DF', 'MG', 'PR', 'RS', 'BA', 'PE', 'CE'];
+
+  if (isCapital) {
+    if (alfa.includes(estado)) return 'tier_alfa';
+    if (beta.includes(estado)) return 'tier_beta';
+    return 'tier_gama';
+  } else {
+    if (alfa.includes(estado)) return 'interior_alfa';
+    if (beta.includes(estado)) return 'interior_beta';
+    return 'interior_gama';
+  }
+};
 
 const getWeightedTribo = (ctx: ConditionContext, migratedItems: string[]): { name: string, prob: ProbData } => {
   const categories = Object.keys(OP_TRIBO);
@@ -793,6 +810,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
       return "serviços";
     })(),
     estado,
+    tierMetropole: getTierMetropole(estado, perfilUrbanoStr.includes("Capital")),
     geneticaFamiliar: Math.random() < 0.1, 
     braçal: professionBase.toLowerCase().includes("obra") || professionBase.toLowerCase().includes("pedreiro") || professionBase.toLowerCase().includes("campo") || professionBase.toLowerCase().includes("roça") || professionBase.toLowerCase().includes("pesca") || professionBase.toLowerCase().includes("braçal") || professionBase.toLowerCase().includes("agrícola"), 
     sop: false, peleClara: etnia === "Branca",
@@ -1240,6 +1258,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     zonaRuralRemota: options.fixedRemoteArea ?? initialCtx.zonaRuralRemota,
     vulneravel: finalClasse.includes("Vulnerável"),
     hipertenso: initialCtx.hipertenso,
+    tierMetropole: initialCtx.tierMetropole,
     traumaArquivado: initialCtx.traumaArquivado,
     drogasInjetaveis: initialCtx.drogasInjetaveis,
     proSe: initialCtx.proSe,
@@ -1721,7 +1740,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
       ? rolesKeys.map(k => migratedItems['papeisRelacionais'][k].name!)
       : ["Irmão/Irmã", "Amigo(a)", "Ex-Cônjuge", "Colega de Trabalho", "Mentor(a)", "Inimigo(a)", "Filho(a)"];
     
-    const roleWeights = roleOptions.map(r => calculateDeclarativeWeight('papeisRelacionais', r, ctx, 1.0, migratedItems));
+    const roleWeights = roleOptions.map(r => calculateDeclarativeWeight('papeisRelacionais', r, ctx, () => 1.0, migratedItems));
     let roleRoll = rollWeighted(roleOptions, roleWeights);
     
     // Child Dynamics Lock Hijack

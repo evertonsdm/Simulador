@@ -150,6 +150,7 @@ const PROPERTIES = [
   { value: 'transporte', label: 'Tipo de Transporte (string)' },
   { value: 'habitacao', label: 'Endereço/Habitação (string)' },
   { value: 'isolamentoTotal', label: 'Isolamento Total (boolean)' },
+  { value: 'tierMetropole', label: 'Tier Metrópole (Alfas/Betas/Gamas)' },
   { value: 'periferico', label: 'Perfil Periférico (boolean)' },
   { value: 'ensolarado', label: 'Ambiente Ensolarado (boolean)' },
   { value: 'climaFrio', label: 'Clima Frio (boolean)' },
@@ -808,12 +809,25 @@ export const RuleForge: React.FC = () => {
         if (itemData && itemData.rules && Array.isArray(itemData.rules)) {
           itemData.rules.forEach((rule: any) => {
             if (rule.property.toLowerCase().includes(searchLow)) {
+              let displayValue = String(rule.value);
+              if (rule.property === 'tierMetropole') {
+                const labels: any = {
+                  'tier_alfa': 'Capital - Tier Alfa (SP/RJ)',
+                  'tier_beta': 'Capital - Tier Beta (MG/PR/RS...)',
+                  'tier_gama': 'Capital - Tier Gama (AC/AP/RR...)',
+                  'interior_alfa': 'Interior - Tier Alfa (SP/RJ)',
+                  'interior_beta': 'Interior - Tier Beta (MG/PR/RS...)',
+                  'interior_gama': 'Interior - Tier Gama (AC/AP/RR...)'
+                };
+                displayValue = labels[rule.value] || rule.value;
+              }
+
               results.push({
                 category: categoryLabel,
                 itemKey,
-                property: rule.property,
+                property: rule.property === 'tierMetropole' ? 'Metrópole' : rule.property,
                 operator: rule.operator,
-                value: rule.value,
+                value: displayValue,
                 multiplier: rule.multiplier
               });
             }
@@ -1242,7 +1256,7 @@ export const RuleForge: React.FC = () => {
                 ) : (
                   rules.map((rule, index) => (
                     <motion.div
-                      key={rule.id}
+                      key={`rule-${rule.property}-${rule.operator}-${rule.value}-${index}`}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
@@ -1284,17 +1298,33 @@ export const RuleForge: React.FC = () => {
 
                       <div className="md:col-span-3">
                         <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Valor</label>
-                        <input 
-                          type="text"
-                          value={String(rule.value)}
-                          onChange={(e) => updateRule(rule.id, { value: e.target.value })}
-                          autoComplete="off"
-                          data-lpignore="true"
-                          data-1pignore="true"
-                          spellCheck="false"
-                          placeholder="Ex: 'Norte' ou true"
-                          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 md:py-2 text-sm outline-none focus:border-blue-500"
-                        />
+                        {rule.property === 'tierMetropole' ? (
+                          <select
+                            value={String(rule.value)}
+                            onChange={(e) => updateRule(rule.id, { value: e.target.value })}
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 md:py-2 text-sm outline-none focus:border-blue-500"
+                          >
+                            <option value="">Selecione...</option>
+                            <option value="tier_alfa">Capital - Tier Alfa (SP/RJ)</option>
+                            <option value="tier_beta">Capital - Tier Beta (MG/PR/RS...)</option>
+                            <option value="tier_gama">Capital - Tier Gama (AC/AP/RR...)</option>
+                            <option value="interior_alfa">Interior - Tier Alfa (SP/RJ)</option>
+                            <option value="interior_beta">Interior - Tier Beta (MG/PR/RS...)</option>
+                            <option value="interior_gama">Interior - Tier Gama (AC/AP/RR...)</option>
+                          </select>
+                        ) : (
+                          <input 
+                            type="text"
+                            value={String(rule.value)}
+                            onChange={(e) => updateRule(rule.id, { value: e.target.value })}
+                            autoComplete="off"
+                            data-lpignore="true"
+                            data-1pignore="true"
+                            spellCheck="false"
+                            placeholder="Ex: 'Norte' ou true"
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 md:py-2 text-sm outline-none focus:border-blue-500"
+                          />
+                        )}
                       </div>
 
                       <div className="md:col-span-3">
