@@ -360,22 +360,22 @@ export const CatalogViewer: React.FC = () => {
             <p className="text-[9px] font-mono text-white/40 uppercase tracking-widest hidden md:block">Dicionário de dados procedurais e probabilidades estruturadas</p>
           </div>
 
-          <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-3 items-center w-full md:w-auto">
-            <div className="relative flex-1 md:w-48 lg:w-64">
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full md:w-auto items-center">
+            <div className="relative w-full md:w-48 lg:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20" />
               <input 
                 type="text" 
                 placeholder="Filtrar..." 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-black/40 border border-dark-border rounded px-8 py-1.5 text-[10px] font-mono text-gold focus:outline-none focus:border-gold/40"
+                className="w-full bg-black/40 border border-dark-border rounded-md px-8 py-1.5 text-[10px] font-mono text-gold focus:outline-none focus:border-gold/40 h-8 md:h-9"
               />
             </div>
             
             <select 
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value as CategoryKey)}
-              className="flex-1 md:flex-none bg-black/40 border border-dark-border rounded px-3 py-1.5 text-[10px] font-mono text-gold focus:outline-none focus:border-gold/40 appearance-none min-w-[140px]"
+              className="w-full md:w-auto flex-1 md:flex-none bg-black/40 border border-dark-border rounded-md px-3 py-1.5 text-[10px] font-mono text-gold focus:outline-none focus:border-gold/40 appearance-none min-w-[140px] h-8 md:h-9"
             >
               {categories.map(cat => (
                 <option key={cat.key} value={cat.key}>{cat.label}</option>
@@ -384,7 +384,7 @@ export const CatalogViewer: React.FC = () => {
 
             <button 
               onClick={handleCopyAll}
-              className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded font-mono text-[9px] uppercase tracking-widest transition-all w-full md:w-auto ${
+              className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded-md font-mono text-[9px] uppercase tracking-widest transition-all w-full md:w-auto h-8 md:h-9 ${
                 copied ? 'bg-emerald-500 text-black font-bold' : 'bg-gold text-black hover:bg-gold-hover font-bold shadow-lg'
               }`}
             >
@@ -398,7 +398,7 @@ export const CatalogViewer: React.FC = () => {
       {/* Main List Area */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 pb-20 md:pb-6">
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             {data.length > 0 ? (
               data.map((item) => {
                 const migrated = isItemMigrated(item.text);
@@ -412,7 +412,7 @@ export const CatalogViewer: React.FC = () => {
                     whileTap={{ scale: 0.99 }}
                     key={item.id}
                     onClick={() => handleCopyItem(item.text)}
-                    className="group flex items-center justify-between gap-4 p-4 bg-dark-surface/50 border border-dark-border rounded-lg hover:border-gold/30 hover:bg-gold/5 transition-all text-left"
+                    className="group flex items-center justify-between gap-4 p-3 md:p-4 bg-white/[0.02] border border-white/5 rounded-lg hover:bg-white/[0.04] hover:border-white/10 transition-all duration-200 text-left"
                   >
                     <div className="flex-1 flex flex-col gap-1 pr-4">
                       <div className="flex items-center gap-4">
@@ -423,7 +423,7 @@ export const CatalogViewer: React.FC = () => {
                       </div>
                       
                       {migrated && (
-                        <div className="pl-6 space-y-0.5 mt-1 border-l border-white/5 ml-0.5">
+                        <div className="pl-3 space-y-0.5 mt-2 border-l border-white/5 ml-1.5">
                           {getRegistryInfo(item.text)?.data.rules?.map((rule: any, index: number) => renderRuleText(rule, index))}
                         </div>
                       )}
