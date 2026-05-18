@@ -71,7 +71,7 @@ export const CatalogViewer: React.FC = () => {
   const [showOnlyLegacy, setShowOnlyLegacy] = useState(false);
 
   // Categories Mapping
-  const categories: { key: CategoryKey; label: string; icon: React.ElementType }[] = [
+  const categories = useMemo(() => [
     { key: 'profissoes', label: 'Profissões', icon: Briefcase },
     { key: 'regioes', label: 'Regiões', icon: MapPin },
     { key: 'etnias', label: 'Etnias', icon: Globe },
@@ -91,7 +91,8 @@ export const CatalogViewer: React.FC = () => {
     { key: 'relacional', label: 'Bagagem Relacional', icon: Users },
     { key: 'papeisRelacionais', label: 'Papéis Relacionais', icon: Users },
     { key: 'filhos', label: 'Dinâmica de Filhos', icon: Users },
-  ];
+    { key: 'estados', label: 'Estados (UF)', icon: MapPin },
+  ].sort((a, b) => a.label.localeCompare(b.label)), []);
 
   const getRegistryInfo = useCallback((itemText: string): { key: string, category: string, data: any } | null => {
     const normalize = (str: string) => {
@@ -116,6 +117,7 @@ export const CatalogViewer: React.FC = () => {
       'logistica': 'logistica',
       'etnias': 'etnia',
       'regioes': 'regiao',
+      'estados': 'estado',
       'orientacoes': 'orientacao',
       'generos': 'sexo'
     };
@@ -130,12 +132,15 @@ export const CatalogViewer: React.FC = () => {
     let itemData = categoryData[searchKey];
     let actualKey = searchKey;
 
-    // If not found, try finding the key by normalizing items in the category
+    // If not found, try finding the key by normalizing items in the category or their 'name' property
     if (!itemData) {
-      const foundKey = Object.keys(categoryData).find(k => normalize(k) === searchKey);
-      if (foundKey) {
-        itemData = categoryData[foundKey];
-        actualKey = foundKey;
+      const foundEntry = Object.entries(categoryData).find(([k, v]: [string, any]) => {
+        return normalize(k) === searchKey || (v.name && normalize(v.name) === searchKey);
+      });
+      
+      if (foundEntry) {
+        actualKey = foundEntry[0];
+        itemData = foundEntry[1];
       }
     }
 
@@ -179,10 +184,13 @@ export const CatalogViewer: React.FC = () => {
 
     switch (selectedCategory) {
       case 'etnias':
-        rawItems = ["Branca", "Parda", "Preta", "Amarela", "Indígena"];
+        rawItems = Object.values(RULES_REGISTRY['etnia'] || {}).map(i => i.name || '');
         break;
       case 'regioes':
-        rawItems = ['Sudeste', 'Nordeste', 'Sul', 'Norte', 'Centro-Oeste'];
+        rawItems = Object.values(RULES_REGISTRY['regiao'] || {}).map(i => i.name || '');
+        break;
+      case 'estados':
+        rawItems = Object.values(RULES_REGISTRY['estado'] || {}).map(i => i.name || '');
         break;
       case 'classes':
         rawItems = [
@@ -200,10 +208,10 @@ export const CatalogViewer: React.FC = () => {
         rawItems = ["Cisgênero", "Transgênero", "Transexual", "Não-Binário"];
         break;
       case 'generos':
-        rawItems = ["Masculino", "Feminino"];
+        rawItems = Object.values(RULES_REGISTRY['sexo'] || {}).map(i => i.name || '');
         break;
       case 'orientacoes':
-        rawItems = ["Heterossexual", "Bissexual", "Homossexual", "Assexual", "Pansexual", "Demissexual"];
+        rawItems = Object.values(RULES_REGISTRY['orientacao'] || {}).map(i => i.name || '');
         break;
       case 'profissoes':
         const universals = Object.values(PROFISSOES_UNIVERSAIS).flat();

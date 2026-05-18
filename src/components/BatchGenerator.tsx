@@ -12,8 +12,10 @@ import {
   Info,
   ChevronDown,
   ChevronUp,
-  AlertTriangle
+  AlertTriangle,
+  ShieldCheck
 } from 'lucide-react';
+import { RULES_REGISTRY } from '../data/rulesRegistry';
 import { generateCharacterData } from '../services/characterGenerator';
 import { CharacterResult } from '../types/character';
 
@@ -27,6 +29,7 @@ interface BatchStats {
   region: Record<string, number>;
   states: Record<string, number>;
   ageBuckets: Record<string, number>;
+  tribes: Record<string, number>;
   averages: {
     physical: number;
     mental: number;
@@ -51,22 +54,40 @@ interface ProgressBarProps {
   isActive?: boolean;
 }
 
+const isItemMigrated = (label: string) => {
+  const normalize = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
+  const search = normalize(label);
+  
+  for (const category of Object.values(RULES_REGISTRY)) {
+    if (typeof category === 'object' && category !== null) {
+      if (Object.keys(category).some(k => normalize(k) === search)) return true;
+      if (Object.values(category).some((v: any) => v.name && normalize(v.name) === search)) return true;
+    }
+  }
+  return false;
+};
+
 const ProgressBar = ({ value, label, total, color = 'bg-indigo-600', onClick, isActive }: ProgressBarProps) => {
   const percentage = (value / total) * 100;
+  const migrated = isItemMigrated(label);
+
   return (
     <div 
       className={`space-y-1 p-1 rounded transition-colors ${onClick ? 'cursor-pointer hover:bg-white/5' : ''} ${isActive ? 'bg-indigo-500/10 ring-1 ring-indigo-500/30' : ''}`}
       onClick={onClick}
     >
       <div className="flex justify-between text-[10px] font-mono tracking-tighter">
-        <span className="text-white/60 truncate max-w-[150px] uppercase">{label}</span>
-        <span className="text-white/80">{percentage.toFixed(1)}% <span className="text-white/20">({value})</span></span>
+        <span className={`truncate max-w-[150px] uppercase flex items-center gap-1.5 ${migrated ? 'text-blue-400 font-black' : 'text-white/60'}`}>
+          {migrated && <ShieldCheck size={8} className="text-blue-500 animate-pulse" />}
+          {label}
+        </span>
+        <span className={`${migrated ? 'text-blue-300' : 'text-white/80'}`}>{percentage.toFixed(1)}% <span className="text-white/20">({value})</span></span>
       </div>
       <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
         <motion.div 
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
-          className={`h-full ${color}`}
+          className={`h-full ${migrated ? 'bg-blue-600' : color}`}
         />
       </div>
     </div>
@@ -149,6 +170,7 @@ export const BatchGenerator: React.FC = () => {
         if (category === 'ethnicity' && meta.etnia !== value) return false;
         if (category === 'orientation' && meta.orientacao !== value) return false;
         if (category === 'identity' && !meta.genero.startsWith(value)) return false;
+        if (category === 'triboUrbana' && meta.triboUrbana !== value) return false;
         if (category === 'ageBucket') {
           const age = meta.idade;
           if (value === '0-17' && age > 17) return false;
@@ -181,6 +203,7 @@ export const BatchGenerator: React.FC = () => {
         '50-64': 0,
         '65+': 0
       },
+      tribes: {},
       averages: { physical: 0, mental: 0, income: 0, relational: 0, resilience: 0, urbanLife: 0 },
       flags: {
         estresse: 0,
@@ -246,6 +269,11 @@ export const BatchGenerator: React.FC = () => {
       meta.vConditions.forEach(cond => {
         currentStats.conditions[cond] = (currentStats.conditions[cond] || 0) + 1;
       });
+
+      // Tribos
+      if (meta.triboUrbana) {
+        currentStats.tribes[meta.triboUrbana] = (currentStats.tribes[meta.triboUrbana] || 0) + 1;
+      }
     });
 
     // Finalize averages
@@ -298,6 +326,11 @@ export const BatchGenerator: React.FC = () => {
   const sortedConditions = useMemo<[string, number][]>(() => {
     if (!stats) return [];
     return (Object.entries(stats.conditions) as [string, number][]).sort((a, b) => b[1] - a[1]);
+  }, [stats]);
+
+  const sortedTribes = useMemo<[string, number][]>(() => {
+    if (!stats) return [];
+    return (Object.entries(stats.tribes) as [string, number][]).sort((a, b) => b[1] - a[1]);
   }, [stats]);
 
   const sortedAgeBuckets = useMemo<[string, number][]>(() => {
@@ -584,6 +617,30 @@ export const BatchGenerator: React.FC = () => {
                 </div>
               </StatCard>
 
+              {/* Tribos Urbanas */}
+              <StatCard title="Subculturas & Tribos" icon={Users}>
+                <div className="space-y-2">
+                  <p className="text-[9px] font-mono text-indigo-400 uppercase tracking-widest font-bold mb-2">Distribuição de Tribos</p>
+                  <div className="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar pr-2">
+                    {sortedTribes.length > 0 ? sortedTribes.map(([label, val]) => (
+                      <ProgressBar 
+                        key={label} 
+                        label={label} 
+                        value={val} 
+                        total={stats.total} 
+                        color="bg-purple-600"
+                        onClick={() => toggleFilter('triboUrbana', label)}
+                        isActive={activeFilters.triboUrbana === label}
+                      />
+                    )) : (
+                      <div className="h-20 flex items-center justify-center text-white/10 text-[10px] font-mono italic">
+                        Nenhuma tribo detectada
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </StatCard>
+
               {/* Profissões */}
               <StatCard title="Mercado de Trabalho" icon={Briefcase} className="lg:col-span-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -594,15 +651,13 @@ export const BatchGenerator: React.FC = () => {
                     </div>
                     <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                       {sortedShinies.length > 0 ? sortedShinies.map(([label, val]) => (
-                        <div key={label} className="bg-gold/5 border border-gold/10 p-2 rounded text-[10px] font-mono">
-                          <div className="flex justify-between text-gold/80 mb-1">
-                            <span className="truncate max-w-[200px] font-bold">{label}</span>
-                            <span>{((val / stats.total) * 100).toFixed(1)}%</span>
-                          </div>
-                          <div className="h-0.5 w-full bg-gold/10 rounded-full overflow-hidden">
-                            <div className="h-full bg-gold/40" style={{ width: `${(val / stats.total) * 100}%` }} />
-                          </div>
-                        </div>
+                        <ProgressBar 
+                          key={label} 
+                          label={label} 
+                          value={val} 
+                          total={stats.total}
+                          color="bg-gold"
+                        />
                       )) : (
                         <div className="h-20 flex items-center justify-center text-white/10 text-[10px] font-mono italic">
                           Nenhum evento Shiny no lote

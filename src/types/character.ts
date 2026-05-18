@@ -232,6 +232,7 @@ export interface ConditionContext {
   classeSocial?: string;
   locomocaoComprometida?: boolean;
   tierMetropole: 'tier_alfa' | 'tier_beta' | 'tier_gama' | 'interior_alfa' | 'interior_beta' | 'interior_gama';
+  etnia: string;
 }
 
 export interface CharacterCondition {
@@ -254,6 +255,7 @@ export interface GenerationOptions {
   forceUnemployed?: boolean;
   fixedClass?: string;
   fixedRegion?: 'Sul' | 'Norte' | 'Nordeste' | 'Sudeste' | 'Centro-Oeste';
+  fixedState?: string;
   fixedIdentityTerm?: string;
   fixedCondition?: string;
   fixedShiny?: string;

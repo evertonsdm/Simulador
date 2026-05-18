@@ -88,6 +88,7 @@ const Badge = ({ children, color = 'gold' }: { children: React.ReactNode, color?
   <span className={`px-2 py-0.5 rounded-sm border text-[9px] font-mono tracking-widest uppercase flex items-center gap-1 ${
     color === 'gold' ? 'bg-gold/10 border-gold/40 text-gold' : 
     color === 'red' ? 'bg-carmine/10 border-carmine/40 text-carmine' :
+    color === 'blue' ? 'bg-blue-500/10 border-blue-500/40 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.1)]' :
     'bg-white/5 border-white/10 text-white/40'
   }`}>
     {children}
@@ -116,8 +117,20 @@ const MigratedItem = ({ name, migratedList }: { name: string, migratedList?: str
   if (!isMigrated) return <>{name}</>;
   
   return (
-    <span className="text-blue-500 font-extrabold drop-shadow-[0_0_10px_rgba(59,130,246,0.6)] animate-pulse-slow">
-      {name}
+    <span className="inline-flex items-center gap-1 group/migrated relative">
+      <span className="text-blue-500 font-extrabold drop-shadow-[0_0_10px_rgba(59,130,246,0.6)] animate-pulse-slow">
+        {name}
+      </span>
+      <ShieldCheck size={10} className="text-blue-400 opacity-60" />
+      
+      <div className="absolute bottom-full left-0 mb-2 hidden group-hover/migrated:block z-[100] w-max max-w-[200px] bg-slate-900 border border-blue-500/30 rounded p-2 shadow-2xl backdrop-blur-md">
+        <p className="text-[9px] font-mono text-blue-300 uppercase tracking-widest font-black flex items-center gap-1">
+          <Zap size={8} /> Item Declarativo
+        </p>
+        <p className="text-[8px] text-white/50 mt-1 leading-tight font-mono">
+          Os pesos e regras deste item são processados pelo RulesRegistry v2.
+        </p>
+      </div>
     </span>
   );
 };
@@ -704,21 +717,8 @@ export default function App() {
                           <h2 className="font-display font-black text-3xl md:text-4xl text-ice tracking-tighter uppercase leading-none">{result.metadata.nome}</h2>
                           <div className="flex flex-wrap items-center gap-3">
                             <Badge>{result.metadata.idade} Anos<Prob value={result.metadata.probs.idade} /></Badge>
-                            <Badge color={result.metadata.migratedItems.includes(result.metadata.regiao) ? 'blue' : 'white'}>
-                              {result.metadata.regiao} • {result.metadata.estado}
-                              {(() => {
-                                const regProb = result.metadata.probs.regiao;
-                                if (!regProb || Array.isArray(regProb)) return null;
-                                const counts: Record<string, number> = { 'Sudeste': 4, 'Sul': 3, 'Nordeste': 9, 'Norte': 7, 'Centro-Oeste': 4 };
-                                const stateCount = counts[result.metadata.regiao] || 1;
-                                const combinedProb = regProb.prob / stateCount;
-                                const combinedPool = regProb.poolSize * stateCount;
-                                return (
-                                  <span className="text-[10px] text-white/20 font-mono ml-1">
-                                    ({combinedProb.toFixed(1)}% | 1/{combinedPool})
-                                  </span>
-                                );
-                              })()}
+                            <Badge color={(result.metadata.migratedItems.includes(result.metadata.regiao) || result.metadata.migratedItems.includes(result.metadata.estado)) ? 'blue' : 'white'}>
+                              <MigratedItem name={result.metadata.regiao} migratedList={result.metadata.migratedItems} /> • <MigratedItem name={result.metadata.estado} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.estado} />
                             </Badge>
                             <Badge color="white"><MigratedItem name={result.metadata.etnia} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.etnia} /></Badge>
                           </div>

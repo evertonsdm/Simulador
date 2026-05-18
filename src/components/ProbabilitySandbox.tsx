@@ -169,6 +169,7 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
     const ctx: ConditionContext = {
       idade: idadeVal,
       sexo: (selSex as any) || 'Masculino',
+      etnia: (selEtnia as any) || 'Branca',
       identidadeGenero: (selSex as any) || 'Homem',
       termoIdentidade: dashboardLocks.identidade.includes("Transgênero") ? "Transgênero/Não-Binário" : "Cisgênero",
       transgenero: dashboardLocks.identidade.includes("Transgênero"),

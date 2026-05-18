@@ -495,7 +495,12 @@ export const OP_TRIBO: Record<string, CharacterCondition[]> = {
   "Mainstream": [
     { name: "Cidadão de Bem / Padrão", weight: (ctx) => 2.0 },
     { name: "Tia do Zap / Conservador Urbano", weight: (ctx) => (ctx.idade > 45 ? 3.0 : 0.5) },
-    { name: "Trabalhador Cansado", weight: (ctx) => (ctx.baixaRenda ? 3.0 : 1.0) }
+    { name: "Trabalhador Cansado", weight: (ctx) => (ctx.baixaRenda ? 3.0 : 1.0) },
+    { name: "Casual / Camisa de Time", weight: (ctx) => 50.0 },
+    { name: "Jovem de Igreja / Religioso Ativo", weight: (ctx) => 40.0 },
+    { name: "Ratão de Academia / Maromba", weight: (ctx) => 25.0 },
+    { name: "Cria / Mandrake", weight: (ctx) => 25.0 },
+    { name: "Universitário Festeiro / Baladeiro", weight: (ctx) => 15.0 }
   ],
   "Subcultura": [
     { name: "Gótico / Trevoso", weight: (ctx) => {
@@ -511,9 +516,12 @@ export const OP_TRIBO: Record<string, CharacterCondition[]> = {
     { name: "Andrógino / Queer Artístico", weight: (ctx) => (ctx.gayCis || ctx.alternativo ? 3.0 : 1.0) },
     { name: "E-Girl / E-Boy", weight: (ctx) => (ctx.idade < 22 && ctx.capital ? 3.5 : 0.1) }
   ],
-  "Marginalidade": [
-    { name: "Membro de Gangue / Facção", weight: (ctx) => (ctx.exDetento && ctx.sexo === 'Masculino' ? 12.0 : ctx.baixaRenda ? 2.0 : 0.5) },
-    { name: "Olheiro de Comunidade", weight: (ctx) => (ctx.baixaRenda ? 2.5 : 0.2) }
+  "Regional / Nicho": [
+    { name: "Indígena Aldeado / Originário", weight: (ctx) => 0.1 },
+    { name: "Ribeirinho", weight: (ctx) => 0.2 },
+    { name: "Sertanejo Raiz / Vaqueiro", weight: (ctx) => 0.3 },
+    { name: "Colono Sulista Tradicional", weight: (ctx) => 0.3 },
+    { name: "Garimpeiro / Extrativista de Risco", weight: (ctx) => 0.1 }
   ]
 };
 

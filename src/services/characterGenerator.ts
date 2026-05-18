@@ -104,11 +104,13 @@ export const calculateDeclarativeWeight = (
 
   let registryItem = categoryData[itemKey];
   
-  // If not found by direct normalized key, search through keys with normalization
+  // If not found by direct normalized key, search through keys with normalization or by 'name' property
   if (!registryItem) {
-    const foundKey = Object.keys(categoryData).find(k => normalize(k) === itemKey);
-    if (foundKey) {
-      registryItem = categoryData[foundKey];
+    const foundEntry = Object.entries(categoryData).find(([k, v]: [string, any]) => {
+      return normalize(k) === itemKey || (v.name && normalize(v.name) === itemKey);
+    });
+    if (foundEntry) {
+      registryItem = foundEntry[1];
     }
   }
 
@@ -121,7 +123,7 @@ export const calculateDeclarativeWeight = (
     }
     
     // Trava de Migração para Rastro Digital
-    if (category === 'rastro' || category === 'etnia' || category === 'regiao') {
+    if (category === 'rastro' || category === 'etnia' || category === 'regiao' || category === 'estado') {
       return 0; 
     }
 
@@ -228,12 +230,11 @@ const getWeightedClasse = (estado: string, isCapital: boolean, ctx: any, migrate
 };
 
 const getWeightedTribo = (ctx: ConditionContext, migratedItems: string[]): { name: string, prob: ProbData } => {
-  const categories = Object.keys(OP_TRIBO);
-  const catRoll = rollUniform(categories);
-  const pool = OP_TRIBO[catRoll.value];
-  const weights = pool.map(i => calculateDeclarativeWeight('tribosUrbanas', i.name, ctx, i.weight, migratedItems));
-  const roll = rollWeighted(pool.map(p => p.name), weights);
-  return { name: roll.value, prob: { prob: (catRoll.prob / 100) * roll.prob, poolSize: roll.poolSize } };
+  const allOptions: CharacterCondition[] = Object.values(OP_TRIBO).flat();
+  const weights = allOptions.map(i => calculateDeclarativeWeight('tribosUrbanas', i.name, ctx, i.weight, migratedItems));
+  
+  const roll = rollWeighted(allOptions.map(p => p.name), weights);
+  return { name: roll.value, prob: { prob: roll.prob, poolSize: allOptions.length } };
 };
 
 const getWeightedCenaSexualidade = (ctx: ConditionContext): { value: string, prob: ProbData } => {
@@ -708,7 +709,15 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     'Norte': ['AM', 'PA', 'AC', 'RR', 'RO', 'TO', 'AP'],
     'Centro-Oeste': ['DF', 'GO', 'MT', 'MS']
   };
-  const estado = randomChoice(statesByRegion[regiao] || ['SP']);
+  
+  const currentRegionStates = statesByRegion[regiao] || ['SP'];
+  const estadoWeights = currentRegionStates.map(name => 
+    calculateDeclarativeWeight('estado', name, { regiao } as any, () => 1, migratedItems)
+  );
+
+  const estadoRoll = rollWeighted(currentRegionStates, estadoWeights);
+  const estado = options.fixedState ?? estadoRoll.value;
+  probs.estado = { prob: estadoRoll.prob, poolSize: currentRegionStates.length };
 
   // 2. Shiny Initialization
   let shiny = options.fixedShiny ?? "Nenhum evento significativo detectado.";
@@ -827,6 +836,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
 
   const initialCtx: ConditionContext = {
     idade: idade, sexo: bioSex, orientacao, classe: classe, regiao, 
+    etnia,
     identidadeGenero, termoIdentidade, transgenero: !isCis,
     profissao: professionBase,
     capital: perfilUrbanoStr.includes("Capital"), 
@@ -1262,6 +1272,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   const ctx: ConditionContext = {
     ...initialCtx,
     idade: finalIdade, sexo: bioSex, orientacao, classe: finalClasse, classeSocial: finalClasse, regiao, 
+    etnia,
     identidadeGenero, termoIdentidade, transgenero: !isCis,
     capital: perfilUrbanoStr.includes("Capital"), 
     trabalha: false,

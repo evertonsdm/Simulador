@@ -2116,6 +2116,198 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "multiplier": 1.2
         }
       ]
+    },
+    "androginoqueerartistico": {
+      "name": "Andrógino / Queer Artístico",
+      "baseWeight": 1.5,
+      "rules": [
+        { "property": "orientacao", "operator": "==", "value": "Heterossexual", "multiplier": 0.1 },
+        { "property": "orientacao", "operator": "==", "value": "Homossexual", "multiplier": 4.0 },
+        { "property": "orientacao", "operator": "==", "value": "Bissexual", "multiplier": 4.0 },
+        { "property": "orientacao", "operator": "==", "value": "Pansexual", "multiplier": 4.0 },
+        { "property": "orientacao", "operator": "==", "value": "Assexual", "multiplier": 4.0 },
+        { "property": "idade", "operator": ">=", "value": 18, "multiplier": 2.0 },
+        { "property": "idade", "operator": ">", "value": 35, "multiplier": 0.5 },
+        { "property": "capital", "operator": "==", "value": true, "multiplier": 2.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "tier_alfa", "multiplier": 2.0 }
+      ]
+    },
+    "egirleboy": {
+      "name": "E-Girl / E-Boy",
+      "baseWeight": 2.0,
+      "rules": [
+        { "property": "idade", "operator": ">=", "value": 14, "multiplier": 4.0 },
+        { "property": "idade", "operator": ">", "value": 22, "multiplier": 0.25 },
+        { "property": "idade", "operator": ">", "value": 30, "multiplier": 0.0 },
+        { "property": "orientacao", "operator": "==", "value": "Bissexual", "multiplier": 2.0 },
+        { "property": "orientacao", "operator": "==", "value": "Pansexual", "multiplier": 2.0 },
+        { "property": "tecnologia", "operator": "==", "value": true, "multiplier": 2.0 },
+        { "property": "nerd", "operator": "==", "value": true, "multiplier": 1.5 }
+      ]
+    },
+    "goticotrevoso": {
+      "name": "Gótico / Trevoso",
+      "baseWeight": 1.5,
+      "rules": [
+        { "property": "idade", "operator": ">=", "value": 15, "multiplier": 2.0 },
+        { "property": "idade", "operator": ">", "value": 24, "multiplier": 0.5 },
+        { "property": "idade", "operator": ">=", "value": 35, "multiplier": 2.5 },
+        { "property": "idade", "operator": ">", "value": 45, "multiplier": 0.4 },
+        { "property": "idade", "operator": ">", "value": 55, "multiplier": 0.0 },
+        { "property": "orientacao", "operator": "==", "value": "Bissexual", "multiplier": 1.5 },
+        { "property": "orientacao", "operator": "==", "value": "Pansexual", "multiplier": 1.5 },
+        { "property": "orientacao", "operator": "==", "value": "Assexual", "multiplier": 1.5 }
+      ]
+    },
+    "otakugeek": {
+      "name": "Otaku / Geek",
+      "baseWeight": 3.0,
+      "rules": [
+        { "property": "idade", "operator": "<", "value": 25, "multiplier": 2.0 },
+        { "property": "idade", "operator": "<=", "value": 35, "multiplier": 1.3 },
+        { "property": "idade", "operator": ">", "value": 45, "multiplier": 0.1 },
+        { "property": "nerd", "operator": "==", "value": true, "multiplier": 3.0 },
+        { "property": "tecnologia", "operator": "==", "value": true, "multiplier": 2.5 }
+      ]
+    },
+    "trabalhadorcansado": {
+      "name": "Trabalhador Cansado",
+      "baseWeight": 90.0,
+      "rules": [
+        { "property": "idade", "operator": "<", "value": 18, "multiplier": 0.0 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.05 },
+        { "property": "estresse", "operator": "==", "value": true, "multiplier": 1.5 },
+        { "property": "trabalhoBraçal", "operator": "==", "value": true, "multiplier": 1.5 }
+      ]
+    },
+    "punkanarcopunk": {
+      "name": "Punk / Anarcopunk",
+      "baseWeight": 1.5,
+      "rules": [
+        { "property": "idade", "operator": ">=", "value": 16, "multiplier": 2.5 },
+        { "property": "idade", "operator": ">", "value": 28, "multiplier": 0.4 },
+        { "property": "idade", "operator": ">", "value": 35, "multiplier": 0.1 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.0 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 1.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Alta / Estabilidade", "multiplier": 1.4 },
+        { "property": "capital", "operator": "==", "value": true, "multiplier": 2.0 },
+        { "property": "orientacao", "operator": "!=", "value": "Heterossexual", "multiplier": 1.2 }
+      ]
+    },
+    "indigenaaldeado": {
+      "name": "Indígena Aldeado / Originário",
+      "baseWeight": 0.1,
+      "rules": [
+        { "property": "etnia", "operator": "==", "value": "Indígena", "multiplier": 50.0 },
+        { "property": "etnia", "operator": "!=", "value": "Indígena", "multiplier": 0.0 },
+        { "property": "regiao", "operator": "==", "value": "Norte", "multiplier": 5.0 },
+        { "property": "regiao", "operator": "==", "value": "Centro-Oeste", "multiplier": 5.0 },
+        { "property": "zonaRuralRemota", "operator": "==", "value": true, "multiplier": 10.0 },
+        { "property": "capital", "operator": "==", "value": true, "multiplier": 0.0 }
+      ]
+    },
+    "ribeirinho": {
+      "name": "Ribeirinho",
+      "baseWeight": 0.2,
+      "rules": [
+        { "property": "regiao", "operator": "==", "value": "Norte", "multiplier": 20.0 },
+        { "property": "regiao", "operator": "==", "value": "Sul", "multiplier": 0.0 },
+        { "property": "regiao", "operator": "==", "value": "Sudeste", "multiplier": 0.0 },
+        { "property": "zonaRuralRemota", "operator": "==", "value": true, "multiplier": 5.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_gama", "multiplier": 5.0 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.0 }
+      ]
+    },
+    "sertanejoraiz": {
+      "name": "Sertanejo Raiz / Vaqueiro",
+      "baseWeight": 0.3,
+      "rules": [
+        { "property": "regiao", "operator": "==", "value": "Nordeste", "multiplier": 30.0 },
+        { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_gama", "multiplier": 5.0 },
+        { "property": "capital", "operator": "==", "value": true, "multiplier": 0.0 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.0 }
+      ]
+    },
+    "colonosulista": {
+      "name": "Colono Sulista Tradicional",
+      "baseWeight": 0.3,
+      "rules": [
+        { "property": "regiao", "operator": "==", "value": "Sul", "multiplier": 25.0 },
+        { "property": "regiao", "operator": "!=", "value": "Sul", "multiplier": 0.0 },
+        { "property": "etnia", "operator": "==", "value": "Branca", "multiplier": 5.0 },
+        { "property": "etnia", "operator": "!=", "value": "Branca", "multiplier": 0.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_gama", "multiplier": 2.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_beta", "multiplier": 2.0 }
+      ]
+    },
+    "garimpeiro": {
+      "name": "Garimpeiro / Extrativista de Risco",
+      "baseWeight": 0.1,
+      "rules": [
+        { "property": "regiao", "operator": "==", "value": "Norte", "multiplier": 15.0 },
+        { "property": "regiao", "operator": "==", "value": "Centro-Oeste", "multiplier": 15.0 },
+        { "property": "trabalhoRisco", "operator": "==", "value": true, "multiplier": 10.0 },
+        { "property": "sexo", "operator": "==", "value": "Feminino", "multiplier": 0.0 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.0 },
+        { "property": "capital", "operator": "==", "value": true, "multiplier": 0.0 }
+      ]
+    },
+    "casualcamisadetime": {
+      "name": "Casual / Camisa de Time",
+      "baseWeight": 50.0,
+      "rules": [
+        { "property": "sexo", "operator": "==", "value": "Masculino", "multiplier": 1.3 },
+        { "property": "idade", "operator": ">=", "value": 14, "multiplier": 1.5 },
+        { "property": "idade", "operator": ">", "value": 45, "multiplier": 0.67 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.2 }
+      ]
+    },
+    "jovemreligioso": {
+      "name": "Jovem de Igreja / Religioso Ativo",
+      "baseWeight": 40.0,
+      "rules": [
+        { "property": "idade", "operator": ">=", "value": 14, "multiplier": 1.5 },
+        { "property": "idade", "operator": ">", "value": 35, "multiplier": 0.67 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 1.3 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 1.3 }
+      ]
+    },
+    "rataodeacademia": {
+      "name": "Ratão de Academia / Maromba",
+      "baseWeight": 25.0,
+      "rules": [
+        { "property": "idade", "operator": ">=", "value": 18, "multiplier": 2.0 },
+        { "property": "idade", "operator": ">", "value": 40, "multiplier": 0.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Alta / Estabilidade", "multiplier": 1.2 },
+        { "property": "capital", "operator": "==", "value": true, "multiplier": 1.2 }
+      ]
+    },
+    "criamandrake": {
+      "name": "Cria / Mandrake",
+      "baseWeight": 25.0,
+      "rules": [
+        { "property": "idade", "operator": ">=", "value": 14, "multiplier": 3.0 },
+        { "property": "idade", "operator": ">", "value": 24, "multiplier": 0.33 },
+        { "property": "idade", "operator": ">", "value": 35, "multiplier": 0.1 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 2.5 },
+        { "property": "regiao", "operator": "==", "value": "Sudeste", "multiplier": 1.2 },
+        { "property": "capital", "operator": "==", "value": true, "multiplier": 1.25 }
+      ]
+    },
+    "universitariofesteiro": {
+      "name": "Universitário Festeiro / Baladeiro",
+      "baseWeight": 15.0,
+      "rules": [
+        { "property": "idade", "operator": ">=", "value": 18, "multiplier": 4.0 },
+        { "property": "idade", "operator": ">", "value": 26, "multiplier": 0.25 },
+        { "property": "idade", "operator": "<=", "value": 17, "multiplier": 0.0 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Alta / Estabilidade", "multiplier": 1.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 1.5 }
+      ]
     }
   },
   papeisRelacionais: {
@@ -2992,34 +3184,176 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
   regiao: {
     "sudeste": {
       "name": "Sudeste",
-      "baseWeight": 42.0,
+      "baseWeight": 84.7,
       "rules": []
     },
     "nordeste": {
       "name": "Nordeste",
-      "baseWeight": 27.0,
+      "baseWeight": 54.2,
       "rules": []
     },
     "sul": {
       "name": "Sul",
-      "baseWeight": 14.0,
+      "baseWeight": 29.8,
       "rules": []
     },
     "norte": {
       "name": "Norte",
-      "baseWeight": 9.0,
+      "baseWeight": 17.1,
       "rules": []
     },
     "centrooeste": {
       "name": "Centro-Oeste",
-      "baseWeight": 8.0,
+      "baseWeight": 16.1,
       "rules": []
+    }
+  },
+  estado: {
+    // ================= SUDESTE =================
+    "sp": {
+      "name": "SP",
+      "baseWeight": 44.4,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Sudeste", "multiplier": 0.0 } ]
+    },
+    "mg": {
+      "name": "MG",
+      "baseWeight": 20.5,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Sudeste", "multiplier": 0.0 } ]
+    },
+    "rj": {
+      "name": "RJ",
+      "baseWeight": 16.0,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Sudeste", "multiplier": 0.0 } ]
+    },
+    "es": {
+      "name": "ES",
+      "baseWeight": 3.8,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Sudeste", "multiplier": 0.0 } ]
+    },
+    // ================= NORDESTE =================
+    "ba": {
+      "name": "BA",
+      "baseWeight": 14.1,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    "pe": {
+      "name": "PE",
+      "baseWeight": 9.0,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    "ce": {
+      "name": "CE",
+      "baseWeight": 8.7,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    "ma": {
+      "name": "MA",
+      "baseWeight": 6.7,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    "pb": {
+      "name": "PB",
+      "baseWeight": 3.9,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    "rn": {
+      "name": "RN",
+      "baseWeight": 3.3,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    "pi": {
+      "name": "PI",
+      "baseWeight": 3.2,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    "al": {
+      "name": "AL",
+      "baseWeight": 3.1,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    "se": {
+      "name": "SE",
+      "baseWeight": 2.2,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Nordeste", "multiplier": 0.0 } ]
+    },
+    // ================= SUL =================
+    "pr": {
+      "name": "PR",
+      "baseWeight": 11.4,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Sul", "multiplier": 0.0 } ]
+    },
+    "rs": {
+      "name": "RS",
+      "baseWeight": 10.8,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Sul", "multiplier": 0.0 } ]
+    },
+    "sc": {
+      "name": "SC",
+      "baseWeight": 7.6,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Sul", "multiplier": 0.0 } ]
+    },
+    // ================= NORTE =================
+    "pa": {
+      "name": "PA",
+      "baseWeight": 8.1,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Norte", "multiplier": 0.0 } ]
+    },
+    "am": {
+      "name": "AM",
+      "baseWeight": 3.9,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Norte", "multiplier": 0.0 } ]
+    },
+    "ro": {
+      "name": "RO",
+      "baseWeight": 1.5,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Norte", "multiplier": 0.0 } ]
+    },
+    "to": {
+      "name": "TO",
+      "baseWeight": 1.5,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Norte", "multiplier": 0.0 } ]
+    },
+    "ac": {
+      "name": "AC",
+      "baseWeight": 0.8,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Norte", "multiplier": 0.0 } ]
+    },
+    "ap": {
+      "name": "AP",
+      "baseWeight": 0.7,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Norte", "multiplier": 0.0 } ]
+    },
+    "rr": {
+      "name": "RR",
+      "baseWeight": 0.6,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Norte", "multiplier": 0.0 } ]
+    },
+    // ================= CENTRO-OESTE =================
+    "go": {
+      "name": "GO",
+      "baseWeight": 7.0,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Centro-Oeste", "multiplier": 0.0 } ]
+    },
+    "mt": {
+      "name": "MT",
+      "baseWeight": 3.6,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Centro-Oeste", "multiplier": 0.0 } ]
+    },
+    "df": {
+      "name": "DF",
+      "baseWeight": 2.8,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Centro-Oeste", "multiplier": 0.0 } ]
+    },
+    "ms": {
+      "name": "MS",
+      "baseWeight": 2.7,
+      "rules": [ { "property": "regiao", "operator": "!=", "value": "Centro-Oeste", "multiplier": 0.0 } ]
     }
   },
   etnia: {
     "branca": {
       "name": "Branca",
-      "baseWeight": 4.0,
+      "baseWeight": 43.0,
       "rules": [
         { "property": "regiao", "operator": "==", "value": "Sul", "multiplier": 2.5 },
         { "property": "estado", "operator": "==", "value": "SP", "multiplier": 1.5 },
@@ -3031,7 +3365,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
     },
     "parda": {
       "name": "Parda",
-      "baseWeight": 4.5,
+      "baseWeight": 45.0,
       "rules": [
         { "property": "regiao", "operator": "==", "value": "Norte", "multiplier": 1.5 },
         { "property": "regiao", "operator": "==", "value": "Nordeste", "multiplier": 1.4 },
@@ -3042,7 +3376,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
     },
     "preta": {
       "name": "Preta",
-      "baseWeight": 1.0,
+      "baseWeight": 10.0,
       "rules": [
         { "property": "estado", "operator": "==", "value": "BA", "multiplier": 3.0 },
         { "property": "estado", "operator": "==", "value": "MA", "multiplier": 2.0 },
@@ -3055,7 +3389,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
     },
     "amarela": {
       "name": "Amarela",
-      "baseWeight": 0.2,
+      "baseWeight": 0.1,
       "rules": [
         { "property": "estado", "operator": "==", "value": "SP", "multiplier": 3.0 },
         { "property": "estado", "operator": "==", "value": "PR", "multiplier": 2.0 },
@@ -3067,7 +3401,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
     },
     "indigena": {
       "name": "Indígena",
-      "baseWeight": 0.3,
+      "baseWeight": 0.1,
       "rules": [
         { "property": "estado", "operator": "==", "value": "RR", "multiplier": 6.0 },
         { "property": "estado", "operator": "==", "value": "AM", "multiplier": 5.0 },
