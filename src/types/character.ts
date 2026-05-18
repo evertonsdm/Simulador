@@ -284,6 +284,7 @@ export interface CharacterResult {
     probs: Record<string, ProbData | ProbData[]>;
     friccaoUrbana: string;
     migratedItems: string[];
+    heatmap?: Record<string, number>;
     bodyMap?: { id: string, color: string }[];
   }
 }

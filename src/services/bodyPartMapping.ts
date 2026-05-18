@@ -5,6 +5,7 @@
 export interface RandomMapping {
   options: string[];
   roll: number;
+  fixed?: string[];
 }
 
 /**
@@ -47,6 +48,11 @@ export const CONDITION_TO_PARTS: Record<string, string[] | string[][] | RandomMa
     roll: 1
   },
   "Queimaduras de 3º Grau Visíveis": ['head', 'neck', 'chest', 'abdomen', 'right-arm', 'left-arm'],
+  "Encefalopatia e Neuropatia Elétrica Moderada": {
+    fixed: ['head'],
+    options: ['right-arm', 'left-arm', 'left-leg', 'right-leg'],
+    roll: 2
+  },
   "Neuropatia Periférica e Encefalopatia por Trauma Elétrico Atmosférico": {
     options: ['head', 'neck', 'left-shoulder', 'chest', 'right-arm', 'abdomen', 'left-arm', 'left-leg', 'right-leg'],
     roll: 7

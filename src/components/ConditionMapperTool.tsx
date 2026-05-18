@@ -7,22 +7,24 @@ import { Copy, Check, ChevronDown } from "lucide-react";
 export const ConditionMapperTool: React.FC = () => {
   const [level, setLevel] = useState<number>(1);
   const [condition, setCondition] = useState<string>("");
-  const [selectedParts, setSelectedParts] = useState<string[]>([]);
-  const [rollCount, setRollCount] = useState<number | 'all'>('all');
+  const [selectedParts, setSelectedParts] = useState<{ id: string; mode: 'fixed' | 'random' }[]>([]);
+  const [randomCount, setRandomCount] = useState<number>(1);
   const [copied, setCopied] = useState(false);
 
-  // Reset rollCount if it exceeds selectedParts length
+  // Reset randomCount if it exceeds the number of random parts
+  const randomPartsCount = selectedParts.filter(p => p.mode === 'random').length;
   useEffect(() => {
-    if (rollCount !== 'all' && rollCount > selectedParts.length) {
-      setRollCount('all');
+    if (randomCount > randomPartsCount && randomPartsCount > 0) {
+      setRandomCount(randomPartsCount);
+    } else if (randomPartsCount === 0) {
+      setRandomCount(1);
     }
-  }, [selectedParts.length, rollCount]);
+  }, [randomPartsCount, randomCount]);
 
   // Update condition when level changes
   useEffect(() => {
     const conditionsForLevel = NIVEIS_V[level] || [];
     if (conditionsForLevel.length > 0) {
-      // Try to keep same condition if it exists in new level, else first one
       if (!conditionsForLevel.some(c => c.name === condition)) {
         setCondition(conditionsForLevel[0].name);
       }
@@ -36,30 +38,32 @@ export const ConditionMapperTool: React.FC = () => {
     if (mapping) {
       if (!Array.isArray(mapping)) {
         // It's a RandomMapping
-        setSelectedParts(mapping.options);
-        setRollCount(mapping.roll);
+        setSelectedParts(mapping.options.map(id => ({ id, mode: 'random' })));
+        setRandomCount(mapping.roll);
       } else {
-        // Handle the case where some conditions have nested arrays (e.g. [['head'], ...])
         const flatParts = mapping.flat();
-        setSelectedParts(flatParts);
-        setRollCount('all');
+        setSelectedParts(flatParts.map(id => ({ id, mode: 'fixed' })));
       }
     } else {
       setSelectedParts([]);
-      setRollCount('all');
     }
   }, [condition]);
 
   // Handle export
   const handleExport = () => {
     if (!condition) return;
-    const partsString = selectedParts.map((p) => `'${p}'`).join(", ");
     
-    let textToCopy = "";
-    if (rollCount === 'all') {
-      textToCopy = `Quero que atualize as regiões que a condição (${condition}) afeta. Atualize os membros afetados de forma FIXA para exatamente estes: ([${partsString}]).`;
-    } else {
-      textToCopy = `Quero que atualize as regiões que a condição (${condition}) afeta. Configure o arquivo 'bodyPartMapping.ts' para sortear aleatoriamente EXATAMENTE ${rollCount} membro(s) dentre as seguintes opções possíveis: ([${partsString}]).`;
+    const fixedParts = selectedParts.filter(p => p.mode === 'fixed').map(p => p.id);
+    const randomParts = selectedParts.filter(p => p.mode === 'random').map(p => p.id);
+    
+    let textToCopy = `Quero que atualize as regiões que a condição (${condition}) afeta no arquivo 'bodyPartMapping.ts'. `;
+    
+    if (fixedParts.length > 0) {
+      textToCopy += `A condição afeta FIXAMENTE (100% de chance) os seguintes membros: [${fixedParts.map(p => `'${p}'`).join(", ")}]. `;
+    }
+    
+    if (randomParts.length > 0) {
+      textToCopy += `ALÉM DISSO, o motor deve sortear aleatoriamente EXATAMENTE ${randomCount} membro(s) dentre o seguinte grupo de possibilidades: [${randomParts.map(p => `'${p}'`).join(", ")}].`;
     }
 
     navigator.clipboard.writeText(textToCopy).then(() => {
@@ -74,20 +78,32 @@ export const ConditionMapperTool: React.FC = () => {
       return;
     }
 
-    setSelectedParts((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
-    );
+    setSelectedParts((prev) => {
+      const exists = prev.find(p => p.id === id);
+      if (exists) {
+        return prev.filter(p => p.id !== id);
+      } else {
+        return [...prev, { id, mode: 'fixed' }];
+      }
+    });
+  };
+
+  const togglePartMode = (id: string) => {
+    setSelectedParts(prev => prev.map(p => 
+      p.id === id ? { ...p, mode: p.mode === 'fixed' ? 'random' : 'fixed' } : p
+    ));
   };
 
   const currentConditions = NIVEIS_V[level] || [];
+  const selectedPartIds = selectedParts.map(p => p.id);
 
   return (
-    <div className="min-h-dvh h-auto md:h-dvh flex flex-col md:flex-row bg-[#111111] text-white overflow-y-auto md:overflow-hidden font-sans">
+    <div className="min-h-dvh h-auto md:h-dvh flex flex-col md:flex-row bg-[#111111] text-white overflow-y-auto md:overflow-y-auto font-sans">
       {/* Sidebar Controls */}
-      <aside className="w-full md:w-80 flex flex-col h-auto md:h-full border-b md:border-b-0 md:border-r border-white/5 bg-[#161616] p-3 md:p-6 shrink-0 z-20 overflow-visible md:overflow-hidden">
+      <aside className="w-full md:w-80 flex flex-col h-auto md:h-full border-b md:border-b-0 md:border-r border-white/5 bg-[#161616] p-3 md:p-6 shrink-0 z-20 overflow-y-auto custom-scrollbar">
         <div className="flex items-center gap-2 mb-3 md:mb-6">
           <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
-          <h1 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-indigo-400">Condition Mapper v2</h1>
+          <h1 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-indigo-400">Condition Mapper v3</h1>
         </div>
 
         {/* Level Select */}
@@ -109,7 +125,7 @@ export const ConditionMapperTool: React.FC = () => {
         </div>
 
         {/* Interactive Condition List */}
-        <div className="flex-1 flex flex-col h-auto max-h-[300px] md:max-h-none md:min-h-0 overflow-y-auto">
+        <div className="flex-1 flex flex-col h-auto max-h-[250px] md:max-h-none md:min-h-0 overflow-y-auto mb-4 md:mb-6">
           <label className="text-[9px] md:text-[10px] text-white/40 uppercase font-black tracking-widest mb-2 block">
             Condições Visíveis (Nível {level})
           </label>
@@ -142,33 +158,57 @@ export const ConditionMapperTool: React.FC = () => {
           </div>
         </div>
 
-        {/* Distribution Controls */}
-        <div className="mt-4 md:mt-6 pt-4 border-t border-white/5 space-y-3">
-          <div className="space-y-1.5">
-            <label className="text-[9px] md:text-[10px] text-white/40 uppercase font-black tracking-widest">Distribuição no Sorteio</label>
-            <select
-              value={rollCount}
-              onChange={(e) => setRollCount(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-              disabled={selectedParts.length === 0}
-              className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-[10px] md:text-xs font-bold outline-none focus:border-indigo-500 transition-colors cursor-pointer disabled:opacity-30"
-            >
-              <option value="all">Fixo: Todos Selecionados</option>
-              {selectedParts.length > 0 && Array.from({ length: selectedParts.length }).map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  Sorteio: {i + 1} item(s)
-                </option>
-              ))}
-            </select>
+        {/* Selected Parts List & Toggles */}
+        <div className="hidden md:flex flex-col shrink-0 border-t border-white/5 pt-4">
+          <label className="text-[9px] md:text-[10px] text-white/40 uppercase font-black tracking-widest mb-3 block">
+            Membros Selecionados
+          </label>
+          <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar space-y-2">
+            {selectedParts.length === 0 ? (
+              <p className="text-[10px] text-white/20 italic p-4 text-center border border-dashed border-white/5 rounded-lg">Clique no mapa para selecionar membros</p>
+            ) : (
+              selectedParts.map((part) => (
+                <div key={part.id} className="bg-white/[0.03] border border-white/5 rounded-md p-2 flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-white/60 truncate max-w-[100px]">{part.id}</span>
+                  <div className="flex bg-black/40 p-0.5 rounded border border-white/10">
+                    <button 
+                      onClick={() => togglePartMode(part.id)}
+                      className={`px-2 py-0.5 text-[8px] font-black uppercase rounded transition-all ${part.mode === 'fixed' ? 'bg-indigo-600 text-white shadow' : 'text-white/30 hover:text-white/50'}`}
+                    >
+                      Fixo
+                    </button>
+                    <button 
+                      onClick={() => togglePartMode(part.id)}
+                      className={`px-2 py-0.5 text-[8px] font-black uppercase rounded transition-all ${part.mode === 'random' ? 'bg-indigo-600 text-white shadow' : 'text-white/30 hover:text-white/50'}`}
+                    >
+                      Roleta
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
-        {/* Global Stats Info */}
-        <div className="hidden md:block mt-auto pt-6 opacity-30">
-          <div className="text-[9px] uppercase tracking-widest leading-loose">
-            <div className="flex justify-between"><span>Selected:</span> <span>{selectedParts.length}</span></div>
-            <div className="flex justify-between"><span>Method:</span> <span>{rollCount === 'all' ? 'Fixed' : 'Random'}</span></div>
+        {/* Distribution Controls */}
+        {randomPartsCount > 0 && (
+          <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
+            <div className="space-y-1.5">
+              <label className="text-[9px] md:text-[10px] text-white/40 uppercase font-black tracking-widest">Distribuição no Sorteio</label>
+              <select
+                value={randomCount}
+                onChange={(e) => setRandomCount(Number(e.target.value))}
+                className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-[10px] md:text-xs font-bold outline-none focus:border-indigo-500 transition-colors cursor-pointer"
+              >
+                {Array.from({ length: randomPartsCount }).map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    Sortear {i + 1} membro(s)
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
+        )}
       </aside>
 
       {/* Main Composition Area */}
@@ -177,19 +217,27 @@ export const ConditionMapperTool: React.FC = () => {
           <div className="w-full h-full max-w-[450px] relative pointer-events-none *:pointer-events-auto">
              <BodyMap
               conditions={[]}
-              affectedParts={selectedParts}
-              highlightedParts={selectedParts}
+              affectedParts={selectedPartIds}
+              highlightedParts={selectedPartIds}
               onPartToggle={handlePartToggle}
               editorMode={true}
             />
           </div>
         </div>
 
-        {/* Context Chip Mobile Only */}
-        <div className="md:hidden absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md border border-white/10 rounded-full">
-           <span className="text-[9px] uppercase font-bold text-white/60 tracking-wider">
-             {selectedParts.length} parts selection
-           </span>
+        {/* Mobile Parts List Toggle (Simplified View) */}
+        <div className="md:hidden px-4 py-2 bg-black/40 border-y border-white/5 overflow-x-auto whitespace-nowrap flex gap-2">
+           {selectedParts.map(part => (
+             <button 
+               key={part.id} 
+               onClick={() => togglePartMode(part.id)}
+               className={`px-3 py-1 rounded-full text-[9px] font-black uppercase border transition-all ${
+                 part.mode === 'fixed' ? 'bg-indigo-600/20 border-indigo-500 text-indigo-400' : 'bg-indigo-900/40 border-indigo-700 text-white/70'
+               }`}
+             >
+               {part.id}: {part.mode === 'fixed' ? 'F' : 'R'}
+             </button>
+           ))}
         </div>
 
         {/* Footer Action */}
@@ -203,8 +251,8 @@ export const ConditionMapperTool: React.FC = () => {
                 : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 border border-indigo-400/30"
             }`}
           >
-            {copied ? <Check size={16} md:size={18} /> : <Copy size={16} md:size={18} />}
-            {copied ? "Prompt Copiado!" : "Gerar Prompt de Sincronização"}
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+            {copied ? "Prompt Copiado!" : "Gerar Prompt de Sincronizacao"}
           </button>
         </footer>
       </main>

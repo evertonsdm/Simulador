@@ -7,6 +7,7 @@ interface BodyMapProps {
   conditions: string[];
   affectedParts?: string[];
   highlightedParts?: string[];
+  heatmap?: Record<string, number>;
   onPartToggle?: (id: string) => void;
   editorMode?: boolean;
 }
@@ -15,6 +16,7 @@ export const BodyMap: React.FC<BodyMapProps> = ({
   conditions, 
   affectedParts = [], 
   highlightedParts = [],
+  heatmap = {},
   onPartToggle,
   editorMode = false 
 }) => {
@@ -37,12 +39,21 @@ export const BodyMap: React.FC<BodyMapProps> = ({
     onPartToggle?.(id);
   };
 
-  const isAfetado = (id: string) => internalAffected.includes(id);
+  const isAfetado = (id: string) => internalAffected.includes(id) || (heatmap && heatmap[id] > 0);
   const isHighlighted = (id: string) => highlightedParts.includes(id);
+
+  const getPartIntensityColor = (id: string) => {
+    const count = heatmap[id] || 0;
+    if (count >= 4) return 'fill-[#ff0000] animate-pulse shadow-[0_0_15px_rgba(255,0,0,0.5)]'; // Vermelho-Fogo
+    if (count === 3) return 'fill-[#ff4500]'; // Laranja-Escuro / Vermelhão
+    if (count === 2) return 'fill-[#ff8c00]'; // Laranja
+    if (count === 1) return 'fill-[#FFBF00]'; // Amarelo
+    return isAfetado(id) ? 'fill-[#FFBF00]' : 'fill-[#D9D9D9]';
+  };
 
   const getPartClass = (id: string) => {
     const isHigh = isHighlighted(id);
-    return `transition-colors duration-300 ${isAfetado(id) ? 'fill-[#FFBF00]' : 'fill-[#D9D9D9]'} ${isHigh ? 'animate-slow-glow' : ''} ${editorMode ? 'cursor-pointer hover:fill-gold/50' : 'pointer-events-auto'}`;
+    return `transition-colors duration-300 ${getPartIntensityColor(id)} ${isHigh ? 'animate-slow-glow' : ''} ${editorMode ? 'cursor-pointer hover:fill-gold/50' : 'pointer-events-auto'}`;
   };
 
   return (

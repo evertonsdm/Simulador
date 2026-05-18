@@ -640,7 +640,7 @@ export default function App() {
 
         {/* Content Scroll Area */}
         {activeView === 'mapper' ? (
-          <div className="flex-1 w-full overflow-hidden flex flex-col">
+          <div className="flex-1 w-full overflow-y-auto flex flex-col">
             <ConditionMapperTool />
           </div>
         ) : activeView === 'catalog' ? (
@@ -727,11 +727,11 @@ export default function App() {
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 pt-2">
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><HeartPulse className="w-3 h-3" /> Gênero</p>
-                            <p className="text-xs font-bold text-white/80"><MigratedItem name={result.metadata.genero} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.genero} /></p>
+                            <div className="text-xs font-bold text-white/80"><MigratedItem name={result.metadata.genero} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.genero} /></div>
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Zap className="w-3 h-3" /> Orientação</p>
-                            <p className="text-xs font-bold text-white/80"><MigratedItem name={result.metadata.orientacao} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.orientacao} /></p>
+                            <div className="text-xs font-bold text-white/80"><MigratedItem name={result.metadata.orientacao} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.orientacao} /></div>
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><MapPin className="w-3 h-3" /> Localização</p>
@@ -739,7 +739,7 @@ export default function App() {
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Globe className="w-3 h-3" /> Tribo</p>
-                            <p className="text-xs font-bold text-white/80"><MigratedItem name={result.metadata.triboUrbana} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.triboUrbana} /></p>
+                            <div className="text-xs font-bold text-white/80"><MigratedItem name={result.metadata.triboUrbana} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.triboUrbana} /></div>
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Ruler className="w-3 h-3" /> Biometria</p>
@@ -752,15 +752,15 @@ export default function App() {
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Zap className="w-3 h-3" /> Cena de Sexualidade</p>
-                            <p className="text-xs font-bold text-gold/80">{result.metadata.cenaSexualidade}<Prob value={result.metadata.probs.cenaSexualidade} /></p>
+                            <div className="text-xs font-bold text-gold/80">{result.metadata.cenaSexualidade}<Prob value={result.metadata.probs.cenaSexualidade} /></div>
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Brain className="w-3 h-3" /> Temperamento</p>
-                            <p className="text-xs font-bold text-white/80">{result.metadata.temperamento}<Prob value={result.metadata.probs.temperamento} /></p>
+                            <div className="text-xs font-bold text-white/80">{result.metadata.temperamento}<Prob value={result.metadata.probs.temperamento} /></div>
                           </div>
                           <div className="space-y-1 md:col-span-3">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Flame className="w-3 h-3" /> Fetiches & Sombras</p>
-                            <p className="text-xs font-bold text-ice/80">
+                            <div className="text-xs font-bold text-ice/80">
                               {result.metadata.fetiches.length > 0 
                                 ? result.metadata.fetiches.map((f, idx) => (
                                     <span key={idx}>
@@ -768,7 +768,7 @@ export default function App() {
                                     </span>
                                   ))
                                 : <span className="text-white/40 italic">Nenhum fetiche detectado <Prob value={result.metadata.probs.fetichesNone} /></span>}
-                            </p>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -790,12 +790,12 @@ export default function App() {
 
                       <div className="space-y-2 md:space-y-3">
                         <div className="space-y-1">
-                          <p className="text-[11px] font-bold text-gold uppercase tracking-widest">
-                            <MigratedItem name={result.metadata.classe} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.classe} /></p>
+                          <div className="text-[11px] font-bold text-gold uppercase tracking-widest">
+                            <MigratedItem name={result.metadata.classe} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.classe} /></div>
                           <p className="text-xs text-white/60 leading-tight">{result.metadata.statusOcupacional}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-[11px] font-display font-bold text-white/80"><MigratedItem name={result.metadata.profissao} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.profissao} /></p>
+                          <div className="text-[11px] font-display font-bold text-white/80"><MigratedItem name={result.metadata.profissao} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.profissao} /></div>
                         </div>
                         <div className="pt-1 space-y-2 md:space-y-3">
                            <div className="bg-black/20 p-2 rounded border border-white/5 space-y-1.5">
@@ -834,8 +834,8 @@ export default function App() {
                   {/* Graph Card */}
                   <div className="md:col-span-4 bg-dark-surface border border-dark-border rounded-lg p-4 md:p-6 flex flex-col h-[300px]">
                     <h3 className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] mb-4">Métricas de Impacto</h3>
-                    <div className="flex-1 min-h-0 -mx-4">
-                      <ResponsiveContainer width="100%" height="100%">
+                    <div className="w-full h-64 min-h-[250px] -mx-4">
+                      <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                         <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
                           <PolarGrid stroke="#222" />
                           <PolarAngleAxis dataKey="subject" tick={{ fill: '#444', fontSize: 8, fontStyle: 'monospace' }} />
@@ -879,9 +879,30 @@ export default function App() {
                             conditions={result.metadata.vConditions} 
                             affectedParts={affectedParts}
                             highlightedParts={affectedParts}
+                            heatmap={result.metadata.heatmap}
                             onPartToggle={handlePartToggle}
                             editorMode={isBodyMapEditor} 
                           />
+                          
+                        {/* Heatmap Legend */}
+                        <div className="flex items-center justify-center gap-4 py-2 px-3 bg-black/40 rounded-b border-x border-b border-dark-border/50">
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-[#FFBF00]"></div>
+                            <span className="text-[8px] font-mono text-white/40 uppercase">1x</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-[#ff8c00]"></div>
+                            <span className="text-[8px] font-mono text-white/40 uppercase">2x</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-[#ff4500]"></div>
+                            <span className="text-[8px] font-mono text-white/40 uppercase">3x</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-[#ff0000] animate-pulse shadow-[0_0_5px_rgba(255,0,0,0.5)]"></div>
+                            <span className="text-[8px] font-mono text-white/40 uppercase tracking-tighter">4x Impacto</span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Right: Lists */}
@@ -957,9 +978,9 @@ export default function App() {
                           <h3 className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] flex items-center gap-2"><Zap className="w-3.5 h-3.5" /> Evento de Destaque</h3>
                           {isShiny && <div className="w-2 h-2 rounded-full bg-gold shadow-[0_0_8px_rgba(255,191,0,1)]"></div>}
                         </div>
-                        <p className={`text-xs leading-relaxed italic relative z-10 ${isShiny ? 'text-gold font-bold' : 'text-white/40'}`}>
+                        <div className={`text-xs leading-relaxed italic relative z-10 ${isShiny ? 'text-gold font-bold' : 'text-white/40'}`}>
                           <MigratedItem name={result.metadata.shiny} migratedList={result.metadata.migratedItems} /> <Prob value={result.metadata.probs.shiny as ProbData} />
-                        </p>
+                        </div>
                         {isShiny && (
                            <div className="pt-4 border-t border-gold/10 mt-auto">
                              <p className="text-[8px] font-mono text-gold/40 uppercase tracking-widest">Procedência Unívoca / Anomalía Detectada</p>

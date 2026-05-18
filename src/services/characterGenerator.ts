@@ -40,7 +40,7 @@ import {
   FILHOS_PESADOS_CONDICIONAIS
 } from '../rules/conditions';
 import { RULES_REGISTRY } from '../data/rulesRegistry';
-import { CONDITION_TO_PARTS } from './bodyPartMapping';
+import { CONDITION_TO_PARTS, RandomMapping } from './bodyPartMapping';
 
 export const getLogistics = (classe: string, regiao: string, perfil: string, ctx: any, migratedItems: string[]): { value: string, prob: number, poolSize: number } => {
     const options = OP_LOGISTICA_TRANSPORTE;
@@ -2247,6 +2247,35 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     physicalHealth
   });
 
+  // --- HEATMAP CALCULATION (Anatomical Impact Sum) ---
+  const heatmap: Record<string, number> = {};
+  
+  // 1. Process specific somatizations (Lichtenberg, Stres, etc)
+  if (atingidoRaio || conditionsV.includes("Neuropatia Periférica e Encefalopatia Grave (Sequela de Raio)")) {
+    ["chest", "right-arm", "left-arm", "right-hand", "left-hand"].forEach(id => { heatmap[id] = (heatmap[id] || 0) + 1; });
+  }
+  if (falenciaEmpresaFamilia || abandonadoAltar) heatmap["orbit"] = (heatmap["orbit"] || 0) + 1;
+
+  // 2. Process all visible conditions via mapping
+  conditionsV.forEach(cond => {
+    const mapping = CONDITION_TO_PARTS[cond];
+    if (!mapping) return;
+    let selected: string[] = [];
+    if (Array.isArray(mapping)) {
+      if (mapping.length > 0 && Array.isArray(mapping[0])) {
+        selected = mapping[Math.floor(Math.random() * mapping.length)] as string[];
+      } else {
+        selected = mapping as string[];
+      }
+    } else {
+      const options = (mapping as RandomMapping).options;
+      const rollCount = (mapping as RandomMapping).roll;
+      const fixed = (mapping as RandomMapping).fixed || [];
+      selected = [...fixed, ...([...options].sort(() => 0.5 - Math.random()).slice(0, rollCount))];
+    }
+    selected.forEach(pid => { heatmap[pid] = (heatmap[pid] || 0) + 1; });
+  });
+
   const habitacaoStr = ctx.habitacao;
   const resilienciaStr = (filhoFugiu) ? randomChoice(["Colapso Iminente", "Cinismo Defensivo"]) : (criouFilhoAmigo) ? "Resiliência Padrão" : finalResilienceValue;
 
@@ -2325,7 +2354,8 @@ ${relacionamentosAtivos.length > 0 ? relacionamentosAtivos.map(r => `[${r.type.t
       probs,
       friccaoUrbana,
       migratedItems,
-      bodyMap: bodyMapImpacts
+      heatmap,
+      bodyMap: Object.entries(heatmap).map(([id, count]) => ({ id, color: count >= 4 ? '#ff0000' : count === 3 ? '#ff4500' : count === 2 ? '#ff8c00' : '#FFBF00' }))
     }
   };
 }

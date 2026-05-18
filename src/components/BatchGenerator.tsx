@@ -111,6 +111,7 @@ export const BatchGenerator: React.FC = () => {
   const [isRolling, setIsRolling] = useState(false);
   const [progressCount, setProgressCount] = useState(0);
   const [rawCharacters, setRawCharacters] = useState<CharacterResult[]>([]);
+  const [workerStats, setWorkerStats] = useState<BatchStats | null>(null);
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
   const [showAllProfessions, setShowAllProfessions] = useState(false);
 
@@ -118,9 +119,9 @@ export const BatchGenerator: React.FC = () => {
     setIsRolling(true);
     setProgressCount(0);
     setRawCharacters([]);
+    setWorkerStats(null);
     setActiveFilters({});
     
-    // Inicializa o Worker
     const worker = new Worker(new URL('../services/batchWorker.ts', import.meta.url), { type: 'module' });
     
     worker.onmessage = (e) => {
@@ -129,7 +130,8 @@ export const BatchGenerator: React.FC = () => {
       if (type === 'progress') {
         setProgressCount(current);
       } else if (type === 'complete') {
-        setRawCharacters(characters);
+        setRawCharacters(characters || []);
+        setWorkerStats(finalStats);
         setIsRolling(false);
         worker.terminate();
       }
@@ -185,7 +187,12 @@ export const BatchGenerator: React.FC = () => {
   }, [rawCharacters, activeFilters]);
 
   const stats = useMemo<BatchStats | null>(() => {
-    if (filteredCharacters.length === 0) return null;
+    // Se temos filtros ativos ou não temos stats do worker ainda, calculamos localmente
+    // No entanto, se o lote foi muito grande (>50k), não temos rawCharacters e dependemos do workerStats total
+    const hasFilters = Object.keys(activeFilters).length > 0;
+    
+    if (!hasFilters && workerStats) return workerStats;
+    if (filteredCharacters.length === 0) return workerStats;
 
     const currentStats: BatchStats = {
       total: filteredCharacters.length,
@@ -257,7 +264,7 @@ export const BatchGenerator: React.FC = () => {
       if (meta.statusOcupacional.includes("Estudante")) currentStats.flags.estudante++;
       if (meta.statusOcupacional.includes("Desempregado")) currentStats.flags.desempregado++;
       if (meta.profissao.toLowerCase().includes("braçal") || meta.profissao.toLowerCase().includes("obra")) currentStats.flags.braçal++;
-      if (meta.shiny !== "Nenhum evento significativo detectado.") {
+      if (meta.shiny !== "Nenhum evento significativo detectado." && meta.shiny !== "Não detectado") {
         currentStats.flags.shiny++;
         currentStats.shinies[meta.shiny] = (currentStats.shinies[meta.shiny] || 0) + 1;
       }
@@ -285,7 +292,7 @@ export const BatchGenerator: React.FC = () => {
     currentStats.averages.urbanLife /= currentStats.total;
 
     return currentStats;
-  }, [filteredCharacters]);
+  }, [filteredCharacters, workerStats, activeFilters]);
 
 
   const sortedProfessions = useMemo<[string, number][]>(() => {
@@ -375,10 +382,16 @@ export const BatchGenerator: React.FC = () => {
                 type="number" 
                 value={count}
                 disabled={isRolling}
-                onChange={(e) => setCount(Math.min(10000, Math.max(10, parseInt(e.target.value) || 0)))}
+                onChange={(e) => setCount(Math.min(999999, Math.max(10, parseInt(e.target.value) || 0)))}
                 className={`bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-sm font-mono text-indigo-300 w-32 focus:outline-none focus:border-indigo-500/50 transition-all ${isRolling ? 'opacity-50 cursor-not-allowed' : ''}`}
               />
             </div>
+            {count > 50000 && (
+               <div className="hidden lg:flex items-center gap-2 text-amber-500 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg">
+                 <AlertTriangle size={14} />
+                 <span className="text-[9px] font-mono leading-none uppercase font-bold">Lote Crítico: Filtros Desativados</span>
+               </div>
+            )}
             <button 
               onClick={handleRollBatch}
               disabled={isRolling}
@@ -708,7 +721,7 @@ export const BatchGenerator: React.FC = () => {
           <div className="space-y-1">
             <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-400">Nota sobre o Batch Engine</h4>
             <p className="text-[10px] text-blue-400/60 font-mono leading-relaxed">
-              O processamento agora utiliza um **Web Worker**, o que permite simulações massivas sem congelar a interface. Amostragens de até 10.000 rolagens agora são seguras para análise de balanceamento estatístico refinado.
+              O processamento utiliza um **Web Worker**, permitindo simulações de até 999.999 rolagens sem congelar a interface. Para lotes acima de 50.000, os personagens individuais não são armazenados em memória para preservar a performance, impossibilitando o uso de filtros cruzados após a geração.
             </p>
           </div>
         </div>
