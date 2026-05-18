@@ -858,6 +858,7 @@ export default function App() {
                           <BodyMap 
                             conditions={result.metadata.vConditions} 
                             affectedParts={affectedParts}
+                            highlightedParts={affectedParts}
                             onPartToggle={handlePartToggle}
                             editorMode={isBodyMapEditor} 
                           />

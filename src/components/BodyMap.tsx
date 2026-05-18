@@ -6,6 +6,7 @@ import { Info, Move } from 'lucide-react';
 interface BodyMapProps {
   conditions: string[];
   affectedParts?: string[];
+  highlightedParts?: string[];
   onPartToggle?: (id: string) => void;
   editorMode?: boolean;
 }
@@ -13,6 +14,7 @@ interface BodyMapProps {
 export const BodyMap: React.FC<BodyMapProps> = ({ 
   conditions, 
   affectedParts = [], 
+  highlightedParts = [],
   onPartToggle,
   editorMode = false 
 }) => {
@@ -36,15 +38,17 @@ export const BodyMap: React.FC<BodyMapProps> = ({
   };
 
   const isAfetado = (id: string) => internalAffected.includes(id);
+  const isHighlighted = (id: string) => highlightedParts.includes(id);
 
   const getPartClass = (id: string) => {
-    return `transition-colors duration-300 ${isAfetado(id) ? 'fill-[#FFBF00]' : 'fill-[#D9D9D9]'} ${editorMode ? 'cursor-pointer hover:fill-gold/50' : 'pointer-events-auto'}`;
+    const isHigh = isHighlighted(id);
+    return `transition-colors duration-300 ${isAfetado(id) ? 'fill-[#FFBF00]' : 'fill-[#D9D9D9]'} ${isHigh ? 'animate-slow-glow' : ''} ${editorMode ? 'cursor-pointer hover:fill-gold/50' : 'pointer-events-auto'}`;
   };
 
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full h-full min-h-[400px] lg:min-h-[500px] bg-black/40 rounded-lg border flex items-center justify-center p-2 md:p-6 overflow-hidden transition-colors ${editorMode ? 'border-gold/50 shadow-[0_0_20px_rgba(255,191,0,0.1)]' : 'border-white/5'}`}
+      className={`relative w-full h-full min-h-[400px] lg:min-h-[500px] bg-black/40 rounded-lg border flex items-center justify-center p-0 overflow-hidden transition-colors ${editorMode ? 'border-gold/50 shadow-[0_0_20px_rgba(255,191,0,0.1)]' : 'border-white/5'}`}
     >
       <style>{`
         .afetado { fill: #FFBF00 !important; }
@@ -54,8 +58,8 @@ export const BodyMap: React.FC<BodyMapProps> = ({
       {/* Human Anatomy Map - Master SVG */}
       <svg 
         id="human-anatomy-map" 
-        viewBox="-40 -60 580 960" 
-        className="w-full h-full max-h-[100%] max-w-[100%] opacity-40 overflow-visible select-none"
+        viewBox="40 -20 460 860" 
+        className="w-full h-full max-h-full max-w-full opacity-40 overflow-visible select-none"
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="xMidYMid meet"
       >

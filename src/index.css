@@ -19,6 +19,16 @@
 
   --animate-spin-slow: spin 3s linear infinite;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-slow-glow: pulsing-glow 2.5s ease-in-out infinite;
+
+  @keyframes pulsing-glow {
+    0%, 100% { 
+      filter: drop-shadow(0 0 4px rgba(255, 191, 0, 0.5)); 
+    }
+    50% { 
+      filter: drop-shadow(0 0 12px rgba(255, 191, 0, 0.9)); 
+    }
+  }
 }
 
 @layer base {

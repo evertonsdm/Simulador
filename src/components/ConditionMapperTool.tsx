@@ -178,6 +178,7 @@ export const ConditionMapperTool: React.FC = () => {
              <BodyMap
               conditions={[]}
               affectedParts={selectedParts}
+              highlightedParts={selectedParts}
               onPartToggle={handlePartToggle}
               editorMode={true}
             />
