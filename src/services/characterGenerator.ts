@@ -29,7 +29,8 @@ import {
   OP_LIBIDO,
   OP_TEMPERAMENTO,
   OP_CORPO,
-  FILHOS_TEXTOS
+  FILHOS_TEXTOS,
+  OP_LOGISTICA_TRANSPORTE
 } from '../data/staticData';
 import {
   NIVEIS_NV,
@@ -41,37 +42,26 @@ import {
 import { RULES_REGISTRY } from '../data/rulesRegistry';
 import { CONDITION_TO_PARTS } from './bodyPartMapping';
 
-export const getLogistics = (classe: string, regiao: string, perfil: string): { value: string, prob: number, poolSize: number } => {
-    const isCapital = perfil.includes("Capital");
-    const options = ["Público/Alternativo", "Transporte por App", "Veículo Próprio"];
-    let weights = [33.3, 33.3, 33.3];
+export const getLogistics = (classe: string, regiao: string, perfil: string, ctx: any, migratedItems: string[]): { value: string, prob: number, poolSize: number } => {
+    const options = OP_LOGISTICA_TRANSPORTE;
     
-    // Sudeste & Sul/Centro-Oeste (Modern Urban)
-    if (regiao === "Sudeste" || regiao === "Sul" || regiao === "Centro-Oeste") {
-        if (classe.includes("Classe E") || classe.includes("Base")) weights = [80, 15, 5];
-        else if (classe.includes("Baixa")) weights = [50, 30, 20];
-        else if (classe.includes("Alta")) weights = [20, 30, 50];
-        else if (classe.includes("Elite")) weights = [5, 20, 75];
-    } 
-    // Norte (Rural/River focus)
-    else if (regiao === "Norte") {
-        if (!isCapital) {
-             // In interior of North, apps are almost non-existent for the base.
-             if (classe.includes("Classe E") || classe.includes("Base")) weights = [90, 2, 8];
-             else if (classe.includes("Baixa")) weights = [70, 5, 25];
-             else weights = [10, 5, 85];
-        } else {
-             if (classe.includes("Classe E") || classe.includes("Base")) weights = [70, 20, 10];
-             else if (classe.includes("Baixa")) weights = [40, 40, 20];
-             else weights = [10, 20, 70];
-        }
-    }
-    // Nordeste (Mixed)
-    else if (regiao === "Nordeste") {
-        if (classe.includes("Classe E") || classe.includes("Base")) weights = [75, 20, 5];
-        else if (classe.includes("Baixa")) weights = [45, 35, 20];
-        else weights = [15, 25, 60];
-    }
+    const weights = options.map(name => calculateDeclarativeWeight('logistica', name, ctx, () => {
+      // Fallback weights logic
+      if (classe.includes("Elite") || classe.includes("Alta")) {
+        if (name === "Veículo Próprio (Carro)") return 45;
+        if (name === "Transporte Sob Demanda (App / Táxi)") return 20;
+        if (name === "Coletivo de Massa (Metrô / Trem / BRT)") return 10;
+        if (name === "Fretado Corporativo / Industrial") return 10;
+        return 5;
+      } else if (classe.includes("Base") || classe.includes("Vulnerável") || classe.includes("Classe E")) {
+        if (name === "Público sobre Pneus (Ônibus urbano / Lotação)") return 35;
+        if (name === "Mobilidade Ativa (A pé / Bicicleta)") return 25;
+        if (name === "Coletivo de Massa (Metrô / Trem / BRT)") return 15;
+        if (name === "Veículo Próprio (Motocicleta)") return 10;
+        return 5;
+      }
+      return 14.2; // Uniform approx
+    }, migratedItems));
     
     return rollWeighted(options, weights);
 };
@@ -105,7 +95,7 @@ export const calculateDeclarativeWeight = (
 ): number => {
   const normalize = (str: string) => {
     if (!str) return '';
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, '');
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
   };
   const itemKey = normalize(itemName);
   
@@ -149,7 +139,7 @@ export const calculateDeclarativeWeight = (
       case '<': matches = Number(ctxValue) < Number(rule.value); break;
       case '>=': matches = Number(ctxValue) >= Number(rule.value); break;
       case '<=': matches = Number(ctxValue) <= Number(rule.value); break;
-      case 'includes': matches = target.toLowerCase().includes(val.toLowerCase()); break;
+      case 'includes': matches = (target || '').toLowerCase().includes((val || '').toLowerCase()); break;
     }
     
     if (matches) {
@@ -820,7 +810,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     identidadeGenero, termoIdentidade, transgenero: !isCis,
     profissao: professionBase,
     capital: perfilUrbanoStr.includes("Capital"), 
-    transporte: 'Público/Alternativo',
+    transporte: 'Público sobre Pneus (Ônibus urbano / Lotação)',
     habitacao: 'Residência Padrão',
     trabalha: false,
     estuda: false, estagio: false, aposentado: false, desempregado: false, estresse: Math.random() < 0.4,
@@ -1308,9 +1298,12 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     traumaArquivado: initialCtx.traumaArquivado,
     drogasInjetaveis: initialCtx.drogasInjetaveis,
     proSe: initialCtx.proSe,
-    transporte: getLogistics(finalClasse, regiao, perfilUrbanoStr).value,
+    transporte: "", // Will be set after roll below
     habitacao: faker.location.streetAddress()
   };
+
+  const transRoll = getLogistics(finalClasse, regiao, perfilUrbanoStr, ctx, migratedItems);
+  ctx.transporte = transRoll.value;
 
   const pickCondition = (pool: Record<number, CharacterCondition[]>, minLevel: number = 0, type: 'v' | 'nv', currentV: string[], currentNV: string[]) => {
     const selected: { name: string, prob: ProbData }[] = [];
@@ -1951,11 +1944,16 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     resilienceScore = 85;
   }
   
-  const transRoll = { value: ctx.transporte, prob: 0, poolSize: 0 }; // We already calculated it for ctx
+  const transRollDummy = transRoll; // Already calculated earlier
 
-  if (transRoll.value === "Veículo Próprio") urbanScore = 90;
-  else if (transRoll.value === "Transporte por App") urbanScore = 70;
-  else urbanScore = 40;
+  // Urban Score calculation (Simplified for performance)
+  urbanScore = 50;
+  if (ctx.capital) urbanScore += 20;
+  
+  if (transRoll.value.includes("Veículo Próprio")) urbanScore = 90;
+  else if (transRoll.value.includes("Sob Demanda")) urbanScore = 70;
+  else if (transRoll.value.includes("Coletivo")) urbanScore = 40;
+  else urbanScore = 30;
   
   if (finalClasse.includes("Elite")) urbanScore += 10;
   if (finalClasse.includes("Alta")) urbanScore += 5;
@@ -2031,7 +2029,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   const needsSeniority = seniority && !exMilitarDesertor && ctx.trabalha && !ctx.aposentado && !ctx.desempregado && !(ctx.estuda && !ctx.trabalha);
   const profissaoFinal = needsSeniority ? `${professionFinalBase} ${seniority}` : professionFinalBase;
   
-  ctx.corporativo = profissaoFinal.toLowerCase().includes("corporativo") || profissaoFinal.toLowerCase().includes("executivo") || profissaoFinal.toLowerCase().includes("diretor") || profissaoFinal.toLowerCase().includes("analista");
+  ctx.corporativo = (profissaoFinal || '').toLowerCase().includes("corporativo") || (profissaoFinal || '').toLowerCase().includes("executivo") || (profissaoFinal || '').toLowerCase().includes("diretor") || (profissaoFinal || '').toLowerCase().includes("analista");
 
   let statusOcupacional = "Mercado de Trabalho Ativo";
   if (ctx.aposentado) statusOcupacional = "Aposentado(a) / Invalidez";

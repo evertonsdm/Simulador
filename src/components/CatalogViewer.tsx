@@ -29,6 +29,7 @@ import {
   SHINY_EVENTS,
   OP_RASTRO,
   OP_RES,
+  OP_LOGISTICA_TRANSPORTE,
   RELACOES_TEXTOS,
   FILHOS_TEXTOS
 } from '../data/staticData';
@@ -91,7 +92,7 @@ export const CatalogViewer: React.FC = () => {
   const getRegistryInfo = useCallback((itemText: string): { key: string, category: string, data: any } | null => {
     const normalize = (str: string) => {
       if (!str) return '';
-      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, '');
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
     };
     const key = normalize(itemText);
     
@@ -176,11 +177,7 @@ export const CatalogViewer: React.FC = () => {
         rawItems = (FETICHES_DATA as any[]).map(f => f.name);
         break;
       case 'logistica':
-        rawItems = [
-          "Transporte: Público/Alternativo",
-          "Transporte: Transporte por App",
-          "Transporte: Veículo Próprio"
-        ];
+        rawItems = OP_LOGISTICA_TRANSPORTE;
         break;
       case 'contexto':
         rawItems = [

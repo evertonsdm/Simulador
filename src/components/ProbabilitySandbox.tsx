@@ -177,7 +177,7 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
       regiao: (selRegiao as any) || 'Sudeste',
       profissao: "", 
       capital: selPerfil === 'Capital',
-      transporte: selTrans || 'Público/Alternativo',
+      transporte: selTrans || 'Público sobre Pneus (Ônibus urbano / Lotação)',
       habitacao: selHab || 'Residência Padrão',
       trabalha: dashboardLocks.contexto.includes("Trabalha"),
       estuda: dashboardLocks.contexto.includes("Estuda"),
@@ -388,6 +388,8 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
     
     // Explicit mappings for items that affect context
     allDashboardItems.forEach((item: string) => {
+      if (!item) return;
+      
       // Identity specific ones
       if (item === "Pobreza Extrema") ctx.baixaRenda = true;
       if (item === "Riqueza Extrema") ctx.cargosAltos = true;
@@ -462,8 +464,7 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
       // Map common condition names to ctx flags if they exist
       const normalizedItem = item.toLowerCase()
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, '')
-        .replace(/[()]/g, '');
+        .replace(/[^a-z0-9]/g, '');
 
       // Manual mapping for some tricky ones
       if (item === "Hipertensão") ctx.hipertenso = true;
@@ -473,7 +474,7 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
       // Auto-mapping check
       // Iterate through keys in ctx and check if normalized item matches
       Object.keys(ctx).forEach(key => {
-        if (key.toLowerCase() === normalizedItem) {
+        if (key && key.toLowerCase() === normalizedItem) {
           (ctx as any)[key] = true;
         }
       });
@@ -638,7 +639,7 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
         }
 
         // Subworld / Illegal - If any illicit or underworld shiny is selected
-        const hasIllegalContext = dashboardLocks.shiny.length > 0 || dashboardLocks.tribos.some(t => t.toLowerCase().includes("crime") || t.toLowerCase().includes("marginal"));
+        const hasIllegalContext = dashboardLocks.shiny.length > 0 || dashboardLocks.tribos.some(t => t && (t.toLowerCase().includes("crime") || t.toLowerCase().includes("marginal")));
         if (hasIllegalContext) {
           pool = [...new Set([...pool, ...PROFISSOES_CATEGORIZADAS["Submundo & Fronteira"]])];
         }

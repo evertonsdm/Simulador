@@ -21,14 +21,14 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
         { property: "falhaResistenciaFisica", operator: "==", value: true, multiplier: 2.0 }
       ]
     },
-    "encefalopatiaeneuropatiaelétricamoderada": {
+    "encefalopatiaeneuropatiaelectricamoderada": {
       baseWeight: 1,
       rules: [
         { property: "contatoCorrenteEletrica", operator: "==", value: true, multiplier: 10 },
         { property: "fadigaExtrema", operator: "==", value: true, multiplier: 2 }
       ]
     },
-    "neuropatiaperiféricaeencefalopatiagrave(sequeladeraio)": {
+    "neuropatiaperifericaeencefalopatiagravesequeladeraio": {
       baseWeight: 0.5,
       rules: [
         { "property": "sexo", "operator": "==", "value": "Masculino", "multiplier": 4.5 },
@@ -323,7 +323,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
         {
           "property": "transporte",
           "operator": "==",
-          "value": "Veículo Próprio",
+          "value": "Veículo Próprio (Carro)",
           "multiplier": 1.2
         },
         {
@@ -457,7 +457,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
       baseWeight: 1,
       rules: []
     },
-    "neuropatiatraumáticapós-elétricaleve": {
+    "neuropatiatraumaticaposeletricaleve": {
       baseWeight: 0.02,
       rules: [
         {
@@ -1053,7 +1053,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
         {
           "property": "transporte",
           "operator": "==",
-          "value": "Público/Alternativo",
+          "value": "Público sobre Pneus (Ônibus urbano / Lotação)",
           "multiplier": 2.5
         },
         {
@@ -1595,7 +1595,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
   resiliencia: {},
   corpo: {},
   rastro: {
-    "listadedívidasnoblocodenotasdocelular": {
+    "listadedividasnoblocodenotasdocelular": {
       "name": "Lista de dívidas no bloco de notas do celular",
       "baseWeight": 1.0,
       "rules": [
@@ -1631,7 +1631,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
         }
       ]
     },
-    "abaanônimapesquisandopassagensaéreasbaratas": {
+    "abaanonimapesquisandopassagensaereasbaratas": {
       "name": "Aba anônima pesquisando passagens aéreas baratas",
       "baseWeight": 1.0,
       "rules": [
@@ -1948,70 +1948,40 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
   termoIdentidade: {},
   orientacao: {},
   logistica: {
-    "público/alternativo": {
-      baseWeight: 1,
-      rules: [
-        {
-          "property": "classe",
-          "operator": "includes",
-          "value": "Elite",
-          "multiplier": 0.05
-        },
-        {
-          "property": "classe",
-          "operator": "includes",
-          "value": "Estabilidade",
-          "multiplier": 0.5
-        },
-        {
-          "property": "classe",
-          "operator": "includes",
-          "value": "Vulnerável",
-          "multiplier": 1.5
-        },
-        {
-          "property": "classe",
-          "operator": "includes",
-          "value": "Baixa Renda",
-          "multiplier": 1.5
-        },
-        {
-          "property": "regiao",
-          "operator": "==",
-          "value": "Norte",
-          "multiplier": 1.15
-        },
-        {
-          "property": "regiao",
-          "operator": "==",
-          "value": "Nordeste",
-          "multiplier": 1.05
-        },
-        {
-          "property": "capital",
-          "operator": "==",
-          "value": false,
-          "multiplier": 1.2
-        },
-        {
-          "property": "ruinaFinanceira",
-          "operator": "==",
-          "value": true,
-          "multiplier": 2
-        },
-        {
-          "property": "falenciaEmpresaFamilia",
-          "operator": "==",
-          "value": true,
-          "multiplier": 1.5
-        },
-        {
-          "property": "traicaoSocioDivida",
-          "operator": "==",
-          "value": true,
-          "multiplier": 1.5
-        }
-      ]
+    "mobilidadeativaapebicicleta": {
+      "name": "Mobilidade Ativa (A pé / Bicicleta)",
+      "baseWeight": 1.0,
+      "rules": []
+    },
+    "coletivodemassametrotrembrt": {
+      "name": "Coletivo de Massa (Metrô / Trem / BRT)",
+      "baseWeight": 1.0,
+      "rules": []
+    },
+    "publicosobrepneusonibusurbanolotacao": {
+      "name": "Público sobre Pneus (Ônibus urbano / Lotação)",
+      "baseWeight": 1.0,
+      "rules": []
+    },
+    "transportesobdemandaapptaxi": {
+      "name": "Transporte Sob Demanda (App / Táxi)",
+      "baseWeight": 1.0,
+      "rules": []
+    },
+    "fretadocorporativoindustrial": {
+      "name": "Fretado Corporativo / Industrial",
+      "baseWeight": 1.0,
+      "rules": []
+    },
+    "veiculopropriomotocicleta": {
+      "name": "Veículo Próprio (Motocicleta)",
+      "baseWeight": 1.0,
+      "rules": []
+    },
+    "veiculopropriocarro": {
+      "name": "Veículo Próprio (Carro)",
+      "baseWeight": 1.0,
+      "rules": []
     }
   },
   relacional: {
@@ -2207,7 +2177,7 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
   },
   filhos: {},
   classeSocial: {
-    "baseprecarizada/vulneravel": {
+    "baseprecarizadavulneravel": {
       "name": "Base Precarizada / Vulnerável",
       "baseWeight": 3.0,
       "rules": [
@@ -2246,10 +2216,15 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "operator": "==",
           "value": "interior_gama",
           "multiplier": 1.5
-        }
+        },
+        { "property": "etnia", "operator": "==", "value": "Indígena", "multiplier": 2.5 },
+        { "property": "etnia", "operator": "==", "value": "Preta", "multiplier": 1.8 },
+        { "property": "etnia", "operator": "==", "value": "Parda", "multiplier": 1.5 },
+        { "property": "etnia", "operator": "==", "value": "Branca", "multiplier": 0.5 },
+        { "property": "etnia", "operator": "==", "value": "Amarela", "multiplier": 0.4 }
       ]
     },
-    "classee(extremapobreza)": {
+    "classeeextremapobreza": {
       "name": "Classe E (Extrema Pobreza)",
       "baseWeight": 1.0,
       "rules": [
@@ -2288,10 +2263,15 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "operator": "==",
           "value": "interior_gama",
           "multiplier": 3.5
-        }
+        },
+        { "property": "etnia", "operator": "==", "value": "Indígena", "multiplier": 2.5 },
+        { "property": "etnia", "operator": "==", "value": "Preta", "multiplier": 1.8 },
+        { "property": "etnia", "operator": "==", "value": "Parda", "multiplier": 1.5 },
+        { "property": "etnia", "operator": "==", "value": "Branca", "multiplier": 0.5 },
+        { "property": "etnia", "operator": "==", "value": "Amarela", "multiplier": 0.4 }
       ]
     },
-    "elite/altarenda": {
+    "elitealtarenda": {
       "name": "Elite / Alta Renda",
       "baseWeight": 1.0,
       "rules": [
@@ -2336,10 +2316,15 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "operator": "==",
           "value": true,
           "multiplier": 0.0
-        }
+        },
+        { "property": "etnia", "operator": "==", "value": "Branca", "multiplier": 1.8 },
+        { "property": "etnia", "operator": "==", "value": "Amarela", "multiplier": 1.8 },
+        { "property": "etnia", "operator": "==", "value": "Parda", "multiplier": 0.6 },
+        { "property": "etnia", "operator": "==", "value": "Preta", "multiplier": 0.4 },
+        { "property": "etnia", "operator": "==", "value": "Indígena", "multiplier": 0.2 }
       ]
     },
-    "classemediabaixa/aengrenagem": {
+    "classemediabaixaaengrenagem": {
       "name": "Classe Média Baixa / A Engrenagem",
       "baseWeight": 4.0,
       "rules": [
@@ -2378,10 +2363,15 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "operator": "==",
           "value": "interior_gama",
           "multiplier": 0.5
-        }
+        },
+        { "property": "etnia", "operator": "==", "value": "Parda", "multiplier": 1.2 },
+        { "property": "etnia", "operator": "==", "value": "Branca", "multiplier": 1.0 },
+        { "property": "etnia", "operator": "==", "value": "Preta", "multiplier": 0.9 },
+        { "property": "etnia", "operator": "==", "value": "Amarela", "multiplier": 0.8 },
+        { "property": "etnia", "operator": "==", "value": "Indígena", "multiplier": 0.6 }
       ]
     },
-    "classemediaalta/estabilidade": {
+    "classemediaaltaestabilidade": {
       "name": "Classe Média Alta / Estabilidade",
       "baseWeight": 2.0,
       "rules": [
@@ -2420,7 +2410,12 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "operator": "==",
           "value": "interior_gama",
           "multiplier": 0.2
-        }
+        },
+        { "property": "etnia", "operator": "==", "value": "Branca", "multiplier": 1.8 },
+        { "property": "etnia", "operator": "==", "value": "Amarela", "multiplier": 1.8 },
+        { "property": "etnia", "operator": "==", "value": "Parda", "multiplier": 0.6 },
+        { "property": "etnia", "operator": "==", "value": "Preta", "multiplier": 0.4 },
+        { "property": "etnia", "operator": "==", "value": "Indígena", "multiplier": 0.2 }
       ]
     }
   }

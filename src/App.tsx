@@ -102,8 +102,13 @@ const Prob = ({ value }: { value?: ProbData | ProbData[] }) => {
 
 const MigratedItem = ({ name, migratedList }: { name: string, migratedList?: string[] }) => {
   if (!name) return null;
-  const normalizedName = name.trim();
-  const isMigrated = migratedList?.some(m => m.trim() === normalizedName);
+  
+  const normalize = (str: string) => {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
+  };
+  
+  const normalizedName = normalize(name);
+  const isMigrated = migratedList?.some(m => normalize(m) === normalizedName);
   
   if (!isMigrated) return <>{name}</>;
   

@@ -568,7 +568,15 @@ export const OP_LIBIDO: Record<string, string[]> = {
 
 export const OP_TEMPERAMENTO = ["Cordial (Máscara)", "Colérico (Reprimido)", "Melancólico (Produtivo)", "Pragmático (Frio)", "Ansioso (Instável)", "Estoico (Resiliente)"];
 export const OP_CORPO = ["Falso Magro", "Desgaste Urbano", "Postura Defensiva", "Atlético Funcional", "Cansaço Crônico"];
-export const OP_LOGISTICA_TRANSPORTE = ["Público/Alternativo", "Transporte por App", "Veículo Próprio"];
+export const OP_LOGISTICA_TRANSPORTE = [
+  "Mobilidade Ativa (A pé / Bicicleta)",
+  "Coletivo de Massa (Metrô / Trem / BRT)",
+  "Público sobre Pneus (Ônibus urbano / Lotação)",
+  "Transporte Sob Demanda (App / Táxi)",
+  "Fretado Corporativo / Industrial",
+  "Veículo Próprio (Motocicleta)",
+  "Veículo Próprio (Carro)"
+];
 
 export const FILHOS_TEXTOS: Record<string, Record<string, string[]>> = {
   "Criança": {
