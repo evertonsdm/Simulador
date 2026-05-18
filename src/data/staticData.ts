@@ -20,7 +20,7 @@ export const PROFISSOES_CATEGORIZADAS = {
     "Médico Clínico Geral", "Pesquisador Acadêmico", "Psicólogo Clínico", "Engenheiro Florestal"
   ],
   "Base / Vulneráveis": [
-    "Ajudante de Carga e Descarga", "Auxiliar de Cozinha", "Auxiliar de Limpeza", 
+    "Ajudante de Carga e Descarga", "Atendente de Padaria", "Padeiro", "Auxiliar de Cozinha", "Auxiliar de Limpeza", 
     "Costureira de Facção (Trabalho Informal)", "Cuidador de Idosos (Sem Formação)", "Entregador de Aplicativo", 
     "Frentista", "Gari / Coletor de Resíduos", "Motorista de Aplicativo (Tempo Integral)", 
     "Operador de Caixa", "Porteiro", "Repositor de Supermercado", "Motorista de Lotação / Van Escolar",

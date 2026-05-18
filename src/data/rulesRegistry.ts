@@ -1393,6 +1393,144 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "multiplier": 0.7
         }
       ]
+    },
+    "atendentedepadaria": {
+      "name": "Atendente de Padaria",
+      "baseWeight": 1,
+      "rules": [
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Elite",
+          "multiplier": 0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Alta",
+          "multiplier": 0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Base Precarizada",
+          "multiplier": 3
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Baixa",
+          "multiplier": 2.5
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": 16,
+          "multiplier": 0
+        },
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 24,
+          "multiplier": 2.5
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 50,
+          "multiplier": 0.5
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "SP",
+          "multiplier": 1.8
+        },
+        {
+          "property": "regiao",
+          "operator": "==",
+          "value": "Sudeste",
+          "multiplier": 1.3
+        },
+        {
+          "property": "braçal",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.5
+        },
+        {
+          "property": "estresse",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.2
+        }
+      ]
+    },
+    "padeiro": {
+      "name": "Padeiro",
+      "baseWeight": 1,
+      "rules": [
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Elite",
+          "multiplier": 0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Alta",
+          "multiplier": 0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Baixa",
+          "multiplier": 3.5
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Base Precarizada",
+          "multiplier": 2
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": 18,
+          "multiplier": 0.1
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 30,
+          "multiplier": 2
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "SP",
+          "multiplier": 1.8
+        },
+        {
+          "property": "regiao",
+          "operator": "==",
+          "value": "Sudeste",
+          "multiplier": 1.3
+        },
+        {
+          "property": "braçal",
+          "operator": "==",
+          "value": true,
+          "multiplier": 2.5
+        },
+        {
+          "property": "estresse",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.5
+        }
+      ]
     }
   },
   shinies: {
