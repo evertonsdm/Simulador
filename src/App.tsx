@@ -101,9 +101,14 @@ const Prob = ({ value }: { value?: ProbData | ProbData[] }) => {
 };
 
 const MigratedItem = ({ name, migratedList }: { name: string, migratedList?: string[] }) => {
-  const isMigrated = migratedList?.includes(name);
+  if (!name) return null;
+  const normalizedName = name.trim();
+  const isMigrated = migratedList?.some(m => m.trim() === normalizedName);
+  
+  if (!isMigrated) return <>{name}</>;
+  
   return (
-    <span className={`${isMigrated ? 'text-blue-500 font-medium' : ''}`}>
+    <span className="text-blue-500 font-extrabold drop-shadow-[0_0_10px_rgba(59,130,246,0.6)] animate-pulse-slow">
       {name}
     </span>
   );
@@ -663,7 +668,7 @@ export default function App() {
                           <div className="flex flex-wrap items-center gap-3">
                             <Badge>{result.metadata.idade} Anos<Prob value={result.metadata.probs.idade} /></Badge>
                             <Badge color="white">{result.metadata.regiao}<Prob value={result.metadata.probs.regiao} /></Badge>
-                            <Badge color="white">{result.metadata.etnia}<Prob value={result.metadata.probs.etnia} /></Badge>
+                            <Badge color="white"><MigratedItem name={result.metadata.etnia} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.etnia} /></Badge>
                           </div>
                         </div>
 
@@ -691,7 +696,7 @@ export default function App() {
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Activity className="w-3 h-3" /> Biotipo</p>
-                            <p className="text-xs font-bold text-white/80 capitalize">{result.metadata.biotipo.toLowerCase()} {result.metadata.biotipoAnomalia ? `(${result.metadata.biotipoAnomalia})` : ''}<Prob value={result.metadata.probs.biotipoAnomalia || result.metadata.probs.biotipo} /></p>
+                            <p className="text-xs font-bold text-white/80 capitalize">{(result.metadata.biotipo || '').toLowerCase()} {result.metadata.biotipoAnomalia ? `(${result.metadata.biotipoAnomalia})` : ''}<Prob value={result.metadata.probs.biotipoAnomalia || result.metadata.probs.biotipo} /></p>
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Zap className="w-3 h-3" /> Cena de Sexualidade</p>
@@ -733,7 +738,8 @@ export default function App() {
 
                       <div className="space-y-2 md:space-y-3">
                         <div className="space-y-1">
-                          <p className="text-[11px] font-bold text-gold uppercase tracking-widest">{result.metadata.classe}<Prob value={result.metadata.probs.classe} /></p>
+                          <p className="text-[11px] font-bold text-gold uppercase tracking-widest">
+                            <MigratedItem name={result.metadata.classe} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.classe} /></p>
                           <p className="text-xs text-white/60 leading-tight">{result.metadata.statusOcupacional}</p>
                         </div>
                         <div className="space-y-1">
@@ -915,7 +921,7 @@ export default function App() {
                            <Badge color="white">Psicometria: {result.metadata.resiliencia.split("'")[1] || "Estável"}</Badge>
                          </div>
                          <div className="p-3 bg-black/40 rounded border border-dark-border/50 text-[11px] text-white/60 font-mono italic">
-                           "{result.metadata.rastro}" <Prob value={result.metadata.probs.rastro as ProbData} />
+                           "<MigratedItem name={result.metadata.rastro} migratedList={result.metadata.migratedItems} />" <Prob value={result.metadata.probs.rastro as ProbData} />
                          </div>
                          <div className="pt-2 space-y-2">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-2"><Camera className="w-3 h-3" /> Galeria Interceptada</p>

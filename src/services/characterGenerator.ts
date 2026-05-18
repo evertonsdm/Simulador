@@ -48,7 +48,7 @@ export const getLogistics = (classe: string, regiao: string, perfil: string): { 
     
     // Sudeste & Sul/Centro-Oeste (Modern Urban)
     if (regiao === "Sudeste" || regiao === "Sul" || regiao === "Centro-Oeste") {
-        if (classe.includes("Base")) weights = [80, 15, 5];
+        if (classe.includes("Classe E") || classe.includes("Base")) weights = [80, 15, 5];
         else if (classe.includes("Baixa")) weights = [50, 30, 20];
         else if (classe.includes("Alta")) weights = [20, 30, 50];
         else if (classe.includes("Elite")) weights = [5, 20, 75];
@@ -57,18 +57,18 @@ export const getLogistics = (classe: string, regiao: string, perfil: string): { 
     else if (regiao === "Norte") {
         if (!isCapital) {
              // In interior of North, apps are almost non-existent for the base.
-             if (classe.includes("Base")) weights = [90, 2, 8];
+             if (classe.includes("Classe E") || classe.includes("Base")) weights = [90, 2, 8];
              else if (classe.includes("Baixa")) weights = [70, 5, 25];
              else weights = [10, 5, 85];
         } else {
-             if (classe.includes("Base")) weights = [70, 20, 10];
+             if (classe.includes("Classe E") || classe.includes("Base")) weights = [70, 20, 10];
              else if (classe.includes("Baixa")) weights = [40, 40, 20];
              else weights = [10, 20, 70];
         }
     }
     // Nordeste (Mixed)
     else if (regiao === "Nordeste") {
-        if (classe.includes("Base")) weights = [75, 20, 5];
+        if (classe.includes("Classe E") || classe.includes("Base")) weights = [75, 20, 5];
         else if (classe.includes("Baixa")) weights = [45, 35, 20];
         else weights = [15, 25, 60];
     }
@@ -103,7 +103,10 @@ export const calculateDeclarativeWeight = (
   migratedItems?: string[],
   level?: number
 ): number => {
-  const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
+  const normalize = (str: string) => {
+    if (!str) return '';
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, '');
+  };
   const itemKey = normalize(itemName);
   
   const registryItem = RULES_REGISTRY[category]?.[itemKey];
@@ -115,6 +118,12 @@ export const calculateDeclarativeWeight = (
     if (category === 'condicoesVisiveis' && levelsMigrated.includes(level ?? 0)) {
       return 0; // Força ignorar o código legado para estes níveis migrados
     }
+    
+    // Trava de Migração para Rastro Digital
+    if (category === 'rastro' || category === 'etnia') {
+      return 0; 
+    }
+
     return fallbackWeightFn(ctx);
   }
   
@@ -197,6 +206,26 @@ const getTierMetropole = (estado: string, isCapital: boolean): 'tier_alfa' | 'ti
   }
 };
 
+const getWeightedClasse = (estado: string, isCapital: boolean, ctx: any, migratedItems: string[], fixedClass?: string | null): { name: string, prob: ProbData } => {
+  const options = ["Classe E (Extrema Pobreza)", "Base Precarizada / Vulnerável", "Classe Média Baixa / A Engrenagem", "Classe Média Alta / Estabilidade", "Elite / Alta Renda"];
+  const baseWeights = [20, 30, 30, 15, 5];
+  
+  if (fixedClass) {
+     const idx = options.indexOf(fixedClass);
+     const fallback = idx !== -1 ? baseWeights[idx] : 1;
+     // Even if fixed, we call to track migration
+     calculateDeclarativeWeight('classeSocial', fixedClass, ctx, () => fallback, migratedItems);
+     return { name: fixedClass, prob: { prob: 100, poolSize: 1 } };
+  }
+
+  const finalWeights = options.map((opt, idx) => {
+    return calculateDeclarativeWeight('classeSocial', opt, ctx, () => baseWeights[idx], migratedItems);
+  });
+
+  const roll = rollWeighted(options, finalWeights);
+  return { name: roll.value, prob: { prob: roll.prob, poolSize: roll.poolSize } };
+};
+
 const getWeightedTribo = (ctx: ConditionContext, migratedItems: string[]): { name: string, prob: ProbData } => {
   const categories = Object.keys(OP_TRIBO);
   const catRoll = rollUniform(categories);
@@ -237,7 +266,7 @@ const getWeightedFetishes = (ctx: ConditionContext, migratedItems: string[]): { 
 
 const getSeniorityLevel = (idade: number, classe: string): string => {
   if (idade < 18) return "";
-  if (classe.includes("Vulnerável")) return Math.random() < 0.1 ? "Sênior" : "";
+  if (classe.includes("Classe E") || classe.includes("Vulnerável")) return Math.random() < 0.1 ? "Sênior" : "";
   if (idade > 45) return "Diretor(a)";
   if (idade > 35) return "Sênior";
   if (idade > 28) return "Pleno";
@@ -267,7 +296,7 @@ const defineOccupationStatus = (ctx: ConditionContext, maxLevel: number, options
   let desempregado = false;
 
   const isElite = ctx.classe.includes("Elite");
-  const isVulnerable = ctx.classe.includes("Base Precarizada / Vulnerável") || ctx.classe.includes("Baixa");
+  const isVulnerable = ctx.classe.includes("Classe E") || ctx.classe.includes("Base Precarizada / Vulnerável") || ctx.classe.includes("Baixa");
 
   // 1. Force Quit Médico / Idade
   if (maxLevel >= 8 || ctx.idade >= 65) {
@@ -345,7 +374,7 @@ const selectProfession = (ctx: ConditionContext, migratedItems: string[]) => {
   const isElite = ctx.classe.includes("Elite");
   const isAgroZone = (ctx.regiao === "Centro-Oeste" || ctx.regiao === "Sul") && !ctx.capital;
   const isBrasilia = ctx.regiao === "Centro-Oeste" && ctx.capital;
-  const isVulnerable = ctx.classe.includes("Base") || ctx.classe.includes("Baixa");
+  const isVulnerable = ctx.classe.includes("Classe E") || ctx.classe.includes("Base") || ctx.classe.includes("Baixa");
 
   // Tier 1: Core Sector Selection
   if (isElite && ctx.regiao === "Sudeste" && ctx.capital) {
@@ -399,12 +428,12 @@ const getFriccaoUrbana = (regiao: string, perfil: string, classe: string, nome: 
   
   if (regiao === "Sudeste") {
     if (isCapital) {
-      if (classe.includes("Base")) return `Dependência absoluta de metrô/trem alimentado por ônibus da periferia. Alta fricção física, empurra-empurra e deslocamento diário acima de 3h.`;
+      if (classe.includes("Classe E") || classe.includes("Base")) return `Dependência absoluta de metrô/trem alimentado por ônibus da periferia. Alta fricção física, empurra-empurra e deslocamento diário acima de 3h.`;
       if (classe.includes("Baixa")) return `Uso estratégico do metrô para fugir do trânsito. Carro popular na garagem para economizar, aplicativos em dias de chuva.`;
       if (classe.includes("Alta")) return `Deslocamento em SUV/Sedan próprio com ar-condicionado. Metrô é raro e apenas se houver linha expressa direta.`;
       return `Veículos blindados conduzidos por motorista particular. Uso de helipontos para evitar o solo em distâncias críticas.`;
     } else {
-      if (classe.includes("Base")) return `Caminhadas sob o sol e bicicletas antigas como meio principal. Ônibus intermunicipais com poucos horários.`;
+      if (classe.includes("Classe E") || classe.includes("Base")) return `Caminhadas sob o sol e bicicletas antigas como meio principal. Ônibus intermunicipais com poucos horários.`;
       if (classe.includes("Baixa")) return `Motocicletas de baixa cilindrada para cortar o trânsito local. Carros antigos com manutenção postergada.`;
       if (classe.includes("Alta")) return `Sedans robustos ou picapes compactas. Dependência total do automóvel pela ausência de transporte estruturado.`;
       return `Picapes topo de linha ou SUVs importados. Uso de aeródromos regionais para acessar a capital rapidamente.`;
@@ -413,12 +442,12 @@ const getFriccaoUrbana = (regiao: string, perfil: string, classe: string, nome: 
 
   if (regiao === "Norte") {
     if (isCapital) {
-      if (classe.includes("Base")) return `Ônibus circulares saturados de poeira e calor. Em áreas ribeirinhas, começa com pequenas embarcações de madeira (catraias).`;
+      if (classe.includes("Classe E") || classe.includes("Base")) return `Ônibus circulares saturados de poeira e calor. Em áreas ribeirinhas, começa com pequenas embarcações de madeira (catraias).`;
       if (classe.includes("Baixa")) return `Uso intenso de motocicletas adaptadas ao clima instável e aplicativos rodando por vias com alagamentos sazonais.`;
       if (classe.includes("Alta")) return `SUVs de tração integral essenciais para a infraestrutura local. Posse de lanchas em marinas privadas para recreação.`;
       return `Picapes de luxo e veículos importados. Deslocamentos interestaduais feitos por táxi aéreo ou embarcações climatizadas.`;
     } else {
-      if (classe.includes("Base")) return `Viagens fluviais longas em barcos de recreio onde se dorme em redes por dias. Em terra, a pé ou em caminhões de carga.`;
+      if (classe.includes("Classe E") || classe.includes("Base")) return `Viagens fluviais longas em barcos de recreio onde se dorme em redes por dias. Em terra, a pé ou em caminhões de carga.`;
       if (classe.includes("Baixa")) return `Barcos de linha de médio porte e motocicletas trail para estradas de terra batida.`;
       if (classe.includes("Alta")) return `Embarcações rápidas (voadeiras) de uso privado ou picapes seminovas para rodovias estaduais.`;
       return `Lanchas de luxo com alta autonomia ou bimotores privados. O transporte aéreo é a única alternativa para evitar o isolamento.`;
@@ -427,12 +456,12 @@ const getFriccaoUrbana = (regiao: string, perfil: string, classe: string, nome: 
 
   if (regiao === "Nordeste") {
     if (isCapital) {
-      if (classe.includes("Base")) return `Sistemas de BRT ou trens urbanos combinados com vans. Uso de mototáxi para vencer relevos acidentados e vielas estreitas.`;
+      if (classe.includes("Classe E") || classe.includes("Base")) return `Sistemas de BRT ou trens urbanos combinados com vans. Uso de mototáxi para vencer relevos acidentados e vielas estreitas.`;
       if (classe.includes("Baixa")) return `Ônibus convencionais e alto uso de aplicativos para corridas curtas ou divididas. Presença de motos econômicas.`;
       if (classe.includes("Alta")) return `Automóveis próprios com ar-condicionado vital. Aplicativos premium nos fins de semana para zonas litorâneas.`;
       return `Sedans executivos e SUVs europeus circulando estritamente entre bairros nobres e condomínios de veraneio.`;
     } else {
-      if (classe.includes("Base")) return `Bicicletas cargueiras, vans antigas adaptadas ou veículos de carroceria aberta (paus-de-arara) em vilarejos.`;
+      if (classe.includes("Classe E") || classe.includes("Base")) return `Bicicletas cargueiras, vans antigas adaptadas ou veículos de carroceria aberta (paus-de-arara) em vilarejos.`;
       if (classe.includes("Baixa")) return `Motocicletas de uso misto (estrada/terra) e carros populares compactos com mais de uma década de uso.`;
       if (classe.includes("Alta")) return `Picapes cabine dupla a diesel ou SUVs de entrada, indispensáveis para a ponte entre propriedades agrícolas e polos.`;
       return `Caminhonetes importadas, vans executivas fretadas e conexões frequentes através de aeroportos regionais.`;
@@ -441,12 +470,12 @@ const getFriccaoUrbana = (regiao: string, perfil: string, classe: string, nome: 
 
   // Sul / Centro-Oeste
   if (isCapital) {
-    if (classe.includes("Base")) return `Redes integradas de BRT com canaletas exclusivas. Trajetos longos mas com maior previsibilidade de horários.`;
+    if (classe.includes("Classe E") || classe.includes("Base")) return `Redes integradas de BRT com canaletas exclusivas. Trajetos longos mas com maior previsibilidade de horários.`;
     if (classe.includes("Baixa")) return `Ônibus articulados conjugados com carros hatch. Alto índice de caronas compartilhadas intermunicipais.`;
     if (classe.includes("Alta")) return `Veículos modernos focados em tecnologia. Forte adesão ao uso de bicicletas em ciclovias por estilo de vida.`;
     return `Sedans de luxo e SUVs esportivos premium. A blindagem é menos frequente, priorizando conforto e potência.`;
   } else {
-    if (classe.includes("Base")) return `Ônibus fretados por cooperativas ou usinas. Bicicletas de marcha e motos de baixo valor para comércio local.`;
+    if (classe.includes("Classe E") || classe.includes("Base")) return `Ônibus fretados por cooperativas ou usinas. Bicicletas de marcha e motos de baixo valor para comércio local.`;
     if (classe.includes("Baixa")) return `Veículos robustos de segunda mão com boa altura (para estradas de cascalho) ou motos utilitárias.`;
     if (classe.includes("Alta")) return `Picapes cabine dupla modernas usadas como ferramenta de trabalho na lavoura e transporte familiar.`;
     return `Picapes de grande porte importadas e customizadas, SUVs de luxo e aeronaves turboélice baseadas nos hangares das fazendas.`;
@@ -532,7 +561,7 @@ function generateDossierPhotos(ctx: PhotoContext): string[] {
   ]);
 
   let f2Background = "";
-  if (ctx.classe.includes("Vulnerável") || ctx.classe.includes("Baixa")) {
+  if (ctx.classe.includes("Classe E") || ctx.classe.includes("Vulnerável") || ctx.classe.includes("Baixa")) {
     f2Background = rnd([
       " O fundo mostra paredes sem reboco e fiação exposta.", 
       " Tirada no fundão de um ônibus lotado da EMTU.", 
@@ -739,22 +768,40 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   };
   const estado = randomChoice(statesByRegion[regiao] || ['SP']);
 
-  const etniaRoll = rollWeighted(["Branca", "Parda", "Preta", "Amarela", "Indígena"], [40, 45, 10, 2, 3]);
-  const etnia = options.fixedEthnicity ?? etniaRoll.value;
-  probs.etnia = { prob: etniaRoll.prob, poolSize: etniaRoll.poolSize };
-
   // 2. Shiny Initialization
   let shiny = options.fixedShiny ?? "Nenhum evento significativo detectado.";
   probs.shiny = { prob: 95, poolSize: 1 }; // Base case
-
-  const classRoll = rollWeighted(["Base Precarizada / Vulnerável", "Classe Média Baixa / A Engrenagem", "Classe Média Alta / Estabilidade", "Elite / Alta Renda"], [30, 40, 20, 10]);
-  const classe = options.fixedClass ?? classRoll.value;
-  probs.classe = { prob: classRoll.prob, poolSize: classRoll.poolSize };
 
   const perfRoll = rollUniform(["Interior", "Capital"]);
   const perfilUrbanoVal = options.fixedLocality ?? perfRoll.value;
   const perfilUrbanoStr = `${perfilUrbanoVal} - ${regiao}`;
   probs.perfilUrbano = { prob: perfRoll.prob, poolSize: perfRoll.poolSize };
+
+  const isCapital = perfilUrbanoStr.includes("Capital");
+  const tier = getTierMetropole(estado, isCapital);
+  const isRural = options.fixedRemoteArea ?? (!isCapital && Math.random() < 0.3);
+  const preCtx = { 
+    tierMetropole: tier, 
+    regiao, 
+    estado, 
+    isCapital, 
+    zonaRuralRemota: isRural 
+  };
+
+  const etniaRegistry = Object.values(RULES_REGISTRY['etnia'] || {});
+  const etniaOptions = etniaRegistry.length > 0 ? etniaRegistry.map(r => r.name || "Desconhecido") : ["Branca", "Parda", "Preta", "Amarela", "Indígena"];
+  const etniaWeights = etniaOptions.map(name => calculateDeclarativeWeight('etnia', name, preCtx as any, (c) => {
+    // BLOQUEIO: Não usa mais os pesos antigos se não estiver no registro
+    return 0;
+  }, migratedItems));
+  
+  const etniaRoll = rollWeighted(etniaOptions, etniaWeights);
+  const etnia = options.fixedEthnicity ?? etniaRoll.value;
+  probs.etnia = { prob: etniaRoll.prob, poolSize: etniaRoll.poolSize };
+
+  const classResult = getWeightedClasse(estado, isCapital, preCtx, migratedItems, options.fixedClass);
+  const classe = classResult.name;
+  probs.classe = classResult.prob;
 
   // 3. Socioeconomic & Preliminary Context for Shiny
   let professionPool: string[] = [];
@@ -788,12 +835,14 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     alcoolOuObesidade: Math.random() < 0.3,
     alcoolico: Math.random() < 0.1, 
     braçalOuSentado: Math.random() < 0.5, diabetico: Math.random() < 0.05, midia: false, fumante: Math.random() < 0.2,
-    aco: false, baixaRenda: classe.includes("Base"), gayCis: orientacao === "Homossexual" && isCis,
+    aco: false, baixaRenda: classe.includes("Classe E") || classe.includes("Base"), gayCis: orientacao === "Homossexual" && isCis,
     proSe: false, drogasInjetaveis: false, traumaArquivado: false, hipertenso: Math.random() < 0.15,
     traumaInfancia: Math.random() < 0.1, 
     militarPolicia: professionBase.toLowerCase().includes("militar") || professionBase.toLowerCase().includes("polícia") || professionBase.toLowerCase().includes("guarda") || professionBase.toLowerCase().includes("vigilante") || professionBase.toLowerCase().includes("segurança"),
     vitimaCrime: false, hipertensoFumante: false,
-    negroPardo: etnia === "Preta" || etnia === "Parda", abusoHistorico: false, historicoDepressivo: false,
+    negroPardo: etnia === "Preta" || etnia === "Parda", 
+    indigena: etnia === "Indígena",
+    abusoHistorico: false, historicoDepressivo: false,
     desempregoLongo: false, corporativoEstresse: false, lutoRecente: false, obesoFumante: false,
     caucasiano: etnia === "Branca", abusoInfanciaProlongado: false, diabeticoOuHipertenso: false,
     isolamentoTotal: false, falenciaLuto: false, infartoPrevio: false, drogasPesadas: false,
@@ -822,7 +871,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     acidenteTransito: false, doencaPulmonarCoracao: false, ensolarado: false, moradorRua: false,
     dependenteQuimicoAtivo: false, trabalhoBarulhento: false, acidenteMotorLesao: false, baixaIodo: false,
     diabeticoLesaoPe: false, colesterolAlto: false, 
-    zonaRuralRemota: perfilUrbanoStr.includes("Interior") && Math.random() < 0.3, 
+    zonaRuralRemota: isRural, 
     herniaDisco: false,
     internacaoUTI: false, mausHabitos: false, traumaViolento: false, interrogatorioIntimidacao: false,
     quimioterapia: false, avcExtenso: false, glaucoma: false, cancerLaringe: false, retinopatia: false,
@@ -1057,9 +1106,6 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   let finalClasse = classe;
   if (exMilitarDesertor) {
     if (finalIdade <= 35) finalIdade = 35 + Math.floor(Math.random() * 20);
-    if (finalClasse.includes("Elite")) {
-      finalClasse = randomChoice(["Base Precarizada / Vulnerável", "Classe Média Baixa / A Engrenagem"]);
-    }
   }
 
   // 3. MOTOR DE DIVERGÊNCIA BIOMÉTRICA
@@ -1256,7 +1302,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     doouOrgaoVital, exMilitarDesertor,
     braçal: options.fixedManualLabor ?? initialCtx.braçal,
     zonaRuralRemota: options.fixedRemoteArea ?? initialCtx.zonaRuralRemota,
-    vulneravel: finalClasse.includes("Vulnerável"),
+    vulneravel: finalClasse.includes("Classe E") || finalClasse.includes("Vulnerável"),
     hipertenso: initialCtx.hipertenso,
     tierMetropole: initialCtx.tierMetropole,
     traumaArquivado: initialCtx.traumaArquivado,
@@ -1562,7 +1608,10 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
 
   physicalHealth = Math.max(0, physicalHealth);
 
-  incomeLevel = finalClasse.includes("Elite") ? 100 : finalClasse.includes("Alta") ? 75 : finalClasse.includes("Média") ? 50 : 25;
+  incomeLevel = finalClasse.includes("Elite") ? 100 : 
+                finalClasse.includes("Alta") ? 75 : 
+                finalClasse.includes("Média") ? 50 : 
+                finalClasse.includes("Classe E") ? 5 : 25;
 
   // --- Shiny Metric Overrides ---
   if (herancaDesconhecido) {
@@ -1910,6 +1959,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   
   if (finalClasse.includes("Elite")) urbanScore += 10;
   if (finalClasse.includes("Alta")) urbanScore += 5;
+  if (finalClasse.includes("Classe E")) urbanScore -= 15;
   if (finalClasse.includes("Vulnerável")) urbanScore -= 10;
 
   // BMI Urban Friction
@@ -1937,8 +1987,11 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   }
 
   const friccaoUrbana = finalFriccaoUrbana;
-  const rastroWeights = OP_RASTRO.map(r => calculateDeclarativeWeight('rastro', r.text, ctx, r.weight, migratedItems));
-  const rastroRoll = rollWeighted(OP_RASTRO.map(r => r.text), rastroWeights);
+  const rastroRegistry = Object.values(RULES_REGISTRY['rastro'] || {});
+  const rastroOptions = rastroRegistry.map(r => r.name || "Desconhecido");
+  const rastroWeights = rastroOptions.map(name => calculateDeclarativeWeight('rastro', name, ctx, () => 0, migratedItems));
+  const rastroRoll = rollWeighted(rastroOptions, rastroWeights);
+  
   const tribo = getWeightedTribo(ctx, migratedItems);
   const sexualidade = getWeightedCenaSexualidade(ctx);
   const fetiches = getWeightedFetishes(ctx, migratedItems);

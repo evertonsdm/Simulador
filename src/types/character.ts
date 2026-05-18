@@ -46,6 +46,7 @@ export interface ConditionContext {
   vitimaCrime: boolean;
   hipertensoFumante: boolean;
   negroPardo: boolean;
+  indigena?: boolean;
   abusoHistorico: boolean;
   historicoDepressivo: boolean;
   desempregoLongo: boolean;

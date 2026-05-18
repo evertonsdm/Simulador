@@ -219,6 +219,7 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
       vitimaCrime: false,
       hipertensoFumante: false,
       negroPardo: selEtnia === "Preta" || selEtnia === "Parda",
+      indigena: selEtnia === "Indígena",
       abusoHistorico: false,
       historicoDepressivo: false,
       desempregoLongo: false,
@@ -494,6 +495,11 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
         if (category === 'tribos') regCategory = 'tribosUrbanas';
         if (category === 'rastros') regCategory = 'rastro';
         if (category === 'shiny') regCategory = 'shinies';
+        if (category === 'classe') regCategory = 'classeSocial';
+        if (category === 'identidade' && etnias.includes(label)) regCategory = 'etnia';
+        if (category === 'identidade' && (label === 'Homem' || label === 'Mulher' || label === 'Não-Binário')) regCategory = 'identidade';
+        if (category === 'relacional') regCategory = 'relacional';
+        if (category === 'filhos') regCategory = 'filhos';
 
         const fallbackFn = (ctx: any) => {
           const meetsCondition = !item.condition || (typeof item.condition === 'function' && item.condition(ctx));

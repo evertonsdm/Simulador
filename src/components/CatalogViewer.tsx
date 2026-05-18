@@ -89,11 +89,15 @@ export const CatalogViewer: React.FC = () => {
   ];
 
   const getRegistryInfo = useCallback((itemText: string): { key: string, category: string, data: any } | null => {
-    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
+    const normalize = (str: string) => {
+      if (!str) return '';
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, '');
+    };
     const key = normalize(itemText);
     
     const categoryMapping: Partial<Record<CategoryKey, string>> = {
       'profissoes': 'profissoes',
+      'classes': 'classeSocial',
       'v_conditions': 'condicoesVisiveis',
       'nv_conditions': 'condicoesNaoVisiveis',
       'tribos': 'tribosUrbanas',
@@ -104,7 +108,8 @@ export const CatalogViewer: React.FC = () => {
       'relacional': 'relacional',
       'papeisRelacionais': 'papeisRelacionais',
       'filhos': 'filhos',
-      'logistica': 'logistica'
+      'logistica': 'logistica',
+      'etnias': 'etnia'
     };
 
     const registryKey = categoryMapping[selectedCategory];
@@ -125,7 +130,13 @@ export const CatalogViewer: React.FC = () => {
         rawItems = ["Branca", "Parda", "Preta", "Amarela", "Indígena"];
         break;
       case 'classes':
-        rawItems = Object.keys(PROFISSOES_UNIVERSAIS);
+        rawItems = [
+          'Elite / Alta Renda',
+          'Classe Média Alta / Estabilidade',
+          'Classe Média Baixa / A Engrenagem',
+          'Base Precarizada / Vulnerável',
+          'Classe E (Extrema Pobreza)'
+        ];
         break;
       case 'identidades':
         rawItems = ["Homem", "Mulher", "Não-Binário"];

@@ -96,6 +96,14 @@ export const CATEGORIES = [
     ...RELACOES_TEXTOS.Negativo.map(t => `Rel Negativo: ${t}`),
     ...Object.values(RULES_REGISTRY['relacional'] || {}).filter(i => i.name).map(i => i.name!)
   ])).map(name => ({ name })) } },
+  { id: 'etnia', label: 'Etnia', data: { all: [{ name: "Branca" }, { name: "Parda" }, { name: "Preta" }, { name: "Amarela" }, { name: "Indígena" }] } },
+  { id: 'classeSocial', label: 'Classes Sociais', data: { all: [
+    { name: 'Elite / Alta Renda' },
+    { name: 'Classe Média Alta / Estabilidade' },
+    { name: 'Classe Média Baixa / A Engrenagem' },
+    { name: 'Base Precarizada / Vulnerável' },
+    { name: 'Classe E (Extrema Pobreza)' }
+  ] } },
   { id: 'filhos', label: 'Dinâmica de Filhos', data: { all: [
     { name: "Filho: Criança" }, { name: "Filho: Adolescente" }, { name: "Filho: Adulto" },
     ...Object.entries(FILHOS_TEXTOS).flatMap(([age, qualities]) => 
@@ -280,12 +288,45 @@ export const RuleForge: React.FC = () => {
   const lastImportedItem = React.useRef<string | null>(null);
   const isImportingRef = React.useRef(false);
   const targetImportedNameRef = React.useRef<string | null>(null);
+  const hasAlertedRef = React.useRef(false);
+
+  // --- Reset hierarchical selections (Move above deterministic reset to avoid race conditions) ---
+  useEffect(() => {
+    if (isImportingRef.current) return;
+    const cat = CATEGORIES.find(c => c.id === selectedCategory);
+    if (cat && !Array.isArray(cat.data)) {
+      setSelectedSubCategory(Object.keys(cat.data)[0] || '');
+    } else {
+      setSelectedSubCategory('');
+    }
+    setSelectedItem('');
+    setItemSearch('');
+  }, [selectedCategory]);
+
+  // New reset for subcategory manually changed
+  useEffect(() => {
+    if (isImportingRef.current) return;
+    setSelectedItem('');
+    setItemSearch('');
+  }, [selectedSubCategory]);
 
   // --- deterministic reset of isImportingRef ---
   useEffect(() => {
     if (isImportingRef.current && targetImportedNameRef.current) {
       const currentName = mode === 'edit' ? selectedItem : newItemName;
+      
       if (currentName === targetImportedNameRef.current) {
+        // Success Notification (Protected against double firing)
+        if (!hasAlertedRef.current) {
+          console.log("[Import] Sucesso Determinístico:", targetImportedNameRef.current);
+          const successMsg = mode === 'create' 
+            ? `Blueprint de fábrica carregado: "${targetImportedNameRef.current}"`
+            : `Item "${targetImportedNameRef.current}" detectado e importado com sucesso!`;
+          
+          alert(successMsg);
+          hasAlertedRef.current = true;
+        }
+
         isImportingRef.current = false;
         targetImportedNameRef.current = null;
         console.log("[Import] Trava de importação liberada de forma determinística.");
@@ -296,7 +337,10 @@ export const RuleForge: React.FC = () => {
   // --- Hydration Engine V2 (Declarative Pattern) ---
   const getExistingItemRules = (category: string, itemName: string) => {
     // Normalização rigorosa conforme diretriz
-    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
+    const normalize = (str: string) => {
+      if (!str) return '';
+      return str.toLowerCase().replace(/\s+/g, '');
+    };
     const itemKey = normalize(itemName);
     
     const defaults = { baseWeight: 1.0, rules: [] as Rule[] };
@@ -396,6 +440,7 @@ export const RuleForge: React.FC = () => {
 
       // --- BIFURCAÇÃO: MODO FÁBRICA (ADIÇÃO) ---
       if (mode === 'create') {
+        hasAlertedRef.current = false;
         isImportingRef.current = true;
         
         if (targetCategory) setSelectedCategory(targetCategory);
@@ -425,19 +470,20 @@ export const RuleForge: React.FC = () => {
 
         setRules(hydratedRules);
         targetImportedNameRef.current = importedNameLabel;
-        alert(`Blueprint de fábrica carregado: "${importedNameLabel}"`);
         setShowImport(false);
         setImportJson('');
         return;
       }
 
       // --- MANTÉM MODO DETETIVE PARA EDIÇÃO ---
-      const normalize = (val: string) => 
-        val.toLowerCase()
+      const normalize = (val: string) => {
+        if (!val) return '';
+        return val.toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "") // Remove accents
           .replace(/\s+/g, '')             // Remove spaces
           .replace(/[^\w]/g, '');          // Remove any non-alphanumeric remaining
+      };
       
       const targetSearchKey = normalize(itemKey);
       const targetSearchName = normalize(importedNameLabel);
@@ -517,6 +563,7 @@ export const RuleForge: React.FC = () => {
       }
 
       // 4. Sincronização de Estados com Blindagem contra useEffects de reset
+      hasAlertedRef.current = false;
       isImportingRef.current = true;
       
       lastImportedItem.current = path.item; // Bloqueia a hidratação do registro original
@@ -552,8 +599,6 @@ export const RuleForge: React.FC = () => {
       }
 
       targetImportedNameRef.current = path.item;
-      console.log("Import Successful:", path);
-      alert(`Item "${path.item}" detectado e importado com sucesso!`);
       setShowImport(false);
       setImportJson('');
 
@@ -614,19 +659,6 @@ export const RuleForge: React.FC = () => {
     const searchLow = itemSearch.toLowerCase();
     return items.filter(item => item.toLowerCase().includes(searchLow));
   }, [items, itemSearch]);
-
-  // Reset hierarchical selections
-  useEffect(() => {
-    if (isImportingRef.current) return;
-    const cat = CATEGORIES.find(c => c.id === selectedCategory);
-    if (cat && !Array.isArray(cat.data)) {
-      setSelectedSubCategory(Object.keys(cat.data)[0] || '');
-    } else {
-      setSelectedSubCategory('');
-    }
-    setSelectedItem('');
-    setItemSearch('');
-  }, [selectedCategory]);
 
   const addRule = () => {
     const newRule: Rule = {
@@ -700,7 +732,10 @@ export const RuleForge: React.FC = () => {
       return;
     }
 
-    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
+    const normalize = (str: string) => {
+      if (!str) return '';
+      return str.toLowerCase().replace(/\s+/g, '');
+    };
     const itemKey = normalize(selectedItem);
 
     const rulesData = rules.map(({ property, operator, value, multiplier }) => ({
@@ -732,7 +767,10 @@ export const RuleForge: React.FC = () => {
       return;
     }
 
-    const normalize = (str: string) => str.toLowerCase().replace(/\s+/g, '');
+    const normalize = (str: string) => {
+      if (!str) return '';
+      return str.toLowerCase().replace(/\s+/g, '');
+    };
     const itemKey = normalize(newItemName);
 
     const rulesData = rules.map(({ property, operator, value, multiplier }) => ({
