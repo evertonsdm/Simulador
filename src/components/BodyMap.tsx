@@ -208,7 +208,7 @@ export const BodyMap: React.FC<BodyMapProps> = ({
       </div>
 
       {editorMode && (
-        <div className="absolute bottom-3 right-3 flex flex-col gap-2 items-end">
+        <div className="absolute top-3 md:top-auto md:bottom-3 right-3 flex flex-col gap-2 items-end">
           <button 
             onClick={() => {
               setInternalAffected([]);
@@ -218,12 +218,6 @@ export const BodyMap: React.FC<BodyMapProps> = ({
           >
             Resetar Áreas
           </button>
-          <div className="px-3 py-1.5 bg-black/80 border border-gold/20 rounded backdrop-blur-md">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[9px] text-gold font-bold font-mono uppercase tracking-widest">Editor de Anatomia</span>
-              <span className="text-[7px] text-white/30 uppercase">Clique nas partes para marcar/desmarcar</span>
-            </div>
-          </div>
         </div>
       )}
     </div>

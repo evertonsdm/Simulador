@@ -13,6 +13,7 @@ export interface RandomMapping {
 export const CONDITION_TO_PARTS: Record<string, string[] | string[][] | RandomMapping> = {
   "Dermatite Atópica Visível": ['head', 'neck', 'right-arm', 'left-arm'],
   "Calvície Androgenética Inicial": ['head'],
+  "Calvície Androgenética Avançada": ['head'],
   "Leve Calvície (Alopecia)": ['head'],
   "Olheiras Crônicas Marcadas": ['orbit'],
   "Cicatriz Pequena (Rosto/Braço)": [['head'], ['right-arm'], ['left-arm']],
