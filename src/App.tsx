@@ -40,7 +40,8 @@ import {
   Home,
   Car,
   Camera,
-  Book
+  Book,
+  MonitorPlay
 } from 'lucide-react';
 import { 
   Radar, 
@@ -525,76 +526,87 @@ export default function App() {
         </button>
 
         {/* Header */}
-        <header className="h-10 md:h-12 border-b border-dark-border px-4 md:px-8 flex items-center justify-between shrink-0 bg-dark-bg/60 backdrop-blur-xl z-30">
-          <div className="flex items-center gap-4">
-            {/* Espaço reservado para futuros sub-menus */}
-            {activeView === 'simulator' && (
-              <button 
-                onClick={() => setActiveView('sandbox')}
-                className="flex items-center gap-2 px-3 py-1.5 rounded bg-gold/10 border border-gold/20 text-gold hover:bg-gold/20 transition-all group"
-              >
-                <Zap className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-                <span className="text-[9px] font-mono uppercase tracking-widest font-black">Sandbox de Probabilidades</span>
-              </button>
-            )}
-          </div>
+        <header className="h-14 border-b border-white/5 px-4 md:px-8 flex items-center justify-center shrink-0 bg-black/60 backdrop-blur-xl z-40 sticky top-0">
+          <nav className="flex items-center justify-center gap-1.5 md:gap-4 max-w-4xl w-full">
+            {/* Simulator Tab */}
+            <button 
+              onClick={() => setActiveView('simulator')}
+              title="Simulador Principal"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md border text-xs md:text-sm font-mono uppercase tracking-widest transition-all duration-200 ${
+                activeView === 'simulator' 
+                  ? 'bg-gold/10 border-gold/30 text-gold shadow-[0_0_10px_rgba(255,215,0,0.1)]' 
+                  : 'border-transparent text-white/40 hover:bg-white/5 hover:text-white/70'
+              }`}
+            >
+              <MonitorPlay size={16} />
+              <span className="hidden md:inline">Simulador</span>
+            </button>
 
-          <div className="flex items-center gap-4">
-            {activeView === 'sandbox' && (
-               <button 
-                onClick={() => setActiveView('simulator')}
-                className="px-3 py-1.5 rounded border border-dark-border bg-black/40 text-white/40 hover:text-white transition-all text-[9px] font-mono uppercase tracking-widest"
-              >
-                Cancelar Sandbox
-              </button>
-            )}
+            {/* Catalog Tab */}
             <button 
-              onClick={() => setActiveView(activeView === 'ruleforge' ? 'simulator' : 'ruleforge')}
-              className={`px-3 py-1.5 rounded border flex items-center gap-2 transition-all ${
-                activeView === 'ruleforge' 
-                  ? 'bg-blue-600 text-white border-blue-600 font-bold shadow-[0_0_15px_rgba(37,99,235,0.3)]' 
-                  : 'bg-black/40 border-dark-border text-white/40 hover:text-white hover:border-white/20'
-              }`}
-            >
-              <Settings className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-mono uppercase tracking-widest hidden md:inline">
-                {activeView === 'ruleforge' ? 'Voltar' : 'Forja de Regras'}
-              </span>
-            </button>
-            <button 
-              onClick={() => setActiveView(activeView === 'catalog' ? 'simulator' : 'catalog')}
-              className={`px-3 py-1.5 rounded border flex items-center gap-2 transition-all ${
+              onClick={() => setActiveView('catalog')}
+              title="Dicionário de Dados"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md border text-xs md:text-sm font-mono uppercase tracking-widest transition-all duration-200 ${
                 activeView === 'catalog' 
-                  ? 'bg-gold text-black border-gold font-bold shadow-[0_0_15px_rgba(255,191,0,0.3)]' 
-                  : 'bg-black/40 border-dark-border text-white/40 hover:text-white hover:border-white/20'
+                  ? 'bg-gold/10 border-gold/30 text-gold shadow-[0_0_10px_rgba(255,215,0,0.1)]' 
+                  : 'border-transparent text-white/40 hover:bg-white/5 hover:text-white/70'
               }`}
             >
-              <Book className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-mono uppercase tracking-widest hidden md:inline">
-                {activeView === 'catalog' ? 'Módulo Simulador' : 'Visão de Catálogo'}
-              </span>
+              <Book size={16} />
+              <span className="hidden md:inline">Catálogo</span>
             </button>
+
+            {/* RuleForge Tab */}
             <button 
-              onClick={() => setActiveView(activeView === 'simulator' ? 'mapper' : 'simulator')}
-              className={`px-3 py-1.5 rounded border flex items-center gap-2 transition-all ${
-                activeView === 'mapper' 
-                  ? 'bg-gold text-black border-gold font-bold shadow-[0_0_15px_rgba(255,191,0,0.3)]' 
-                  : 'bg-black/40 border-dark-border text-white/40 hover:text-white hover:border-white/20'
+              onClick={() => setActiveView('ruleforge')}
+              title="Editor de Regras"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md border text-xs md:text-sm font-mono uppercase tracking-widest transition-all duration-200 ${
+                activeView === 'ruleforge' 
+                  ? 'bg-blue-500/10 border-blue-500/30 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.1)]' 
+                  : 'border-transparent text-white/40 hover:bg-white/5 hover:text-white/70'
               }`}
             >
-              <Activity className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-mono uppercase tracking-widest hidden md:inline">
-                {activeView === 'simulator' ? 'Editor de Corpo' : 'Voltar ao Simulador'}
-              </span>
+              <Settings size={16} />
+              <span className="hidden md:inline">RuleForge</span>
             </button>
-            <div className={`px-3 py-1 rounded border border-dark-border flex items-center gap-2 bg-black/40`}>
-              <span className="text-[8px] md:text-[9px] font-mono tracking-widest">
+
+            {/* Mapper Tab */}
+            <button 
+              onClick={() => setActiveView('mapper')}
+              title="Editor de BodyMap"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md border text-xs md:text-sm font-mono uppercase tracking-widest transition-all duration-200 ${
+                activeView === 'mapper' 
+                  ? 'bg-gold/10 border-gold/30 text-gold shadow-[0_0_10px_rgba(255,215,0,0.1)]' 
+                  : 'border-transparent text-white/40 hover:bg-white/5 hover:text-white/70'
+              }`}
+            >
+              <Layers size={16} />
+              <span className="hidden md:inline">Mapper</span>
+            </button>
+
+            {/* Sandbox Tab */}
+            <button 
+              onClick={() => setActiveView('sandbox')}
+              title="Sandbox de Probabilidades"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md border text-xs md:text-sm font-mono uppercase tracking-widest transition-all duration-200 ${
+                activeView === 'sandbox' 
+                  ? 'bg-gold/10 border-gold/30 text-gold shadow-[0_0_10px_rgba(255,215,0,0.1)]' 
+                  : 'border-transparent text-white/40 hover:bg-white/5 hover:text-white/70'
+              }`}
+            >
+              <Zap size={16} />
+              <span className="hidden md:inline">Sandbox</span>
+            </button>
+
+            {/* Stats (Hidden on small mobile) */}
+            <div className={`hidden lg:flex px-3 py-1.5 rounded border border-white/5 bg-black/40 items-center gap-2 ml-4`}>
+              <span className="text-[9px] font-mono tracking-widest">
                 <span className="text-blue-500 font-bold">{conversionStats.converted}</span>
-                <span className="text-white/40"> / </span>
-                <span className="text-white/40">{conversionStats.notConverted}</span>
+                <span className="text-white/20"> / </span>
+                <span className="text-white/40">{conversionStats.total}</span>
               </span>
             </div>
-          </div>
+          </nav>
         </header>
 
         {/* Content Scroll Area */}

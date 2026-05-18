@@ -878,20 +878,20 @@ export const RuleForge: React.FC = () => {
   }, [searchTrigger]);
 
   return (
-    <div className="h-dvh md:h-full flex flex-col overflow-y-auto bg-slate-950 text-slate-200 p-2.5 md:p-8 font-sans border-l border-slate-800/50">
+    <div className="h-dvh md:h-full flex flex-col overflow-y-auto bg-dark-bg text-ice p-2.5 md:p-8 font-sans border-l border-dark-border">
       <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col pb-24 md:pb-20">
         {/* Mode Toggle */}
         <div className="flex justify-center mb-4 md:mb-8">
-          <div className="bg-slate-900 p-1 rounded-xl border border-slate-800 flex shadow-2xl w-full max-w-sm">
+          <div className="bg-black/40 p-1 rounded-xl border border-white/5 flex shadow-2xl w-full max-w-sm">
             <button 
               onClick={() => setMode('edit')}
-              className={`flex-1 px-4 md:px-6 py-2 rounded-lg text-sm md:text-base font-medium transition-all ${mode === 'edit' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`flex-1 px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-mono uppercase tracking-widest transition-all ${mode === 'edit' ? 'bg-white/10 text-white border border-white/20 shadow-lg shadow-white/5' : 'text-white/30 hover:text-white/50'}`}
             >
               Editar Existente
             </button>
             <button 
               onClick={() => setMode('create')}
-              className={`flex-1 px-4 md:px-6 py-2 rounded-lg text-sm md:text-base font-medium transition-all ${mode === 'create' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/40' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`flex-1 px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-mono uppercase tracking-widest transition-all ${mode === 'create' ? 'bg-white/10 text-white border border-white/20 shadow-lg shadow-white/5' : 'text-white/30 hover:text-white/50'}`}
             >
               Fábrica
             </button>
@@ -901,11 +901,11 @@ export const RuleForge: React.FC = () => {
         {/* Header */}
         <header className="mb-4 md:mb-8 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
           <div className="text-center md:text-left">
-            <h1 className="sm:text-3xl text-lg font-bold flex items-center justify-center md:justify-start gap-2.5 text-white">
+            <h1 className="sm:text-2xl text-lg font-display font-black uppercase tracking-widest flex items-center justify-center md:justify-start gap-2.5 text-ice">
               <Settings2 className={mode === 'edit' ? "text-blue-500" : "text-indigo-400"} size={22} />
               {mode === 'edit' ? 'Forja de Regras' : 'Fábrica de Entidades'}
             </h1>
-            <p className="text-slate-400 mt-1 sm:text-base text-xs">
+            <p className="text-white/40 mt-1 sm:text-sm text-[10px] font-mono uppercase tracking-widest">
               {mode === 'edit' ? 'Edição de pesos e modificadores contextuais' : 'Criação de novos itens e regras matemáticas'}
             </p>
           </div>
@@ -913,7 +913,7 @@ export const RuleForge: React.FC = () => {
 
         {/* Busca Reversa */}
         <div 
-          className="mb-4 md:mb-8 bg-slate-900/40 border border-slate-800 rounded-xl p-3.5 md:p-6 shadow-xl backdrop-blur-sm"
+          className="mb-4 md:mb-8 bg-white/[0.02] border border-white/5 rounded-xl p-3.5 md:p-6 shadow-xl backdrop-blur-sm"
           data-lpignore="true"
           data-1pignore="true"
         >
@@ -921,7 +921,7 @@ export const RuleForge: React.FC = () => {
             <div className="p-1.5 bg-blue-500/10 rounded-lg border border-blue-500/20">
               <Search className="text-blue-400" size={16} />
             </div>
-            <h2 className="sm:text-lg text-xs font-bold text-white tracking-tight uppercase opacity-80">Busca Reversa por Gatilho</h2>
+            <h2 className="text-ice font-display uppercase tracking-widest text-xs md:text-sm">Busca Reversa por Gatilho</h2>
           </div>
           <div className="relative">
             <input 
@@ -933,7 +933,7 @@ export const RuleForge: React.FC = () => {
               data-lpignore="true"
               data-1pignore="true"
               spellCheck="false"
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-lg px-4 py-2.5 md:py-3 text-xs md:text-sm focus:border-blue-500/50 outline-none transition-all placeholder:text-slate-700"
+              className="w-full bg-black/40 border border-white/5 rounded-lg px-4 py-2.5 md:py-3 text-[10px] md:text-xs font-mono text-gold focus:border-white/20 outline-none transition-all placeholder:text-white/20"
             />
           </div>
 
@@ -949,18 +949,18 @@ export const RuleForge: React.FC = () => {
                   {reverseSearchResults.map((res, idx) => (
                     <div 
                       key={idx} 
-                      className="bg-slate-900/60 border border-slate-800/80 p-3 rounded-lg flex flex-col gap-1.5 hover:bg-slate-900 transition-colors group"
+                      className="bg-black/40 border border-white/5 p-3 rounded-lg flex flex-col gap-1.5 hover:bg-white/[0.04] transition-colors group"
                     >
-                      <div className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1 truncate">
+                      <div className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-1 truncate">
                         <span className="text-blue-400/70">{res.category}</span> 
-                        <ChevronRight size={10} className="text-slate-700" /> 
-                        <span className="text-slate-300">{res.itemKey}</span>
+                        <ChevronRight size={10} className="text-white/20" /> 
+                        <span className="text-white/60">{res.itemKey}</span>
                       </div>
-                      <div className="flex justify-between items-center bg-slate-950/60 p-2 rounded-md border border-slate-800/50 group-hover:border-blue-500/20 transition-colors">
+                      <div className="flex justify-between items-center bg-black/60 p-2 rounded-md border border-white/5 group-hover:border-blue-500/20 transition-colors">
                         <div className="flex flex-col min-w-0">
-                          <span className="text-[11px] text-blue-400 font-mono truncate">{res.property}</span>
-                          <span className="text-[9px] text-slate-500 uppercase truncate">
-                            {res.operator} <span className="text-slate-400">{String(res.value)}</span>
+                          <span className="text-[10px] md:text-[11px] text-blue-400 font-mono truncate">{res.property}</span>
+                          <span className="text-[9px] text-white/40 uppercase truncate">
+                            {res.operator} <span className="text-gold/70">{String(res.value)}</span>
                           </span>
                         </div>
                         <div className="sm:text-lg text-sm font-black text-blue-100/90 pl-3">
@@ -976,9 +976,9 @@ export const RuleForge: React.FC = () => {
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mt-4 p-4 text-center bg-slate-900/20 border border-slate-800/40 rounded-lg"
+                className="mt-4 p-4 text-center bg-white/[0.01] border border-white/5 rounded-lg"
               >
-                <p className="text-slate-500 text-sm">Nenhum item utiliza o gatilho <span className="text-blue-400/80 font-mono">"{searchTrigger}"</span> em suas regras.</p>
+                <p className="text-white/40 text-[10px] font-mono uppercase tracking-widest">Nenhum item utiliza o gatilho <span className="text-blue-400/80 font-mono">"{searchTrigger}"</span>.</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -986,19 +986,19 @@ export const RuleForge: React.FC = () => {
 
         {/* Utilities Bar - Seção de Configurações/Utilidades Realocada */}
         <div 
-          className="flex flex-col gap-3 md:gap-4 mb-4 md:mb-8 bg-slate-900/30 border border-slate-800 p-3 md:p-4 rounded-xl"
+          className="flex flex-col gap-3 md:gap-4 mb-4 md:mb-8 bg-black/40 border border-white/5 p-3 md:p-4 rounded-xl"
           data-lpignore="true"
           data-1pignore="true"
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-amber-500/80">
+            <div className="flex items-center gap-2 text-gold">
               <Settings2 size={16} />
-              <span className="text-[11px] md:text-sm font-bold uppercase tracking-wider">Configurações e Utilidades</span>
+              <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest font-bold">Configurações e Utilidades</span>
             </div>
             <button 
               id="btn-paste-import"
               onClick={handlePasteAndImport}
-              className="flex items-center gap-2 px-3 md:px-5 h-[40px] md:h-[50px] bg-amber-600 hover:bg-amber-500 text-white border border-amber-400/30 rounded-lg text-xs md:text-sm font-bold transition-all shadow-lg active:scale-95 group"
+              className="flex items-center gap-2 px-3 md:px-5 h-[40px] md:h-[50px] bg-gold/10 border border-gold/20 text-gold hover:bg-gold/20 hover:border-gold/40 rounded-lg text-[10px] md:text-xs font-mono uppercase tracking-widest font-bold transition-all shadow-lg active:scale-95 group"
             >
               <ClipboardCopy size={18} className="group-hover:rotate-12 transition-transform" />
               Importar
@@ -1013,9 +1013,9 @@ export const RuleForge: React.FC = () => {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <div className="pt-4 border-t border-slate-800 space-y-4">
+                <div className="pt-4 border-t border-white/5 space-y-4">
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                    <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2">
                       <FileJson size={14} className="text-blue-400" />
                       Entrada Manual (Cole abaixo)
                     </label>
@@ -1029,19 +1029,19 @@ export const RuleForge: React.FC = () => {
                       data-1pignore="true"
                       spellCheck="false"
                       placeholder='Ex: { "item_key": { "baseWeight": 1.0, "rules": [...] } }'
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono h-32 focus:border-amber-500/50 outline-none transition-all placeholder:text-slate-700"
+                      className="w-full bg-black/40 border border-white/5 rounded-lg p-3 text-[10px] font-mono text-gold h-32 focus:border-white/20 outline-none transition-all placeholder:text-white/20"
                     />
                   </div>
                   <div className="flex justify-end gap-3 pb-2">
                     <button 
                       onClick={() => { setShowImport(false); setImportJson(''); }}
-                      className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+                      className="px-4 py-2 text-[10px] font-mono uppercase tracking-widest text-white/40 hover:text-white/60 transition-colors"
                     >
                       Cancelar
                     </button>
                     <button 
                       onClick={() => processImport(importJson)}
-                      className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
+                      className="flex items-center gap-2 px-6 py-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 hover:border-blue-500/40 rounded-lg text-[10px] md:text-xs font-mono uppercase tracking-widest font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
                     >
                       <CheckCircle2 size={14} />
                       Importar Manualmente
@@ -1057,18 +1057,18 @@ export const RuleForge: React.FC = () => {
           {/* Configuração do Alvo / Criação */}
           <section className="lg:col-span-1 space-y-4 md:space-y-6">
             <div 
-              className={`bg-slate-900/50 border rounded-xl p-3.5 md:p-6 backdrop-blur-sm shadow-xl transition-colors ${mode === 'edit' ? 'border-slate-800' : 'border-indigo-500/20'}`}
+              className={`bg-white/[0.02] border rounded-xl p-3.5 md:p-6 backdrop-blur-sm shadow-xl transition-colors ${mode === 'edit' ? 'border-white/5' : 'border-gold/10'}`}
               data-lpignore="true"
               data-1pignore="true"
             >
-               <h2 className={`sm:text-lg text-xs font-bold uppercase mb-4 md:mb-6 flex items-center gap-2 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-300'} opacity-80`}>
+               <h2 className={`text-ice font-display uppercase tracking-widest text-xs md:text-sm mb-4 md:mb-6 flex items-center gap-2 ${mode === 'edit' ? 'text-blue-400' : 'text-gold'}`}>
                   {mode === 'edit' ? <Database size={18} /> : <Plus size={18} />}
                   {mode === 'edit' ? 'Seleção de Alvo' : 'Nova Entidade'}
                </h2>
                
                <div className="space-y-3 md:space-y-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Categoria</label>
+                    <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1.5 font-bold">Categoria</label>
                     <select 
                       value={selectedCategory} 
                       onChange={(e) => {
@@ -1078,7 +1078,7 @@ export const RuleForge: React.FC = () => {
                       autoComplete="off"
                       data-lpignore="true"
                       data-1pignore="true"
-                      className={`w-full bg-slate-800 border rounded-lg px-4 py-2 md:py-2.5 text-sm outline-none transition-colors ${mode === 'edit' ? 'border-slate-700 focus:border-blue-500' : 'border-indigo-500/30 focus:border-indigo-500'}`}
+                      className={`w-full bg-black/40 border rounded-lg px-4 py-2 md:py-2.5 text-[10px] md:text-xs font-mono text-gold outline-none transition-colors ${mode === 'edit' ? 'border-white/5 focus:border-white/20' : 'border-gold/10 focus:border-gold/30'}`}
                     >
                       {CATEGORIES.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.label}</option>
@@ -1090,14 +1090,14 @@ export const RuleForge: React.FC = () => {
                     <div className="space-y-3 md:space-y-4">
                       {subCategories.length > 0 && (
                         <div>
-                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 text-blue-400">Sub-categoria / Nível</label>
+                          <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1.5 font-bold text-blue-400">Sub-categoria / Nível</label>
                           <select 
                             value={selectedSubCategory}
                             onChange={(e) => setSelectedSubCategory(e.target.value)}
                             autoComplete="off"
                             data-lpignore="true"
                             data-1pignore="true"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 md:py-2.5 text-sm outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-black/40 border border-white/5 rounded-lg px-4 py-2 md:py-2.5 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors"
                           >
                             {subCategories.map(sub => (
                               <option key={sub} value={sub}>{sub}</option>
@@ -1107,10 +1107,10 @@ export const RuleForge: React.FC = () => {
                       )}
 
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Buscar Item</label>
+                        <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-2 font-bold">Buscar Item</label>
                         <div className="space-y-2">
                           <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-white/20" />
                             <input 
                               type="text"
                               placeholder="Filtro rápido..."
@@ -1120,10 +1120,10 @@ export const RuleForge: React.FC = () => {
                               data-lpignore="true"
                               data-1pignore="true"
                               spellCheck="false"
-                              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg pl-9 pr-3 py-1.5 md:py-2 text-xs md:text-sm outline-none focus:border-blue-500"
+                              className="w-full bg-black/40 border border-white/5 rounded-lg pl-9 pr-3 py-1.5 md:py-2 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 placeholder:text-white/20"
                             />
                           </div>
-                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Lista de Itens</label>
+                          <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-2 font-bold">Lista de Itens</label>
                           <select 
                             value={selectedItem}
                             onChange={(e) => setSelectedItem(e.target.value)}
@@ -1131,14 +1131,14 @@ export const RuleForge: React.FC = () => {
                             autoComplete="off"
                             data-lpignore="true"
                             data-1pignore="true"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs md:text-sm outline-none focus:border-blue-500 transition-colors custom-scrollbar"
+                            className="w-full bg-black/40 border border-white/5 rounded-lg px-2 py-1 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors custom-scrollbar"
                           >
-                            <option value="" className="py-2 px-2 text-slate-500">{filteredItems.length === 0 ? 'Nenhum item encontrado' : 'Selecione um item na lista...'}</option>
+                            <option value="" className="py-2 px-2 text-white/20">{filteredItems.length === 0 ? 'Nenhum item encontrado' : 'Selecione um item na lista...'}</option>
                             {filteredItems.map(item => {
                               const checkKey = item.toLowerCase().replace(/\s+/g, '');
                               const isMigrated = !!RULES_REGISTRY[selectedCategory]?.[checkKey];
                               return (
-                                <option key={item} value={item} className={`py-1.5 px-2 rounded cursor-pointer hover:bg-slate-700 ${isMigrated ? 'text-blue-400 font-bold' : 'text-slate-300'}`}>
+                                <option key={item} value={item} className={`py-1.5 px-2 rounded cursor-pointer hover:bg-white/5 ${isMigrated ? 'text-blue-400 font-bold' : 'text-white/40'}`}>
                                   {isMigrated ? '✓ ' : '• '}{item}
                                 </option>
                               );
@@ -1151,14 +1151,14 @@ export const RuleForge: React.FC = () => {
                     <div className="space-y-3 md:space-y-4">
                       {subCategories.length > 0 && (
                         <div>
-                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 text-indigo-400">Sub-categoria / Alocação</label>
+                          <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1.5 font-bold text-gold/60">Sub-categoria / Alocação</label>
                           <select 
                             value={selectedSubCategory}
                             onChange={(e) => setSelectedSubCategory(e.target.value)}
                             autoComplete="off"
                             data-lpignore="true"
                             data-1pignore="true"
-                            className="w-full bg-slate-800 border border-indigo-500/30 rounded-lg px-4 py-2 md:py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full bg-black/40 border border-white/5 rounded-lg px-4 py-2 md:py-2.5 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors"
                           >
                             {subCategories.map(sub => (
                               <option key={sub} value={sub}>{sub}</option>
@@ -1169,7 +1169,7 @@ export const RuleForge: React.FC = () => {
 
                       <div className="grid grid-cols-1 gap-4">
                         <div>
-                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nova Chave (ID Interno)</label>
+                          <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1.5 font-bold">Nova Chave (ID Interno)</label>
                           <input 
                             type="text"
                             value={newItemKey}
@@ -1179,11 +1179,11 @@ export const RuleForge: React.FC = () => {
                             data-1pignore="true"
                             spellCheck="false"
                             placeholder="ex: atendentedepadaria"
-                            className="w-full bg-slate-800 border border-indigo-500/20 rounded-lg px-4 py-2.5 text-sm font-mono text-indigo-300 outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full bg-black/40 border border-white/5 rounded-lg px-4 py-2.5 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors placeholder:text-white/20"
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nome de Exibição</label>
+                          <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1.5 font-bold">Nome de Exibição</label>
                           <input 
                             type="text"
                             value={newItemName}
@@ -1193,21 +1193,21 @@ export const RuleForge: React.FC = () => {
                             data-1pignore="true"
                             spellCheck="false"
                             placeholder="Ex: Atendente de Padaria"
-                            className="w-full bg-slate-800 border border-indigo-500/20 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full bg-black/40 border border-white/5 rounded-lg px-4 py-2.5 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors placeholder:text-white/20"
                           />
                         </div>
                       </div>
 
                       {(selectedCategory === 'condicoesVisiveis' || selectedCategory === 'condicoesNaoVisiveis') && (
                         <div>
-                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nível de Severidade (1-10)</label>
+                          <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1.5 font-bold">Nível de Severidade (1-10)</label>
                           <select 
                             value={newItemLevel}
                             onChange={(e) => setNewItemLevel(parseInt(e.target.value))}
                             autoComplete="off"
                             data-lpignore="true"
                             data-1pignore="true"
-                            className="w-full bg-slate-800 border border-indigo-500/20 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full bg-black/40 border border-white/5 rounded-lg px-4 py-2.5 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors"
                           >
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                               <option key={n} value={n}>Nível {n}</option>
@@ -1217,7 +1217,7 @@ export const RuleForge: React.FC = () => {
                       )}
 
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Impactos Six-Axis (opcional)</label>
+                        <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-1.5 font-bold">Impactos Six-Axis (opcional)</label>
                         <input 
                           type="text"
                           value={newItemImpact}
@@ -1227,7 +1227,7 @@ export const RuleForge: React.FC = () => {
                           data-1pignore="true"
                           spellCheck="false"
                           placeholder="Ex: physical: -20, mental: -10"
-                          className="w-full bg-slate-800 border border-indigo-500/20 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-600"
+                          className="w-full bg-black/40 border border-white/5 rounded-lg px-4 py-2.5 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors placeholder:text-white/20"
                         />
                       </div>
                     </div>
@@ -1240,9 +1240,9 @@ export const RuleForge: React.FC = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden pt-4 border-t border-slate-800"
+                        className="overflow-hidden pt-4 border-t border-white/5"
                       >
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Peso Base do Item</label>
+                        <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest flex items-center gap-2 mb-2 font-bold">Peso Base do Item</label>
                         <div className="relative">
                           <input 
                             type="number" 
@@ -1253,9 +1253,9 @@ export const RuleForge: React.FC = () => {
                             data-lpignore="true"
                             data-1pignore="true"
                             spellCheck="false"
-                            className={`w-full bg-slate-800 border rounded-lg px-4 py-2.5 outline-none transition-colors ${mode === 'edit' ? 'border-slate-700 focus:border-blue-500' : 'border-indigo-500/30 focus:border-indigo-500'}`}
+                            className="w-full bg-black/40 border border-white/5 rounded-lg px-4 py-2.5 text-[10px] md:text-xs font-mono text-gold outline-none transition-all placeholder:text-white/20"
                           />
-                          <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold uppercase ${mode === 'edit' ? 'text-blue-500' : 'text-indigo-400'}`}>Base</span>
+                          <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-mono font-bold uppercase tracking-widest ${mode === 'edit' ? 'text-blue-500' : 'text-gold'}`}>Base</span>
                         </div>
                       </motion.div>
                     )}
@@ -1266,28 +1266,28 @@ export const RuleForge: React.FC = () => {
                  <div className={`mt-8 p-4 rounded-lg border transition-colors ${
                    isHydrated 
                     ? 'bg-blue-500/10 border-blue-500/20' 
-                    : 'bg-slate-800 border-slate-700'
+                    : 'bg-white/5 border-white/10'
                  }`}>
-                    <p className={`text-[11px] uppercase tracking-wider font-bold mb-1 ${isHydrated ? 'text-blue-400' : 'text-slate-500'}`}>Status do Item</p>
-                    <p className={`text-sm ${isHydrated ? 'text-blue-300' : 'text-slate-400'}`}>
-                      Editando: <span className={`font-bold ${isHydrated ? 'text-blue-100' : 'text-slate-200'}`}>{selectedItem}</span>
+                    <p className={`text-[9px] font-mono uppercase tracking-widest font-bold mb-1 ${isHydrated ? 'text-blue-400' : 'text-white/40'}`}>Status do Item</p>
+                    <p className={`text-xs md:text-sm font-mono ${isHydrated ? 'text-blue-300' : 'text-white/60'}`}>
+                      Editando: <span className={`font-bold ${isHydrated ? 'text-blue-100' : 'text-white/80'}`}>{selectedItem}</span>
                     </p>
                  </div>
                )}
 
                {mode === 'create' && newItemName && (
-                 <div className="mt-8 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
-                    <p className="text-[11px] uppercase tracking-wider font-bold mb-1 text-indigo-400">Nova Entidade</p>
-                    <p className="text-sm text-indigo-300">
-                      Na fábrica: <span className="font-bold text-indigo-100">{newItemName}</span>
+                 <div className="mt-8 p-4 bg-gold/10 border border-gold/20 rounded-lg">
+                    <p className="text-[9px] font-mono uppercase tracking-widest font-bold mb-1 text-gold">Nova Entidade</p>
+                    <p className="text-xs md:text-sm font-mono text-gold/80">
+                      Na fábrica: <span className="font-bold text-gold">{newItemName}</span>
                     </p>
                  </div>
                )}
             </div>
 
-            <div className="bg-slate-900/30 border border-amber-500/20 p-3 md:p-4 rounded-xl flex gap-3 items-start">
-               <AlertCircle className="text-amber-500 shrink-0" size={16} />
-               <p className="text-[9px] md:text-[10px] text-amber-500/70 leading-relaxed uppercase font-medium">
+            <div className="bg-black/40 border border-gold/10 p-3 md:p-4 rounded-xl flex gap-3 items-start">
+               <AlertCircle className="text-gold/80 shrink-0" size={16} />
+               <p className="text-[9px] md:text-[10px] text-gold/50 leading-relaxed uppercase font-mono tracking-widest">
                   Multiplicadores cumulativos. As regras são processadas em sequência sobre o peso base.
                </p>
             </div>
@@ -1306,12 +1306,12 @@ export const RuleForge: React.FC = () => {
                 >
                   <div className="flex items-center justify-between mb-1 pb-2 border-b border-white/5">
                     <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
-                      <h2 className="sm:text-lg text-xs font-bold uppercase text-white flex items-center gap-2 opacity-80">
-                        <Plus className={mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'} size={16} />
+                      <h2 className="text-ice font-display uppercase tracking-widest text-xs md:text-sm flex items-center gap-2">
+                        <Plus className={mode === 'edit' ? 'text-blue-400' : 'text-gold'} size={16} />
                         Modificadores Contextuais
                       </h2>
                       {mode === 'edit' && (
-                        <div className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-colors ${isHydrated ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-amber-500/10 text-amber-500/70 border border-amber-500/20'}`}>
+                        <div className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-widest transition-colors ${isHydrated ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-gold/10 text-gold/70 border border-gold/20'}`}>
                           {isHydrated ? 'JSON Estruturado' : 'Código Nativo'}
                         </div>
                       )}
@@ -1320,7 +1320,7 @@ export const RuleForge: React.FC = () => {
                       <button 
                         id="btn-add-rule"
                         onClick={addRule}
-                        className={`h-[32px] md:h-[36px] text-[9px] md:text-[10px] uppercase font-bold px-3 md:px-4 rounded-lg flex items-center gap-2 transition-all ${mode === 'edit' ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 hover:bg-blue-600/20' : 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/20'}`}
+                        className={`h-[32px] md:h-[36px] px-3 md:px-4 rounded-lg flex items-center gap-2 text-[9px] md:text-[10px] font-mono uppercase tracking-widest font-bold transition-all ${mode === 'edit' ? 'bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20' : 'bg-gold/10 border border-gold/20 text-gold hover:bg-gold/20'}`}
                       >
                         <Plus size={12} />
                         Nova Regra
@@ -1331,17 +1331,17 @@ export const RuleForge: React.FC = () => {
                   <div className="space-y-2 md:space-y-3 min-h-[400px]">
                     <AnimatePresence mode="popLayout">
                       {rules.length === 0 ? (
-                        <motion.div 
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="h-48 md:h-64 border-2 border-dashed border-slate-800/50 rounded-2xl flex flex-col items-center justify-center text-slate-600 gap-2 md:gap-3 bg-slate-900/20"
-                        >
-                          <div className={`p-3 md:p-4 rounded-full ${mode === 'edit' ? 'bg-blue-500/5' : 'bg-indigo-500/5'}`}>
-                            <Settings2 size={32} className={`opacity-20 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`} strokeWidth={1} />
-                          </div>
-                          <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Nenhum modificador</p>
-                          <button onClick={addRule} className={`text-xs md:text-sm font-bold hover:underline ${mode === 'edit' ? 'text-blue-500' : 'text-indigo-500'}`}>Adicionar primeira regra</button>
-                        </motion.div>
+                          <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="h-48 md:h-64 border-2 border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center text-white/20 gap-2 md:gap-3 bg-white/[0.01]"
+                          >
+                            <div className={`p-3 md:p-4 rounded-full ${mode === 'edit' ? 'bg-blue-500/5' : 'bg-gold/5'}`}>
+                              <Settings2 size={32} className={`opacity-20 ${mode === 'edit' ? 'text-blue-400' : 'text-gold'}`} strokeWidth={1} />
+                            </div>
+                            <p className="text-[10px] font-mono uppercase tracking-widest font-bold opacity-40">Nenhum modificador</p>
+                            <button onClick={addRule} className={`text-[10px] font-mono uppercase tracking-widest font-bold hover:underline ${mode === 'edit' ? 'text-blue-400' : 'text-gold'}`}>Adicionar primeira regra</button>
+                          </motion.div>
                       ) : (
                         rules.map((rule, index) => (
                           <motion.div
@@ -1349,14 +1349,14 @@ export const RuleForge: React.FC = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-slate-900 border border-slate-800 rounded-xl p-3 md:p-4 flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-3 items-stretch md:items-end group relative"
+                            className="bg-white/[0.02] border border-white/5 rounded-xl p-3 md:p-4 flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-3 items-stretch md:items-end group relative"
                           >
                             <div className="md:col-span-3">
-                              <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Contexto (ctx)</label>
+                              <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest block mb-1.5 font-bold">Contexto (ctx)</label>
                               <select 
                                 value={rule.property}
                                 onChange={(e) => updateRule(rule.id, { property: e.target.value })}
-                                className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                                className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors"
                               >
                                 {allProperties.map(p => (
                                   <option key={p.value} value={p.value}>{p.label}</option>
@@ -1365,11 +1365,11 @@ export const RuleForge: React.FC = () => {
                             </div>
 
                             <div className="md:col-span-2">
-                              <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Operador</label>
+                              <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest block mb-1.5 font-bold">Operador</label>
                               <select 
                                 value={rule.operator}
                                 onChange={(e) => updateRule(rule.id, { operator: e.target.value as any })}
-                                className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                                className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors"
                               >
                                 {OPERATORS.map(op => (
                                   <option key={op.value} value={op.value}>{op.label}</option>
@@ -1378,12 +1378,12 @@ export const RuleForge: React.FC = () => {
                             </div>
 
                             <div className="md:col-span-3">
-                              <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Valor de Comparação</label>
+                              <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest block mb-1.5 font-bold">Comparação</label>
                               {rule.property === 'tierMetropole' ? (
                                 <select
                                   value={String(rule.value)}
                                   onChange={(e) => updateRule(rule.id, { value: e.target.value })}
-                                  className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                                  className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors"
                                 >
                                   <option value="">Selecione...</option>
                                   <option value="tier_alfa">Capital - Tier Alfa (SP/RJ)</option>
@@ -1399,29 +1399,29 @@ export const RuleForge: React.FC = () => {
                                   value={String(rule.value)}
                                   onChange={(e) => updateRule(rule.id, { value: e.target.value })}
                                   placeholder="ex: true ou 'Feminino'"
-                                  className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                                  className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors placeholder:text-white/20"
                                 />
                               )}
                             </div>
 
                             <div className="md:col-span-3">
-                              <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Multiplicador Final</label>
+                              <label className="text-[9px] font-mono text-white/40 uppercase tracking-widest block mb-1.5 font-bold">Multiplicador</label>
                               <div className="relative">
                                 <input 
                                   type="number"
                                   step="0.1"
                                   value={rule.multiplier}
                                   onChange={(e) => updateRule(rule.id, { multiplier: parseFloat(e.target.value) || 0 })}
-                                  className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                                  className="w-full bg-black/40 border border-white/5 rounded-lg px-3 py-2 text-[10px] md:text-xs font-mono text-gold outline-none focus:border-white/20 transition-colors font-bold"
                                 />
-                                <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`}>X</span>
+                                <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono font-black ${mode === 'edit' ? 'text-blue-400' : 'text-gold'}`}>X</span>
                               </div>
                             </div>
 
                             <div className="md:col-span-1 flex justify-end md:pb-1">
                               <button 
                                 onClick={() => removeRule(rule.id)}
-                                className="p-2 text-slate-500 hover:text-red-500 rounded-lg transition-colors group/del"
+                                className="p-2 text-white/20 hover:text-red-500 rounded-lg transition-colors group/del"
                                 title="Remover"
                               >
                                 <X size={18} className="group-hover/del:scale-110 transition-transform" />
@@ -1444,10 +1444,10 @@ export const RuleForge: React.FC = () => {
                   <div className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl flex items-center justify-center mb-4 md:mb-6 ${mode === 'edit' ? 'bg-blue-500/5 border border-blue-500/10' : 'bg-indigo-500/5 border border-indigo-500/10'}`}>
                     <Database size={32} className={`opacity-20 md:w-10 md:h-10 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`} />
                   </div>
-                  <h3 className="text-lg md:text-xl font-bold text-white/40 mb-1.5 md:mb-2">
+                  <h3 className="text-lg md:text-xl font-display font-black uppercase tracking-widest text-white/40 mb-1.5 md:mb-2">
                     {mode === 'edit' ? 'Selecione um Alvo' : 'Configure a Entidade'}
                   </h3>
-                  <p className="text-slate-500 text-[11px] md:text-sm max-w-[240px] md:max-w-xs mx-auto">
+                  <p className="text-white/20 text-[9px] md:text-[10px] font-mono uppercase tracking-widest max-w-[240px] md:max-w-xs mx-auto leading-relaxed">
                     {mode === 'edit' 
                       ? 'Escolha um item na lista ao lado para forjar seus pesos contextuais.' 
                       : 'Preencha os campos obrigatórios para habilitar a forja de pesos.'}
@@ -1460,31 +1460,31 @@ export const RuleForge: React.FC = () => {
       </div>
 
       {/* Rodapé de Ações Sticky / Principal */}
-      <div className="fixed bottom-0 left-0 w-full bg-zinc-950 border-t border-zinc-800 p-3 z-50 flex flex-row gap-3 justify-center shadow-lg">
+      <div className="fixed bottom-0 left-0 w-full bg-black/80 backdrop-blur-md border-t border-white/5 p-3 z-50 flex flex-row gap-3 justify-center shadow-2xl">
         <button 
           id="btn-export-raw-json-footer"
           onClick={handleExportRawJSON}
           disabled={isFormInvalid}
-          className={`flex-1 h-11 flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-colors border ${
+          className={`flex-1 h-11 flex items-center justify-center gap-2 text-[10px] md:text-xs font-mono uppercase tracking-widest font-bold rounded-lg transition-all border ${
             isFormInvalid 
-              ? 'bg-zinc-800 text-zinc-600 border-zinc-700 cursor-not-allowed opacity-50' 
-              : 'bg-blue-600 hover:bg-blue-500 text-white border-blue-400/30 shadow-lg shadow-blue-900/20'
+              ? 'bg-white/5 text-white/20 border-white/5 cursor-not-allowed opacity-50' 
+              : 'bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 shadow-lg shadow-blue-500/5'
           }`}
         >
           <Code size={18} />
           <span className="hidden md:inline">Exportar JSON Bruto</span>
-          <span className="md:hidden text-xs">JSON Bruto</span>
+          <span className="md:hidden">JSON Bruto</span>
         </button>
         <button 
           id="btn-export-prompt-footer"
           onClick={mode === 'edit' ? handleExportPrompt : handleExportCreatePrompt}
           disabled={isFormInvalid}
-          className={`flex-1 h-11 flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all ${
+          className={`flex-1 h-11 flex items-center justify-center gap-2 text-[10px] md:text-xs font-mono uppercase tracking-widest font-bold rounded-lg transition-all border ${
             isFormInvalid 
-              ? 'bg-zinc-800 text-zinc-600 border-zinc-700 cursor-not-allowed opacity-50' 
+              ? 'bg-white/5 text-white/20 border-white/5 cursor-not-allowed opacity-50' 
               : mode === 'edit' 
-                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/20' 
-                : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-900/20'
+                ? 'bg-gold/10 border border-gold/20 text-gold hover:bg-gold/20 shadow-lg shadow-gold/5' 
+                : 'bg-gold/20 border border-gold/40 text-gold hover:bg-gold/30 shadow-lg shadow-gold/10'
           }`}
         >
           {copied ? <CheckCircle2 size={18} /> : (mode === 'edit' ? <ClipboardCopy size={18} /> : <Plus size={18} />)}

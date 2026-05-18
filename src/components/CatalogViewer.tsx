@@ -66,6 +66,7 @@ export const CatalogViewer: React.FC = () => {
   const [copied, setCopied] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showOnlyLegacy, setShowOnlyLegacy] = useState(false);
 
   // Categories Mapping
   const categories: { key: CategoryKey; label: string; icon: React.ElementType }[] = [
@@ -163,6 +164,10 @@ export const CatalogViewer: React.FC = () => {
 
     return { key: actualKey, category: registryCategory, data: itemData };
   }, [selectedCategory]);
+
+  const isItemMigrated = (itemText: string): boolean => {
+    return !!getRegistryInfo(itemText);
+  };
 
   // Data Extraction Logic
   const data = useMemo(() => {
@@ -265,6 +270,10 @@ export const CatalogViewer: React.FC = () => {
         text: typeof item === 'string' ? item : (item.text || item.name || String(item))
       }))
       .filter(item => item.text.toLowerCase().includes(searchQuery.toLowerCase()))
+      .filter(item => {
+        if (!showOnlyLegacy) return true;
+        return !isItemMigrated(item.text);
+      })
       .sort((a, b) => {
         const aMigrated = !!getRegistryInfo(a.text);
         const bMigrated = !!getRegistryInfo(b.text);
@@ -274,7 +283,7 @@ export const CatalogViewer: React.FC = () => {
         
         return a.text.localeCompare(b.text);
       });
-  }, [selectedCategory, searchQuery, getRegistryInfo]);
+  }, [selectedCategory, searchQuery, getRegistryInfo, showOnlyLegacy]);
 
   const handleCopyAll = () => {
     const textToCopy = data.map(item => item.text).join('\n');
@@ -303,10 +312,6 @@ export const CatalogViewer: React.FC = () => {
       setCopiedItem(itemText);
       setTimeout(() => setCopiedItem(null), 2000);
     });
-  };
-
-  const isItemMigrated = (itemText: string): boolean => {
-    return !!getRegistryInfo(itemText);
   };
 
   const renderRuleText = (rule: any, index: number) => {
@@ -352,15 +357,44 @@ export const CatalogViewer: React.FC = () => {
       {/* Header Hook */}
       <div className="shrink-0 p-4 md:p-6 border-b border-dark-border bg-dark-surface/30">
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
-          <div className="space-y-1">
-            <h2 className="text-lg md:text-xl font-display font-black uppercase tracking-widest text-ice flex items-center gap-3">
-              <Icon className="w-5 h-5 md:w-6 md:h-6 text-gold" />
-              Catálogo
-            </h2>
-            <p className="text-[9px] font-mono text-white/40 uppercase tracking-widest hidden md:block">Dicionário de dados procedurais e probabilidades estruturadas</p>
+          <div className="flex justify-between items-center w-full md:w-auto">
+            <div className="space-y-1">
+              <h2 className="text-lg md:text-xl font-display font-black uppercase tracking-widest text-ice flex items-center gap-3">
+                <Icon className="w-5 h-5 md:w-6 md:h-6 text-gold" />
+                Catálogo
+              </h2>
+              <p className="text-[9px] font-mono text-white/40 uppercase tracking-widest hidden md:block">Dicionário de dados procedurais e probabilidades estruturadas</p>
+            </div>
+
+            {/* Mobile Toggle */}
+            <button 
+              onClick={() => setShowOnlyLegacy(!showOnlyLegacy)}
+              className={`md:hidden flex items-center gap-2 px-3 py-1.5 rounded border transition-all duration-300 ${
+                showOnlyLegacy 
+                  ? 'border-gold/50 bg-gold/5 text-gold shadow-[0_0_10px_rgba(255,191,0,0.1)]' 
+                  : 'border-white/10 text-white/40'
+              }`}
+            >
+              {showOnlyLegacy ? <Zap className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+              <span className="text-[9px] font-bold uppercase tracking-wider">Legado</span>
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full md:w-auto items-center">
+            {/* Desktop Toggle */}
+            <button 
+              onClick={() => setShowOnlyLegacy(!showOnlyLegacy)}
+              className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md border transition-all duration-300 h-8 md:h-9 ${
+                showOnlyLegacy 
+                  ? 'border-gold/50 bg-gold/5 text-gold shadow-[0_0_15px_rgba(255,191,0,0.15)]' 
+                  : 'border-white/10 text-white/40 hover:border-white/20'
+              }`}
+              title="Filtrar apenas itens não convertidos"
+            >
+              {showOnlyLegacy ? <Zap className="w-3.5 h-3.5 animate-pulse" /> : <Zap className="w-3.5 h-3.5 opacity-40" />}
+              <span className="text-[9px] font-bold uppercase tracking-widest">Apenas Legado</span>
+            </button>
+
             <div className="relative w-full md:w-48 lg:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20" />
               <input 
