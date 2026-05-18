@@ -504,7 +504,8 @@ export const OP_TRIBO: Record<string, CharacterCondition[]> = {
       return 0.3;
     } },
     { name: "Punk / Anarcopunk", weight: (ctx) => (ctx.alternativo ? 2.5 : 1.0) },
-    { name: "Otaku / Geek", weight: (ctx) => (ctx.tecnologia || ctx.idade < 25 ? 3.0 : 1.0) }
+    { name: "Otaku / Geek", weight: (ctx) => (ctx.tecnologia || ctx.idade < 25 ? 3.0 : 1.0) },
+    { name: "Nerd / Geek", weight: (ctx) => 1.0 }
   ],
   "Estética": [
     { name: "Andrógino / Queer Artístico", weight: (ctx) => (ctx.gayCis || ctx.alternativo ? 3.0 : 1.0) },

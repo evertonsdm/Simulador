@@ -110,7 +110,9 @@ export const CatalogViewer: React.FC = () => {
       'papeisRelacionais': 'papeisRelacionais',
       'filhos': 'filhos',
       'logistica': 'logistica',
-      'etnias': 'etnia'
+      'etnias': 'etnia',
+      'orientacoes': 'orientacao',
+      'generos': 'sexo'
     };
 
     const registryCategory = categoryMapping[selectedCategory];

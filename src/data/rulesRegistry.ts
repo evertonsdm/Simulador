@@ -1531,6 +1531,174 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "multiplier": 1.5
         }
       ]
+    },
+    "importadordevinhos": {
+      "name": "Importador de Vinhos",
+      "baseWeight": 0.5,
+      "rules": [
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Elite",
+          "multiplier": 5.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Alta",
+          "multiplier": 2.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Baixa",
+          "multiplier": 0.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Base Precarizada",
+          "multiplier": 0.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe E",
+          "multiplier": 0.0
+        },
+        {
+          "property": "regiao",
+          "operator": "==",
+          "value": "Sul",
+          "multiplier": 4.0
+        },
+        {
+          "property": "regiao",
+          "operator": "==",
+          "value": "Sudeste",
+          "multiplier": 2.0
+        },
+        {
+          "property": "regiao",
+          "operator": "==",
+          "value": "Norte",
+          "multiplier": 0.0
+        },
+        {
+          "property": "regiao",
+          "operator": "==",
+          "value": "Centro-Oeste",
+          "multiplier": 0.5
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": 25,
+          "multiplier": 0.1
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 35,
+          "multiplier": 2.0
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 45,
+          "multiplier": 1.5
+        },
+        {
+          "property": "capital",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.5
+        },
+        {
+          "property": "estresse",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.5
+        }
+      ]
+    },
+    "donoadepadaria": {
+      "name": "Dono(a) de Padaria",
+      "baseWeight": 0.8,
+      "rules": [
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe E",
+          "multiplier": 0.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Base Precarizada",
+          "multiplier": 0.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Baixa",
+          "multiplier": 1.5
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Alta",
+          "multiplier": 3.0
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Elite",
+          "multiplier": 0.5
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": 25,
+          "multiplier": 0.1
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 35,
+          "multiplier": 2.5
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 50,
+          "multiplier": 1.5
+        },
+        {
+          "property": "regiao",
+          "operator": "==",
+          "value": "Sudeste",
+          "multiplier": 2.5
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "SP",
+          "multiplier": 2.0
+        },
+        {
+          "property": "estresse",
+          "operator": "==",
+          "value": true,
+          "multiplier": 2.5
+        },
+        {
+          "property": "estresseCronico",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.5
+        }
+      ]
     }
   },
   shinies: {
@@ -1656,6 +1824,90 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
       rules: [
         { "property": "cancerProstataMetastatico", "operator": "!=", "value": true, "multiplier": 0.0 }
       ]
+    },
+    "engravidounaadolescênciaefoiexpulsodecasapelafamíliaconservadora": {
+      "name": "Engravidou na adolescência e foi expulso de casa pela família conservadora",
+      "baseWeight": 1,
+      "rules": [
+        {
+          "property": "sexo",
+          "operator": "==",
+          "value": "Masculino",
+          "multiplier": 0
+        },
+        {
+          "property": "idade",
+          "operator": "<",
+          "value": "17",
+          "multiplier": 0.3
+        },
+        {
+          "property": "triboUrbana",
+          "operator": "includes",
+          "value": "Cidadão de Bem",
+          "multiplier": 2
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Base Precarizada",
+          "multiplier": 1.5
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe E",
+          "multiplier": 1.5
+        }
+      ]
+    },
+    "foivítimadeumstalkerobsessivoquedestruiusuapazduranteanos": {
+      "name": "Foi vítima de um stalker obsessivo que destruiu sua paz durante anos",
+      "baseWeight": 1,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 15,
+          "multiplier": 0
+        },
+        {
+          "property": "sexo",
+          "operator": "==",
+          "value": "Feminino",
+          "multiplier": 3
+        },
+        {
+          "property": "sexo",
+          "operator": "==",
+          "value": "Masculino",
+          "multiplier": 0.8
+        },
+        {
+          "property": "orientacao",
+          "operator": "==",
+          "value": "Heterossexual",
+          "multiplier": 0.5
+        },
+        {
+          "property": "orientacao",
+          "operator": "==",
+          "value": "Homossexual",
+          "multiplier": 1.5
+        },
+        {
+          "property": "orientacao",
+          "operator": "==",
+          "value": "Bissexual",
+          "multiplier": 1.5
+        },
+        {
+          "property": "orientacao",
+          "operator": "==",
+          "value": "Pansexual",
+          "multiplier": 1.5
+        }
+      ]
     }
   },
   contexto: {
@@ -1704,8 +1956,166 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
   },
   tribosUrbanas: {
     "cidadãodebem/padrão": {
-      baseWeight: 2,
-      rules: []
+      "name": "Cidadão de Bem / Padrão",
+      "baseWeight": 2,
+      "rules": [
+        {
+          "property": "orientacao",
+          "operator": "!=",
+          "value": "Heterossexual",
+          "multiplier": 0.35
+        },
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 15,
+          "multiplier": 0
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 20,
+          "multiplier": 1.05
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 30,
+          "multiplier": 1.1
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 40,
+          "multiplier": 1.1
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 50,
+          "multiplier": 1.1
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 60,
+          "multiplier": 1.05
+        }
+      ]
+    },
+    "tiadozap/conservadorurbano": {
+      "name": "Tia do Zap / Conservador Urbano",
+      "baseWeight": 1.5,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 40,
+          "multiplier": 0
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 50,
+          "multiplier": 1.5
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 60,
+          "multiplier": 1.5
+        },
+        {
+          "property": "orientacao",
+          "operator": "!=",
+          "value": "Heterossexual",
+          "multiplier": 0.6
+        },
+        {
+          "property": "sexo",
+          "operator": "==",
+          "value": "Feminino",
+          "multiplier": 1.3
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Baixa",
+          "multiplier": 1.5
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Alta",
+          "multiplier": 1.3
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "interior_",
+          "multiplier": 1.2
+        }
+      ]
+    },
+    "nerd/geek": {
+      "name": "Nerd / Geek",
+      "baseWeight": 1.5,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 30,
+          "multiplier": 1.5
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 50,
+          "multiplier": 0.5
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe E",
+          "multiplier": 0.4
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Alta",
+          "multiplier": 1.5
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe Média Baixa",
+          "multiplier": 1.2
+        },
+        {
+          "property": "capital",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.3
+        },
+        {
+          "property": "tecnologia",
+          "operator": "==",
+          "value": true,
+          "multiplier": 2.5
+        },
+        {
+          "property": "nerd",
+          "operator": "==",
+          "value": true,
+          "multiplier": 4.0
+        },
+        {
+          "property": "sexo",
+          "operator": "==",
+          "value": "Masculino",
+          "multiplier": 1.2
+        }
+      ]
     }
   },
   papeisRelacionais: {
@@ -2090,10 +2500,276 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
     }
   },
   libido: {},
-  sexo: {},
+  sexo: {
+    "masculino": {
+      "name": "Masculino",
+      "baseWeight": 49.0,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 50,
+          "multiplier": 0.95
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 65,
+          "multiplier": 0.85
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 80,
+          "multiplier": 0.70
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "MT",
+          "multiplier": 1.05
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "RO",
+          "multiplier": 1.05
+        },
+        {
+          "property": "braçal",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.20
+        },
+        {
+          "property": "trabalhoRisco",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.30
+        }
+      ]
+    },
+    "feminino": {
+      "name": "Feminino",
+      "baseWeight": 51.0,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 50,
+          "multiplier": 1.05
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 65,
+          "multiplier": 1.10
+        },
+        {
+          "property": "idade",
+          "operator": ">=",
+          "value": 80,
+          "multiplier": 1.20
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "RJ",
+          "multiplier": 1.05
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "PE",
+          "multiplier": 1.05
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Base Precarizada",
+          "multiplier": 1.10
+        },
+        {
+          "property": "etnia",
+          "operator": "==",
+          "value": "Preta",
+          "multiplier": 1.05
+        }
+      ]
+    }
+  },
   identidadeGenero: {},
   termoIdentidade: {},
-  orientacao: {},
+  orientacao: {
+    "heterossexual": {
+      "name": "Heterossexual",
+      "baseWeight": 75,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 50,
+          "multiplier": 1.15
+        },
+        {
+          "property": "zonaRuralRemota",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.2
+        },
+        {
+          "property": "capital",
+          "operator": "==",
+          "value": true,
+          "multiplier": 0.95
+        }
+      ]
+    },
+    "bissexual": {
+      "name": "Bissexual",
+      "baseWeight": 10.0,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 30,
+          "multiplier": 1.5
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 50,
+          "multiplier": 0.6
+        },
+        {
+          "property": "sexo",
+          "operator": "==",
+          "value": "Feminino",
+          "multiplier": 1.3
+        },
+        {
+          "property": "capital",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.2
+        }
+      ]
+    },
+    "homossexual": {
+      "name": "Homossexual",
+      "baseWeight": 5.0,
+      "rules": [
+        {
+          "property": "capital",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.5
+        },
+        {
+          "property": "tierMetropole",
+          "operator": "includes",
+          "value": "interior_gama",
+          "multiplier": 0.6
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "SP",
+          "multiplier": 1.2
+        },
+        {
+          "property": "estado",
+          "operator": "==",
+          "value": "RJ",
+          "multiplier": 1.2
+        }
+      ]
+    },
+    "assexual": {
+      "name": "Assexual",
+      "baseWeight": 4.0,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 25,
+          "multiplier": 1.4
+        },
+        {
+          "property": "isolamentoTotal",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.3
+        },
+        {
+          "property": "fobiaSocial",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.2
+        }
+      ]
+    },
+    "demissexual": {
+      "name": "Demissexual",
+      "baseWeight": 3.0,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 30,
+          "multiplier": 1.8
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 45,
+          "multiplier": 0.3
+        },
+        {
+          "property": "classe",
+          "operator": "includes",
+          "value": "Classe E",
+          "multiplier": 0.5
+        },
+        {
+          "property": "ansiedade",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.2
+        }
+      ]
+    },
+    "pansexual": {
+      "name": "Pansexual",
+      "baseWeight": 3.0,
+      "rules": [
+        {
+          "property": "idade",
+          "operator": "<=",
+          "value": 25,
+          "multiplier": 2.5
+        },
+        {
+          "property": "idade",
+          "operator": ">",
+          "value": 40,
+          "multiplier": 0.2
+        },
+        {
+          "property": "tecnologia",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.3
+        },
+        {
+          "property": "capital",
+          "operator": "==",
+          "value": true,
+          "multiplier": 1.2
+        }
+      ]
+    }
+  },
   logistica: {
     "mobilidadeativaapebicicleta": {
       "name": "Mobilidade Ativa (A pé / Bicicleta)",

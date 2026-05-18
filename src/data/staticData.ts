@@ -16,7 +16,7 @@ export const PROFISSOES_CATEGORIZADAS = {
   "Engrenagem Corporativa / Classe Média": [
     "Advogado Associado", "Analista Financeiro Pleno", "Analista de Suporte TI", "Arquiteto", 
     "Auditor Contábil", "Cientista de Dados Pleno", "Desenvolvedor Sênior de Polo Tecnológico", 
-    "Engenheiro Civil", "Gerente de Loja", "Gerente de Projetos", "Gerente de Supply Chain / Logística",
+    "Engenheiro Civil", "Gerente de Loja", "Dono(a) de Padaria", "Gerente de Projetos", "Gerente de Supply Chain / Logística",
     "Médico Clínico Geral", "Pesquisador Acadêmico", "Psicólogo Clínico", "Engenheiro Florestal"
   ],
   "Base / Vulneráveis": [

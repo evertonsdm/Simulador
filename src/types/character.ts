@@ -259,6 +259,8 @@ export interface GenerationOptions {
   fixedShiny?: string;
   fixedLocality?: 'Capital' | 'Interior';
   fixedEthnicity?: string;
+  fixedOrientation?: string;
+  fixedGender?: string;
   fixedManualLabor?: boolean;
   fixedRemoteArea?: boolean;
   fixedAnxiety?: boolean;

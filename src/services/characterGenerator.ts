@@ -689,72 +689,6 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   if (initialIdade < 15) initialIdade = 15 + Math.floor(Math.random() * 3);
   const idade = initialIdade;
   probs.idade = { prob: normalPdf(idade, 26, 12) };
-  
-  let identidadeGenero = rollWeighted(["Homem", "Mulher", "Não-Binário"], [48, 49, 3]).value;
-  let termoIdentidade = "";
-  let isCis = true;
-
-  if (options.fixedIdentityTerm) {
-    if (options.fixedIdentityTerm === "Não-Binário") {
-      identidadeGenero = "Não-Binário";
-      termoIdentidade = "Não-Binário";
-      isCis = false;
-    } else if (options.fixedIdentityTerm === "Cisgênero") {
-      isCis = true;
-      if (identidadeGenero === "Não-Binário") identidadeGenero = randomChoice(["Homem", "Mulher"]);
-      termoIdentidade = "Cisgênero";
-    } else { // Transgênero / Transexual
-      isCis = false;
-      if (identidadeGenero === "Não-Binário") identidadeGenero = randomChoice(["Homem", "Mulher"]);
-      termoIdentidade = options.fixedIdentityTerm;
-    }
-  }
-
-  probs.genero = { prob: 100, poolSize: 1 };
-
-  let bioSexVal = options.fixedBioSex;
-  let bioSexProb = 100;
-  let bioSexPoolSize = 1;
-
-  if (!bioSexVal) {
-    if (options.fixedIdentityTerm) {
-      if (identidadeGenero === "Homem") bioSexVal = isCis ? "Masculino" : "Feminino";
-      else if (identidadeGenero === "Mulher") bioSexVal = isCis ? "Feminino" : "Masculino";
-      else bioSexVal = randomChoice(["Masculino", "Feminino"]);
-    } else {
-      const isTransRoll = options.fixedTrans ?? (Math.random() < 0.02);
-      if (identidadeGenero === "Homem") {
-        bioSexVal = isTransRoll ? "Feminino" : "Masculino";
-        bioSexProb = isTransRoll ? 2 : 98;
-      } else if (identidadeGenero === "Mulher") {
-        bioSexVal = isTransRoll ? "Masculino" : "Feminino";
-        bioSexProb = isTransRoll ? 2 : 98;
-      } else {
-        bioSexVal = randomChoice(["Masculino", "Feminino"]);
-        bioSexProb = 50;
-      }
-    }
-  }
-
-  const bioSex = bioSexVal;
-  probs.bioSex = { prob: 100, poolSize: 1 };
-  
-  let nome = "";
-  if (identidadeGenero === "Não-Binário") {
-    nome = `${randomChoice(NOMES_NEUTROS)} ${faker.person.lastName()}`;
-  } else {
-    const nameGender = identidadeGenero === "Homem" ? 'male' : 'female';
-    nome = faker.person.fullName({ sex: nameGender });
-  }
-
-  if (!options.fixedIdentityTerm) {
-    isCis = (identidadeGenero === "Homem" && bioSex === "Masculino") || (identidadeGenero === "Mulher" && bioSex === "Feminino");
-    termoIdentidade = isCis ? "Cisgênero" : "Transgênero/Não-Binário";
-  }
-  
-  const orientRoll = rollWeighted(["Heterossexual", "Bissexual", "Homossexual", "Assexual", "Pansexual", "Demissexual"], [75, 10, 5, 4, 3, 3]);
-  const orientacao = orientRoll.value;
-  probs.orientacao = { prob: orientRoll.prob, poolSize: orientRoll.poolSize };
 
   const regRoll = rollUniform(['Sudeste', 'Nordeste', 'Sul', 'Norte', 'Centro-Oeste']);
   const regiao = options.fixedRegion ?? regRoll.value;
@@ -781,37 +715,105 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   const isCapital = perfilUrbanoStr.includes("Capital");
   const tier = getTierMetropole(estado, isCapital);
   const isRural = options.fixedRemoteArea ?? (!isCapital && Math.random() < 0.3);
-  const preCtx = { 
+  
+  const preCtxForBase = { 
     tierMetropole: tier, 
     regiao, 
     estado, 
     isCapital, 
-    zonaRuralRemota: isRural 
+    zonaRuralRemota: isRural,
+    idade
   };
 
   const etniaRegistry = Object.values(RULES_REGISTRY['etnia'] || {});
   const etniaOptions = etniaRegistry.length > 0 ? etniaRegistry.map(r => r.name || "Desconhecido") : ["Branca", "Parda", "Preta", "Amarela", "Indígena"];
-  const etniaWeights = etniaOptions.map(name => calculateDeclarativeWeight('etnia', name, preCtx as any, (c) => {
-    // BLOQUEIO: Não usa mais os pesos antigos se não estiver no registro
-    return 0;
-  }, migratedItems));
+  const etniaWeights = etniaOptions.map(name => calculateDeclarativeWeight('etnia', name, preCtxForBase as any, () => 0, migratedItems));
   
   const etniaRoll = rollWeighted(etniaOptions, etniaWeights);
   const etnia = options.fixedEthnicity ?? etniaRoll.value;
   probs.etnia = { prob: etniaRoll.prob, poolSize: etniaRoll.poolSize };
 
-  const classResult = getWeightedClasse(estado, isCapital, preCtx, migratedItems, options.fixedClass);
+  const classResult = getWeightedClasse(estado, isCapital, { ...preCtxForBase, etnia }, migratedItems, options.fixedClass);
   const classe = classResult.name;
   probs.classe = classResult.prob;
 
-  // 3. Socioeconomic & Preliminary Context for Shiny
+  // Derive Braçal (partial) for sex rules
   let professionPool: string[] = [];
   const regionalPool = PROFISSOES_REGIONAIS[regiao]?.[classe] || [];
   const universalPool = PROFISSOES_UNIVERSAIS[classe] || [];
   professionPool = [...regionalPool, ...universalPool];
-  
   const profRollBase = rollUniform(professionPool);
   const professionBase = profRollBase.value;
+  const isBracal = professionBase.toLowerCase().includes("obra") || professionBase.toLowerCase().includes("pedreiro") || professionBase.toLowerCase().includes("campo") || professionBase.toLowerCase().includes("roça") || professionBase.toLowerCase().includes("pesca") || professionBase.toLowerCase().includes("braçal") || professionBase.toLowerCase().includes("agrícola");
+
+  // Roll Bio Sex
+  const sexOptions = ["Masculino", "Feminino"];
+  const sexFallbacks = [49, 51];
+  const sexWeights = sexOptions.map((name, idx) => 
+    calculateDeclarativeWeight('sexo', name, { ...preCtxForBase, etnia, classe, braçal: isBracal } as any, () => sexFallbacks[idx], migratedItems)
+  );
+  const bioSexRoll = rollWeighted(sexOptions, sexWeights);
+  const bioSex = options.fixedBioSex ?? bioSexRoll.value;
+  probs.bioSex = { prob: bioSexRoll.prob, poolSize: bioSexRoll.poolSize };
+
+  // Roll Gender Identity
+  let identidadeGenero = options.fixedGender ?? rollWeighted(["Homem", "Mulher", "Não-Binário"], [48, 49, 3]).value;
+  let termoIdentidade = "";
+  let isCis = true;
+
+  if (options.fixedIdentityTerm) {
+    if (options.fixedIdentityTerm === "Não-Binário") {
+      identidadeGenero = "Não-Binário";
+      termoIdentidade = "Não-Binário";
+      isCis = false;
+    } else if (options.fixedIdentityTerm === "Cisgênero") {
+      isCis = true;
+      if (identidadeGenero === "Não-Binário") identidadeGenero = bioSex === "Masculino" ? "Homem" : "Mulher";
+      termoIdentidade = "Cisgênero";
+    } else { // Transgênero / Transexual
+      isCis = false;
+      if (identidadeGenero === "Não-Binário") identidadeGenero = bioSex === "Masculino" ? "Mulher" : "Homem";
+      termoIdentidade = options.fixedIdentityTerm;
+    }
+  } else {
+    // Standard random logic but biased towards bioSex
+    const isTransRoll = options.fixedTrans ?? (Math.random() < 0.02);
+    if (isTransRoll) {
+      identidadeGenero = bioSex === "Masculino" ? "Mulher" : "Homem";
+      termoIdentidade = "Transgênero/Transexual";
+      isCis = false;
+    } else {
+      identidadeGenero = bioSex === "Masculino" ? "Homem" : "Mulher";
+      termoIdentidade = "Cisgênero";
+      isCis = true;
+    }
+    // Small chance for NB
+    if (Math.random() < 0.03 && !options.fixedGender) {
+       identidadeGenero = "Não-Binário";
+       termoIdentidade = "Não-Binário";
+       isCis = false;
+    }
+  }
+  probs.genero = { prob: 100, poolSize: 1 };
+
+  // Orientation
+  const orientOptions = ["Heterossexual", "Bissexual", "Homossexual", "Assexual", "Pansexual", "Demissexual"];
+  const orientFallbacks = [75, 10, 5, 4, 3, 3];
+  const orientWeights = orientOptions.map((name, idx) => 
+    calculateDeclarativeWeight('orientacao', name, { ...preCtxForBase, etnia, classe, sexo: bioSex, identidadeGenero } as any, () => orientFallbacks[idx], migratedItems)
+  );
+  const orientRoll = rollWeighted(orientOptions, orientWeights);
+  const orientacao = options.fixedOrientation ?? orientRoll.value;
+  probs.orientacao = { prob: orientRoll.prob, poolSize: orientRoll.poolSize };
+
+  // Nome
+  let nome = "";
+  if (identidadeGenero === "Não-Binário") {
+    nome = `${randomChoice(NOMES_NEUTROS)} ${faker.person.lastName()}`;
+  } else {
+    const nameGender = identidadeGenero === "Homem" ? 'male' : 'female';
+    nome = faker.person.fullName({ sex: nameGender });
+  }
 
   const resRoll = rollUniform(OP_RES);
   const tempRoll = rollUniform(OP_TEMPERAMENTO);
@@ -2148,8 +2150,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   
   const fProbArray = fetiches.probs.length > 0 ? fetiches.probs : [{ prob: 70.0 }];
   probs.fetiches = fProbArray;
-  probs.sexo = { prob: 50, poolSize: 2 };
-  probs.bioSex = { prob: ((probs.genero as ProbData).prob / 100) * bioSexProb, poolSize: bioSexPoolSize };
+  // probs.bioSex already handled by declarative weights above
 
   // --- FINAL OCCUPATION & PROFESSION FUNNEL ---
   const maxLevel = getMaxConditionLevel(conditionsV, conditionsNV);
