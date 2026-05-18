@@ -672,7 +672,22 @@ export default function App() {
                           <h2 className="font-display font-black text-3xl md:text-4xl text-ice tracking-tighter uppercase leading-none">{result.metadata.nome}</h2>
                           <div className="flex flex-wrap items-center gap-3">
                             <Badge>{result.metadata.idade} Anos<Prob value={result.metadata.probs.idade} /></Badge>
-                            <Badge color="white">{result.metadata.regiao}<Prob value={result.metadata.probs.regiao} /></Badge>
+                            <Badge color="white">
+                              {result.metadata.regiao} • {result.metadata.estado}
+                              {(() => {
+                                const regProb = result.metadata.probs.regiao;
+                                if (!regProb || Array.isArray(regProb)) return null;
+                                const counts: Record<string, number> = { 'Sudeste': 4, 'Sul': 3, 'Nordeste': 9, 'Norte': 7, 'Centro-Oeste': 4 };
+                                const stateCount = counts[result.metadata.regiao] || 1;
+                                const combinedProb = regProb.prob / stateCount;
+                                const combinedPool = regProb.poolSize * stateCount;
+                                return (
+                                  <span className="text-[10px] text-white/20 font-mono ml-1">
+                                    ({combinedProb.toFixed(1)}% | 1/{combinedPool})
+                                  </span>
+                                );
+                              })()}
+                            </Badge>
                             <Badge color="white"><MigratedItem name={result.metadata.etnia} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.etnia} /></Badge>
                           </div>
                         </div>
@@ -680,15 +695,15 @@ export default function App() {
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 pt-2">
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><HeartPulse className="w-3 h-3" /> Gênero</p>
-                            <p className="text-xs font-bold text-white/80">{result.metadata.genero}<Prob value={result.metadata.probs.genero} /></p>
+                            <p className="text-xs font-bold text-white/80"><MigratedItem name={result.metadata.genero} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.genero} /></p>
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Zap className="w-3 h-3" /> Orientação</p>
-                            <p className="text-xs font-bold text-white/80">{result.metadata.orientacao}<Prob value={result.metadata.probs.orientacao} /></p>
+                            <p className="text-xs font-bold text-white/80"><MigratedItem name={result.metadata.orientacao} migratedList={result.metadata.migratedItems} /><Prob value={result.metadata.probs.orientacao} /></p>
                           </div>
                           <div className="space-y-1">
-                            <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><MapPin className="w-3 h-3" /> Perfil</p>
-                            <p className="text-xs font-bold text-white/80">{result.metadata.perfilUrbano}<Prob value={result.metadata.probs.perfilUrbano} /></p>
+                            <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><MapPin className="w-3 h-3" /> Localização</p>
+                            <p className="text-xs font-bold text-white/80 truncate">{result.metadata.perfilUrbano.split(' - ')[0]}<Prob value={result.metadata.probs.perfilUrbano} /></p>
                           </div>
                           <div className="space-y-1">
                             <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-1.5"><Globe className="w-3 h-3" /> Tribo</p>

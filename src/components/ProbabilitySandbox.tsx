@@ -491,14 +491,18 @@ export const ProbabilitySandbox: React.FC<{ onFinish: (result: CharacterResult) 
         const isSelected = dashboardLocks[category as keyof DashboardLocksState]?.includes(label);
         
         let regCategory = category;
+        if (category === 'identidade') {
+          if (etnias.includes(label)) regCategory = 'etnia';
+          else if (oris.includes(label)) regCategory = 'orientacao';
+          else if (["Masculino", "Feminino"].includes(label)) regCategory = 'sexo';
+          else if (['Homem', 'Mulher', 'Não-Binário'].includes(label)) regCategory = 'identidade';
+        }
         if (category === 'visible') regCategory = 'condicoesVisiveis';
         if (category === 'hidden') regCategory = 'condicoesNaoVisiveis';
         if (category === 'tribos') regCategory = 'tribosUrbanas';
         if (category === 'rastros') regCategory = 'rastro';
         if (category === 'shiny') regCategory = 'shinies';
         if (category === 'classe') regCategory = 'classeSocial';
-        if (category === 'identidade' && etnias.includes(label)) regCategory = 'etnia';
-        if (category === 'identidade' && (label === 'Homem' || label === 'Mulher' || label === 'Não-Binário')) regCategory = 'identidade';
         if (category === 'relacional') regCategory = 'relacional';
         if (category === 'filhos') regCategory = 'filhos';
 

@@ -277,7 +277,7 @@ export interface ProbData {
 export interface CharacterResult {
   text: string;
   metadata: {
-    nome: string; idade: number; genero: string; bioSex: string; etnia: string; orientacao: string; classe: string; regiao: string; perfilUrbano: string; profissao: string; statusOcupacional: string; vConditions: string[]; nvConditions: string[]; habitacao: string; transporte: string; resiliencia: string; temperamento: string; shiny: string; cenaSexualidade: string; fetiches: string[]; triboUrbana: string; rastro: string; biotipo: string; biotipoAnomalia: string; altura: number; peso: number; imc: number; massaMagra: boolean; photos: string[]; baggage: { type: string, text: string, prob?: ProbData, isMigrated?: boolean }[];
+    nome: string; idade: number; genero: string; bioSex: string; etnia: string; orientacao: string; classe: string; regiao: string; estado: string; perfilUrbano: string; profissao: string; statusOcupacional: string; vConditions: string[]; nvConditions: string[]; habitacao: string; transporte: string; resiliencia: string; temperamento: string; shiny: string; cenaSexualidade: string; fetiches: string[]; triboUrbana: string; rastro: string; biotipo: string; biotipoAnomalia: string; altura: number; peso: number; imc: number; massaMagra: boolean; photos: string[]; baggage: { type: string, text: string, prob?: ProbData, isMigrated?: boolean }[];
     metrics: { physical: number; mental: number; income: number; relational: number; resilience: number; urbanLife: number; };
     probs: Record<string, ProbData | ProbData[]>;
     friccaoUrbana: string;

@@ -743,7 +743,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   const universalPool = PROFISSOES_UNIVERSAIS[classe] || [];
   professionPool = [...regionalPool, ...universalPool];
   const profRollBase = rollUniform(professionPool);
-  const professionBase = profRollBase.value;
+  const professionBase = profRollBase.value || "";
   const isBracal = professionBase.toLowerCase().includes("obra") || professionBase.toLowerCase().includes("pedreiro") || professionBase.toLowerCase().includes("campo") || professionBase.toLowerCase().includes("roça") || professionBase.toLowerCase().includes("pesca") || professionBase.toLowerCase().includes("braçal") || professionBase.toLowerCase().includes("agrícola");
 
   // Roll Bio Sex
@@ -829,8 +829,8 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     estuda: false, estagio: false, aposentado: false, desempregado: false, estresse: Math.random() < 0.4,
     estresseHard: Math.random() < 0.1, remoto: Math.random() < 0.2,
     climaFrio: false, ansiedade: Math.random() < 0.3, 
-    alternativo: Math.random() < 0.2 || professionBase.toLowerCase().includes("artista") || professionBase.toLowerCase().includes("designer") || professionBase.toLowerCase().includes("músico") || professionBase.toLowerCase().includes("freelancer"),
-    escritorio: professionBase.toLowerCase().includes("escritório") || professionBase.toLowerCase().includes("analista") || professionBase.toLowerCase().includes("gerente") || professionBase.toLowerCase().includes("diretor") || professionBase.toLowerCase().includes("contábil") || professionBase.toLowerCase().includes("jurídico"),
+    alternativo: Math.random() < 0.2 || (professionBase || "").toLowerCase().includes("artista") || (professionBase || "").toLowerCase().includes("designer") || (professionBase || "").toLowerCase().includes("músico") || (professionBase || "").toLowerCase().includes("freelancer"),
+    escritorio: (professionBase || "").toLowerCase().includes("escritório") || (professionBase || "").toLowerCase().includes("analista") || (professionBase || "").toLowerCase().includes("gerente") || (professionBase || "").toLowerCase().includes("diretor") || (professionBase || "").toLowerCase().includes("contábil") || (professionBase || "").toLowerCase().includes("jurídico"),
     industriaOuMusica: false, 
     sobrepeso: false, abaixoDoPeso: false, pesoIdeal: true, obesidadeI: false, obesidadeII: false, obesidadeIII: false, falsoSaudavel: false,
     cargosAltos: classe.includes("Elite"),
@@ -841,7 +841,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     aco: false, baixaRenda: classe.includes("Classe E") || classe.includes("Base"), gayCis: orientacao === "Homossexual" && isCis,
     proSe: false, drogasInjetaveis: false, traumaArquivado: false, hipertenso: Math.random() < 0.15,
     traumaInfancia: Math.random() < 0.1, 
-    militarPolicia: professionBase.toLowerCase().includes("militar") || professionBase.toLowerCase().includes("polícia") || professionBase.toLowerCase().includes("guarda") || professionBase.toLowerCase().includes("vigilante") || professionBase.toLowerCase().includes("segurança"),
+    militarPolicia: (professionBase || "").toLowerCase().includes("militar") || (professionBase || "").toLowerCase().includes("polícia") || (professionBase || "").toLowerCase().includes("guarda") || (professionBase || "").toLowerCase().includes("vigilante") || (professionBase || "").toLowerCase().includes("segurança"),
     vitimaCrime: false, hipertensoFumante: false,
     negroPardo: etnia === "Preta" || etnia === "Parda", 
     indigena: etnia === "Indígena",
@@ -851,9 +851,9 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     isolamentoTotal: false, falenciaLuto: false, infartoPrevio: false, drogasPesadas: false,
     fumanteQuimico: false, atletaMilitar: false, trabalhadorNuclear: false, baixaSaudeMental: false,
     intoxicacaoMedicamentosa: false, biotipoAnomalia: "", massaMagra: false, 
-    tecnologia: Math.random() < 0.4 || professionBase.toLowerCase().includes("tecnologia") || professionBase.toLowerCase().includes("software") || professionBase.toLowerCase().includes("ti") || professionBase.toLowerCase().includes("análise"),
+    tecnologia: Math.random() < 0.4 || (professionBase || "").toLowerCase().includes("tecnologia") || (professionBase || "").toLowerCase().includes("software") || (professionBase || "").toLowerCase().includes("ti") || (professionBase || "").toLowerCase().includes("análise"),
     setor: (() => {
-      const lower = professionBase.toLowerCase();
+      const lower = (professionBase || "").toLowerCase();
       if (lower.includes("agrícola") || lower.includes("agro") || lower.includes("irrigação") || lower.includes("latifúndio") || lower.includes("soja") || lower.includes("pecuária") || lower.includes("agrônomo")) return "agro";
       if (lower.includes("tecnologia") || lower.includes("software") || lower.includes("ti") || lower.includes("dados") || lower.includes("hacker") || lower.includes("cripto")) return "tech";
       if (lower.includes("corporativo") || lower.includes("diretor") || lower.includes("multinacional") || lower.includes("startup") || lower.includes("faria limer") || lower.includes("analista") || lower.includes("financeiro")) return "corporativo";
@@ -864,11 +864,11 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     estado,
     tierMetropole: getTierMetropole(estado, perfilUrbanoStr.includes("Capital")),
     geneticaFamiliar: Math.random() < 0.1, 
-    braçal: professionBase.toLowerCase().includes("obra") || professionBase.toLowerCase().includes("pedreiro") || professionBase.toLowerCase().includes("campo") || professionBase.toLowerCase().includes("roça") || professionBase.toLowerCase().includes("pesca") || professionBase.toLowerCase().includes("braçal") || professionBase.toLowerCase().includes("agrícola"), 
+    braçal: (professionBase || "").toLowerCase().includes("obra") || (professionBase || "").toLowerCase().includes("pedreiro") || (professionBase || "").toLowerCase().includes("campo") || (professionBase || "").toLowerCase().includes("roça") || (professionBase || "").toLowerCase().includes("pesca") || (professionBase || "").toLowerCase().includes("braçal") || (professionBase || "").toLowerCase().includes("agrícola"), 
     sop: false, peleClara: etnia === "Branca",
     tdah: Math.random() < 0.1, insonia: Math.random() < 0.2, turnosNoturnos: Math.random() < 0.1,
     idoso: idade > 60, botox: false, lutador: false, violencia: false, lutoSevero: false,
-    obeso: false, corticoides: false, exPresidiario: false, gangue: false, corporativo: professionBase.toLowerCase().includes("corporativo") || professionBase.toLowerCase().includes("executivo") || professionBase.toLowerCase().includes("diretor"),
+    obeso: false, corticoides: false, exPresidiario: false, gangue: false, corporativo: (professionBase || "").toLowerCase().includes("corporativo") || (professionBase || "").toLowerCase().includes("executivo") || (professionBase || "").toLowerCase().includes("diretor"),
     autoimune: false, sedentario: Math.random() < 0.5, trabalhoRisco: false, alcoolicoAbstinencia: false,
     fogo: false, hepatite: false, miopiaCongenita: false, fumantePesado: false, professorCantor: false,
     acidenteTransito: false, doencaPulmonarCoracao: false, ensolarado: false, moradorRua: false,
@@ -904,10 +904,10 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     vingativo: tempRoll.value.includes("Colérico") || Math.random() < 0.1,
     imigranteRefugiado: Math.random() < 0.05,
     altruista: Math.random() < 0.15,
-    exposicaoPublica: Math.random() < 0.1 || (professionBase.toLowerCase().includes("mídia") || professionBase.toLowerCase().includes("repórter")) || classe.includes("Elite"),
+    exposicaoPublica: Math.random() < 0.1 || ((professionBase || "").toLowerCase().includes("mídia") || (professionBase || "").toLowerCase().includes("repórter")) || classe.includes("Elite"),
     fobiaSocial: Math.random() < 0.05,
     agorafobia: Math.random() < 0.03,
-    nerd: Math.random() < 0.2 || professionBase.toLowerCase().includes("cientista") || professionBase.toLowerCase().includes("tecnologia"),
+    nerd: Math.random() < 0.2 || (professionBase || "").toLowerCase().includes("cientista") || (professionBase || "").toLowerCase().includes("tecnologia"),
     depressao: Math.random() < 0.15,
   };
 
@@ -2287,7 +2287,7 @@ ${relacionamentosAtivos.length > 0 ? relacionamentosAtivos.map(r => `[${r.type.t
   return {
     text: rawText,
     metadata: {
-      nome, idade: finalIdade, genero: `${identidadeGenero} ${termoIdentidade}`, bioSex, etnia, orientacao, classe: finalClasse, regiao, 
+      nome, idade: finalIdade, genero: `${identidadeGenero} ${termoIdentidade}`, bioSex, etnia, orientacao, classe: finalClasse, regiao, estado, 
       perfilUrbano: perfilUrbanoStr, profissao: profissaoFinal, statusOcupacional,
       vConditions: conditionsV, nvConditions: conditionsNV, 
       habitacao: habitacaoStr, transporte: transRoll.value, 
