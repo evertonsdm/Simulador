@@ -282,6 +282,7 @@ export const RuleForge: React.FC = () => {
   const [showImport, setShowImport] = useState(false);
   const [itemSearch, setItemSearch] = useState('');
   const [newItemName, setNewItemName] = useState('');
+  const [newItemKey, setNewItemKey] = useState('');
   const [newItemLevel, setNewItemLevel] = useState(1);
   const [newItemImpact, setNewItemImpact] = useState('');
   const [searchTrigger, setSearchTrigger] = useState('');
@@ -452,6 +453,7 @@ export const RuleForge: React.FC = () => {
           console.log(`[Modo Fábrica] Sincronizando Nível: ${levelNum}`);
         }
 
+        setNewItemKey(itemKey);
         setNewItemName(importedNameLabel);
         
         if (dataToImport.baseWeight !== undefined) {
@@ -698,9 +700,9 @@ export const RuleForge: React.FC = () => {
     if (mode === 'edit') {
       return !selectedCategory || !selectedItem;
     } else {
-      return !selectedCategory || !newItemName;
+      return !selectedCategory || !newItemName || !newItemKey;
     }
-  }, [mode, selectedCategory, selectedItem, newItemName]);
+  }, [mode, selectedCategory, selectedItem, newItemName, newItemKey]);
 
   const parseRules = () => {
     const operatorTranslation: Record<string, string> = {
@@ -762,16 +764,12 @@ export const RuleForge: React.FC = () => {
   };
 
   const handleExportCreatePrompt = () => {
-    if (!selectedCategory || !newItemName) {
-      alert("Ação Bloqueada: Você precisa selecionar a Categoria e o Nome do Item antes de exportar o prompt!");
+    if (!selectedCategory || !newItemName || !newItemKey) {
+      alert("Ação Bloqueada: Você precisa selecionar a Categoria, Chave e o Nome do Item antes de exportar o prompt!");
       return;
     }
 
-    const normalize = (str: string) => {
-      if (!str) return '';
-      return str.toLowerCase().replace(/\s+/g, '');
-    };
-    const itemKey = normalize(newItemName);
+    const itemKey = newItemKey.toLowerCase().replace(/\s+/g, '');
 
     const rulesData = rules.map(({ property, operator, value, multiplier }) => ({
       property,
@@ -813,7 +811,9 @@ export const RuleForge: React.FC = () => {
         .replace(/\s+/g, '')
         .replace(/[^\w]/g, '');
 
-    const itemKey = normalizeKey(mode === 'edit' ? selectedItem : newItemName);
+    const itemKey = mode === 'edit' 
+      ? normalizeKey(selectedItem) 
+      : normalizeKey(newItemKey || newItemName);
     
     const exportObj = {
       [itemKey]: {
@@ -878,10 +878,10 @@ export const RuleForge: React.FC = () => {
   }, [searchTrigger]);
 
   return (
-    <div className="h-dvh md:h-full flex flex-col overflow-y-auto bg-slate-950 text-slate-200 p-4 md:p-8 font-sans border-l border-slate-800/50">
-      <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col pb-32 md:pb-20">
+    <div className="h-dvh md:h-full flex flex-col overflow-y-auto bg-slate-950 text-slate-200 p-2.5 md:p-8 font-sans border-l border-slate-800/50">
+      <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col pb-24 md:pb-20">
         {/* Mode Toggle */}
-        <div className="flex justify-center mb-6 md:mb-8">
+        <div className="flex justify-center mb-4 md:mb-8">
           <div className="bg-slate-900 p-1 rounded-xl border border-slate-800 flex shadow-2xl w-full max-w-sm">
             <button 
               onClick={() => setMode('edit')}
@@ -899,13 +899,13 @@ export const RuleForge: React.FC = () => {
         </div>
 
         {/* Header */}
-        <header className="mb-6 md:mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <header className="mb-4 md:mb-8 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
           <div className="text-center md:text-left">
-            <h1 className="sm:text-3xl text-xl font-bold flex items-center justify-center md:justify-start gap-3 text-white">
-              <Settings2 className={mode === 'edit' ? "text-blue-500" : "text-indigo-400"} />
+            <h1 className="sm:text-3xl text-lg font-bold flex items-center justify-center md:justify-start gap-2.5 text-white">
+              <Settings2 className={mode === 'edit' ? "text-blue-500" : "text-indigo-400"} size={22} />
               {mode === 'edit' ? 'Forja de Regras' : 'Fábrica de Entidades'}
             </h1>
-            <p className="text-slate-400 mt-1 sm:text-base text-sm">
+            <p className="text-slate-400 mt-1 sm:text-base text-xs">
               {mode === 'edit' ? 'Edição de pesos e modificadores contextuais' : 'Criação de novos itens e regras matemáticas'}
             </p>
           </div>
@@ -913,27 +913,27 @@ export const RuleForge: React.FC = () => {
 
         {/* Busca Reversa */}
         <div 
-          className="mb-6 md:mb-8 bg-slate-900/40 border border-slate-800 rounded-xl p-4 md:p-6 shadow-xl backdrop-blur-sm"
+          className="mb-4 md:mb-8 bg-slate-900/40 border border-slate-800 rounded-xl p-3.5 md:p-6 shadow-xl backdrop-blur-sm"
           data-lpignore="true"
           data-1pignore="true"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
-              <Search className="text-blue-400" size={18} />
+          <div className="flex items-center gap-2.5 mb-3 md:mb-4">
+            <div className="p-1.5 bg-blue-500/10 rounded-lg border border-blue-500/20">
+              <Search className="text-blue-400" size={16} />
             </div>
-            <h2 className="sm:text-lg text-sm font-bold text-white tracking-tight">Busca Reversa por Gatilho</h2>
+            <h2 className="sm:text-lg text-xs font-bold text-white tracking-tight uppercase opacity-80">Busca Reversa por Gatilho</h2>
           </div>
           <div className="relative">
             <input 
               type="text"
-              placeholder="Digite um gatilho para auditar itens (ex: capital, ansiedade, idade, classe)..."
+              placeholder="Digite um gatilho para auditar itens..."
               value={searchTrigger}
               onChange={(e) => setSearchTrigger(e.target.value)}
               autoComplete="off"
               data-lpignore="true"
               data-1pignore="true"
               spellCheck="false"
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-lg px-4 py-3 text-sm focus:border-blue-500/50 outline-none transition-all placeholder:text-slate-700"
+              className="w-full bg-slate-950/80 border border-slate-800 rounded-lg px-4 py-2.5 md:py-3 text-xs md:text-sm focus:border-blue-500/50 outline-none transition-all placeholder:text-slate-700"
             />
           </div>
 
@@ -986,19 +986,19 @@ export const RuleForge: React.FC = () => {
 
         {/* Utilities Bar - Seção de Configurações/Utilidades Realocada */}
         <div 
-          className="flex flex-col gap-4 mb-6 md:mb-8 bg-slate-900/30 border border-slate-800 p-4 rounded-xl"
+          className="flex flex-col gap-3 md:gap-4 mb-4 md:mb-8 bg-slate-900/30 border border-slate-800 p-3 md:p-4 rounded-xl"
           data-lpignore="true"
           data-1pignore="true"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-amber-500/80">
-              <Settings2 size={18} />
-              <span className="text-sm font-bold uppercase tracking-wider">Configurações e Utilidades</span>
+              <Settings2 size={16} />
+              <span className="text-[11px] md:text-sm font-bold uppercase tracking-wider">Configurações e Utilidades</span>
             </div>
             <button 
               id="btn-paste-import"
               onClick={handlePasteAndImport}
-              className="flex items-center gap-2 px-5 h-[50px] bg-amber-600 hover:bg-amber-500 text-white border border-amber-400/30 rounded-lg text-sm font-bold transition-all shadow-lg shadow-amber-900/40 active:scale-95 group"
+              className="flex items-center gap-2 px-3 md:px-5 h-[40px] md:h-[50px] bg-amber-600 hover:bg-amber-500 text-white border border-amber-400/30 rounded-lg text-xs md:text-sm font-bold transition-all shadow-lg active:scale-95 group"
             >
               <ClipboardCopy size={18} className="group-hover:rotate-12 transition-transform" />
               Importar
@@ -1053,22 +1053,22 @@ export const RuleForge: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-8">
           {/* Configuração do Alvo / Criação */}
-          <section className="lg:col-span-1 space-y-6">
+          <section className="lg:col-span-1 space-y-4 md:space-y-6">
             <div 
-              className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 backdrop-blur-sm shadow-xl"
+              className={`bg-slate-900/50 border rounded-xl p-3.5 md:p-6 backdrop-blur-sm shadow-xl transition-colors ${mode === 'edit' ? 'border-slate-800' : 'border-indigo-500/20'}`}
               data-lpignore="true"
               data-1pignore="true"
             >
-               <h2 className={`sm:text-lg text-sm font-semibold mb-6 flex items-center gap-2 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`}>
-                  {mode === 'edit' ? <Database size={20} /> : <Plus size={20} />}
+               <h2 className={`sm:text-lg text-xs font-bold uppercase mb-4 md:mb-6 flex items-center gap-2 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-300'} opacity-80`}>
+                  {mode === 'edit' ? <Database size={18} /> : <Plus size={18} />}
                   {mode === 'edit' ? 'Seleção de Alvo' : 'Nova Entidade'}
                </h2>
                
-               <div className="space-y-4">
+               <div className="space-y-3 md:space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Categoria</label>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Categoria</label>
                     <select 
                       value={selectedCategory} 
                       onChange={(e) => {
@@ -1078,7 +1078,7 @@ export const RuleForge: React.FC = () => {
                       autoComplete="off"
                       data-lpignore="true"
                       data-1pignore="true"
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors"
+                      className={`w-full bg-slate-800 border rounded-lg px-4 py-2 md:py-2.5 text-sm outline-none transition-colors ${mode === 'edit' ? 'border-slate-700 focus:border-blue-500' : 'border-indigo-500/30 focus:border-indigo-500'}`}
                     >
                       {CATEGORIES.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.label}</option>
@@ -1087,17 +1087,17 @@ export const RuleForge: React.FC = () => {
                   </div>
 
                   {mode === 'edit' ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                       {subCategories.length > 0 && (
                         <div>
-                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 text-blue-400">Sub-categoria / Nível</label>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 text-blue-400">Sub-categoria / Nível</label>
                           <select 
                             value={selectedSubCategory}
                             onChange={(e) => setSelectedSubCategory(e.target.value)}
                             autoComplete="off"
                             data-lpignore="true"
                             data-1pignore="true"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 md:py-2.5 text-sm outline-none focus:border-blue-500 transition-colors"
                           >
                             {subCategories.map(sub => (
                               <option key={sub} value={sub}>{sub}</option>
@@ -1107,34 +1107,39 @@ export const RuleForge: React.FC = () => {
                       )}
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Item Específico</label>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Buscar Item</label>
                         <div className="space-y-2">
-                          <input 
-                            type="text"
-                            placeholder="Buscar item..."
-                            value={itemSearch}
-                            onChange={(e) => setItemSearch(e.target.value)}
-                            autoComplete="off"
-                            data-lpignore="true"
-                            data-1pignore="true"
-                            spellCheck="false"
-                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-blue-500"
-                          />
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-500" />
+                            <input 
+                              type="text"
+                              placeholder="Filtro rápido..."
+                              value={itemSearch}
+                              onChange={(e) => setItemSearch(e.target.value)}
+                              autoComplete="off"
+                              data-lpignore="true"
+                              data-1pignore="true"
+                              spellCheck="false"
+                              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg pl-9 pr-3 py-1.5 md:py-2 text-xs md:text-sm outline-none focus:border-blue-500"
+                            />
+                          </div>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Lista de Itens</label>
                           <select 
                             value={selectedItem}
                             onChange={(e) => setSelectedItem(e.target.value)}
+                            size={mode === 'edit' ? 6 : 1}
                             autoComplete="off"
                             data-lpignore="true"
                             data-1pignore="true"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-xs md:text-sm outline-none focus:border-blue-500 transition-colors custom-scrollbar"
                           >
-                            <option value="">{filteredItems.length === 0 ? 'Nenhum item encontrado' : 'Selecione um item...'}</option>
+                            <option value="" className="py-2 px-2 text-slate-500">{filteredItems.length === 0 ? 'Nenhum item encontrado' : 'Selecione um item na lista...'}</option>
                             {filteredItems.map(item => {
                               const checkKey = item.toLowerCase().replace(/\s+/g, '');
                               const isMigrated = !!RULES_REGISTRY[selectedCategory]?.[checkKey];
                               return (
-                                <option key={item} value={item} className={isMigrated ? 'text-blue-500 font-medium' : ''}>
-                                  {item}
+                                <option key={item} value={item} className={`py-1.5 px-2 rounded cursor-pointer hover:bg-slate-700 ${isMigrated ? 'text-blue-400 font-bold' : 'text-slate-300'}`}>
+                                  {isMigrated ? '✓ ' : '• '}{item}
                                 </option>
                               );
                             })}
@@ -1143,17 +1148,17 @@ export const RuleForge: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <>
+                    <div className="space-y-3 md:space-y-4">
                       {subCategories.length > 0 && (
                         <div>
-                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 text-indigo-400">Sub-categoria / Alocação</label>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 text-indigo-400">Sub-categoria / Alocação</label>
                           <select 
                             value={selectedSubCategory}
                             onChange={(e) => setSelectedSubCategory(e.target.value)}
                             autoComplete="off"
                             data-lpignore="true"
                             data-1pignore="true"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full bg-slate-800 border border-indigo-500/30 rounded-lg px-4 py-2 md:py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors"
                           >
                             {subCategories.map(sub => (
                               <option key={sub} value={sub}>{sub}</option>
@@ -1162,31 +1167,47 @@ export const RuleForge: React.FC = () => {
                         </div>
                       )}
 
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nome do Novo Item</label>
-                        <input 
-                          type="text"
-                          value={newItemName}
-                          onChange={(e) => setNewItemName(e.target.value)}
-                          autoComplete="off"
-                          data-lpignore="true"
-                          data-1pignore="true"
-                          spellCheck="false"
-                          placeholder="Ex: Tuberculose Resistente"
-                          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 outline-none focus:border-indigo-500 transition-colors"
-                        />
+                      <div className="grid grid-cols-1 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nova Chave (ID Interno)</label>
+                          <input 
+                            type="text"
+                            value={newItemKey}
+                            onChange={(e) => setNewItemKey(e.target.value)}
+                            autoComplete="off"
+                            data-lpignore="true"
+                            data-1pignore="true"
+                            spellCheck="false"
+                            placeholder="ex: atendentedepadaria"
+                            className="w-full bg-slate-800 border border-indigo-500/20 rounded-lg px-4 py-2.5 text-sm font-mono text-indigo-300 outline-none focus:border-indigo-500 transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nome de Exibição</label>
+                          <input 
+                            type="text"
+                            value={newItemName}
+                            onChange={(e) => setNewItemName(e.target.value)}
+                            autoComplete="off"
+                            data-lpignore="true"
+                            data-1pignore="true"
+                            spellCheck="false"
+                            placeholder="Ex: Atendente de Padaria"
+                            className="w-full bg-slate-800 border border-indigo-500/20 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors"
+                          />
+                        </div>
                       </div>
 
                       {(selectedCategory === 'condicoesVisiveis' || selectedCategory === 'condicoesNaoVisiveis') && (
                         <div>
-                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nível de Severidade (1-10)</label>
+                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nível de Severidade (1-10)</label>
                           <select 
                             value={newItemLevel}
                             onChange={(e) => setNewItemLevel(parseInt(e.target.value))}
                             autoComplete="off"
                             data-lpignore="true"
                             data-1pignore="true"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full bg-slate-800 border border-indigo-500/20 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors"
                           >
                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                               <option key={n} value={n}>Nível {n}</option>
@@ -1196,7 +1217,7 @@ export const RuleForge: React.FC = () => {
                       )}
 
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Impactos (Six-Axis)</label>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Impactos Six-Axis (opcional)</label>
                         <input 
                           type="text"
                           value={newItemImpact}
@@ -1206,29 +1227,39 @@ export const RuleForge: React.FC = () => {
                           data-1pignore="true"
                           spellCheck="false"
                           placeholder="Ex: physical: -20, mental: -10"
-                          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 outline-none focus:border-indigo-500 transition-colors"
+                          className="w-full bg-slate-800 border border-indigo-500/20 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-indigo-500 transition-colors placeholder:text-slate-600"
                         />
                       </div>
-                    </>
+                    </div>
                   )}
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Peso Base (Default 1.0)</label>
-                    <div className="relative">
-                      <input 
-                        type="number" 
-                        step="0.1"
-                        value={baseWeight}
-                        onChange={(e) => setBaseWeight(parseFloat(e.target.value) || 0)}
-                        autoComplete="off"
-                        data-lpignore="true"
-                        data-1pignore="true"
-                        spellCheck="false"
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors"
-                      />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm">Base</span>
-                    </div>
-                  </div>
+                  {/* Base Weight - Only visible if item selected/named */}
+                  <AnimatePresence>
+                    {((mode === 'edit' && selectedItem) || (mode === 'create' && newItemName && newItemKey)) && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden pt-4 border-t border-slate-800"
+                      >
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Peso Base do Item</label>
+                        <div className="relative">
+                          <input 
+                            type="number" 
+                            step="0.1"
+                            value={baseWeight}
+                            onChange={(e) => setBaseWeight(parseFloat(e.target.value) || 0)}
+                            autoComplete="off"
+                            data-lpignore="true"
+                            data-1pignore="true"
+                            spellCheck="false"
+                            className={`w-full bg-slate-800 border rounded-lg px-4 py-2.5 outline-none transition-colors ${mode === 'edit' ? 'border-slate-700 focus:border-blue-500' : 'border-indigo-500/30 focus:border-indigo-500'}`}
+                          />
+                          <span className={`absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold uppercase ${mode === 'edit' ? 'text-blue-500' : 'text-indigo-400'}`}>Base</span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                </div>
 
                {mode === 'edit' && selectedItem && (
@@ -1237,171 +1268,193 @@ export const RuleForge: React.FC = () => {
                     ? 'bg-blue-500/10 border-blue-500/20' 
                     : 'bg-slate-800 border-slate-700'
                  }`}>
+                    <p className={`text-[11px] uppercase tracking-wider font-bold mb-1 ${isHydrated ? 'text-blue-400' : 'text-slate-500'}`}>Status do Item</p>
                     <p className={`text-sm ${isHydrated ? 'text-blue-300' : 'text-slate-400'}`}>
-                      Editando peso para <span className={`font-bold ${isHydrated ? 'text-blue-100' : 'text-slate-200'}`}>{selectedItem}</span>
+                      Editando: <span className={`font-bold ${isHydrated ? 'text-blue-100' : 'text-slate-200'}`}>{selectedItem}</span>
                     </p>
                  </div>
                )}
 
                {mode === 'create' && newItemName && (
                  <div className="mt-8 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                    <p className="text-[11px] uppercase tracking-wider font-bold mb-1 text-indigo-400">Nova Entidade</p>
                     <p className="text-sm text-indigo-300">
-                      Criando nova entidade: <span className="font-bold text-indigo-100">{newItemName}</span>
+                      Na fábrica: <span className="font-bold text-indigo-100">{newItemName}</span>
                     </p>
                  </div>
                )}
             </div>
 
-            <div className="bg-slate-950 border border-amber-500/20 p-4 rounded-xl flex gap-3 items-start">
-               <AlertCircle className="text-amber-500 shrink-0" size={20} />
-               <p className="text-xs text-amber-500/80 leading-relaxed">
-                  Os multiplicadores são cumulativos. Se duas regras baterem, seus multiplicadores serão aplicados um após o outro sobre o peso base.
+            <div className="bg-slate-900/30 border border-amber-500/20 p-3 md:p-4 rounded-xl flex gap-3 items-start">
+               <AlertCircle className="text-amber-500 shrink-0" size={16} />
+               <p className="text-[9px] md:text-[10px] text-amber-500/70 leading-relaxed uppercase font-medium">
+                  Multiplicadores cumulativos. As regras são processadas em sequência sobre o peso base.
                </p>
             </div>
           </section>
 
           {/* Regras Dinâmicas */}
-          <section className="lg:col-span-2 space-y-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex flex-col md:flex-row md:items-center gap-3">
-                <h2 className="sm:text-lg text-sm font-semibold text-white">Modificadores Contextuais</h2>
-                {mode === 'edit' && selectedItem && (
-                  <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider transition-colors ${isHydrated ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
-                    {isHydrated ? '🔵 Versão Declarativa (JSON) Ativa' : '🟡 Item operando no padrão antigo (Código puro)'}
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <button 
-                  id="btn-add-rule"
-                  onClick={addRule}
-                  className="h-[40px] pt-[6px] leading-[12px] text-[9px] bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 px-3 rounded-md flex items-center gap-1.5 transition-colors"
+          <section className="lg:col-span-2 space-y-3 md:space-y-4">
+            <AnimatePresence mode="wait">
+              {((mode === 'edit' && selectedItem) || (mode === 'create' && newItemName && newItemKey)) ? (
+                <motion.div
+                  key="rules-active"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  className="space-y-3 md:space-y-4"
                 >
-                  <Plus size={14} />
-                  Adicionar Regra
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-3 min-h-[400px]">
-              <AnimatePresence mode="popLayout">
-                {rules.length === 0 ? (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="h-64 border-2 border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center text-slate-600 gap-2"
-                  >
-                    <Settings2 size={48} strokeWidth={1} />
-                    <p>Nenhuma regra contextual definida.</p>
-                    <button onClick={addRule} className="text-blue-500 text-sm font-medium hover:underline">Clique para adicionar o primeiro modificador</button>
-                  </motion.div>
-                ) : (
-                  rules.map((rule, index) => (
-                    <motion.div
-                      key={`rule-${rule.property}-${rule.operator}-${rule.value}-${index}`}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      data-lpignore="true"
-                      data-1pignore="true"
-                      className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:grid md:grid-cols-12 gap-4 md:gap-3 items-stretch md:items-end group relative"
-                    >
-                      <div className="md:col-span-3">
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Propriedade (ctx)</label>
-                        <select 
-                          value={rule.property}
-                          onChange={(e) => updateRule(rule.id, { property: e.target.value })}
-                          autoComplete="off"
-                          data-lpignore="true"
-                          data-1pignore="true"
-                          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 md:py-2 text-sm outline-none focus:border-blue-500"
-                        >
-                          {allProperties.map(p => (
-                            <option key={p.value} value={p.value}>{p.label}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Operador</label>
-                        <select 
-                          value={rule.operator}
-                          onChange={(e) => updateRule(rule.id, { operator: e.target.value as any })}
-                          autoComplete="off"
-                          data-lpignore="true"
-                          data-1pignore="true"
-                          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 md:py-2 text-sm outline-none focus:border-blue-500"
-                        >
-                          {OPERATORS.map(op => (
-                            <option key={op.value} value={op.value}>{op.label}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="md:col-span-3">
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Valor</label>
-                        {rule.property === 'tierMetropole' ? (
-                          <select
-                            value={String(rule.value)}
-                            onChange={(e) => updateRule(rule.id, { value: e.target.value })}
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 md:py-2 text-sm outline-none focus:border-blue-500"
-                          >
-                            <option value="">Selecione...</option>
-                            <option value="tier_alfa">Capital - Tier Alfa (SP/RJ)</option>
-                            <option value="tier_beta">Capital - Tier Beta (MG/PR/RS...)</option>
-                            <option value="tier_gama">Capital - Tier Gama (AC/AP/RR...)</option>
-                            <option value="interior_alfa">Interior - Tier Alfa (SP/RJ)</option>
-                            <option value="interior_beta">Interior - Tier Beta (MG/PR/RS...)</option>
-                            <option value="interior_gama">Interior - Tier Gama (AC/AP/RR...)</option>
-                          </select>
-                        ) : (
-                          <input 
-                            type="text"
-                            value={String(rule.value)}
-                            onChange={(e) => updateRule(rule.id, { value: e.target.value })}
-                            autoComplete="off"
-                            data-lpignore="true"
-                            data-1pignore="true"
-                            spellCheck="false"
-                            placeholder="Ex: 'Norte' ou true"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 md:py-2 text-sm outline-none focus:border-blue-500"
-                          />
-                        )}
-                      </div>
-
-                      <div className="md:col-span-3">
-                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Multiplicador</label>
-                        <div className="relative">
-                          <input 
-                            type="number"
-                            step="0.1"
-                            value={rule.multiplier}
-                            onChange={(e) => updateRule(rule.id, { multiplier: parseFloat(e.target.value) || 0 })}
-                            autoComplete="off"
-                            data-lpignore="true"
-                            data-1pignore="true"
-                            spellCheck="false"
-                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 md:py-2 text-sm outline-none focus:border-blue-500"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs text-blue-400 font-bold">x</span>
+                  <div className="flex items-center justify-between mb-1 pb-2 border-b border-white/5">
+                    <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+                      <h2 className="sm:text-lg text-xs font-bold uppercase text-white flex items-center gap-2 opacity-80">
+                        <Plus className={mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'} size={16} />
+                        Modificadores Contextuais
+                      </h2>
+                      {mode === 'edit' && (
+                        <div className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-colors ${isHydrated ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-amber-500/10 text-amber-500/70 border border-amber-500/20'}`}>
+                          {isHydrated ? 'JSON Estruturado' : 'Código Nativo'}
                         </div>
-                      </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button 
+                        id="btn-add-rule"
+                        onClick={addRule}
+                        className={`h-[32px] md:h-[36px] text-[9px] md:text-[10px] uppercase font-bold px-3 md:px-4 rounded-lg flex items-center gap-2 transition-all ${mode === 'edit' ? 'bg-blue-600/10 text-blue-400 border border-blue-500/20 hover:bg-blue-600/20' : 'bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/20'}`}
+                      >
+                        <Plus size={12} />
+                        Nova Regra
+                      </button>
+                    </div>
+                  </div>
 
-                      <div className="md:col-span-1 flex justify-end md:pb-1">
-                        <button 
-                          onClick={() => removeRule(rule.id)}
-                          className="p-2 md:p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors border border-slate-800 md:border-transparent w-full md:w-auto flex justify-center items-center"
-                          title="Remover regra"
+                  <div className="space-y-2 md:space-y-3 min-h-[400px]">
+                    <AnimatePresence mode="popLayout">
+                      {rules.length === 0 ? (
+                        <motion.div 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="h-48 md:h-64 border-2 border-dashed border-slate-800/50 rounded-2xl flex flex-col items-center justify-center text-slate-600 gap-2 md:gap-3 bg-slate-900/20"
                         >
-                          <X size={20} className="md:w-4 md:h-4" />
-                          <span className="md:hidden ml-2 text-xs font-bold uppercase">Remover</span>
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))
-                )}
-              </AnimatePresence>
-            </div>
+                          <div className={`p-3 md:p-4 rounded-full ${mode === 'edit' ? 'bg-blue-500/5' : 'bg-indigo-500/5'}`}>
+                            <Settings2 size={32} className={`opacity-20 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`} strokeWidth={1} />
+                          </div>
+                          <p className="text-[10px] uppercase font-bold tracking-widest opacity-40">Nenhum modificador</p>
+                          <button onClick={addRule} className={`text-xs md:text-sm font-bold hover:underline ${mode === 'edit' ? 'text-blue-500' : 'text-indigo-500'}`}>Adicionar primeira regra</button>
+                        </motion.div>
+                      ) : (
+                        rules.map((rule, index) => (
+                          <motion.div
+                            key={`rule-${rule.id}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-slate-900 border border-slate-800 rounded-xl p-3 md:p-4 flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-3 items-stretch md:items-end group relative"
+                          >
+                            <div className="md:col-span-3">
+                              <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Contexto (ctx)</label>
+                              <select 
+                                value={rule.property}
+                                onChange={(e) => updateRule(rule.id, { property: e.target.value })}
+                                className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                              >
+                                {allProperties.map(p => (
+                                  <option key={p.value} value={p.value}>{p.label}</option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div className="md:col-span-2">
+                              <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Operador</label>
+                              <select 
+                                value={rule.operator}
+                                onChange={(e) => updateRule(rule.id, { operator: e.target.value as any })}
+                                className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                              >
+                                {OPERATORS.map(op => (
+                                  <option key={op.value} value={op.value}>{op.label}</option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div className="md:col-span-3">
+                              <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Valor de Comparação</label>
+                              {rule.property === 'tierMetropole' ? (
+                                <select
+                                  value={String(rule.value)}
+                                  onChange={(e) => updateRule(rule.id, { value: e.target.value })}
+                                  className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                                >
+                                  <option value="">Selecione...</option>
+                                  <option value="tier_alfa">Capital - Tier Alfa (SP/RJ)</option>
+                                  <option value="tier_beta">Capital - Tier Beta (MG/PR/RS...)</option>
+                                  <option value="tier_gama">Capital - Tier Gama (AC/AP/RR...)</option>
+                                  <option value="interior_alfa">Interior - Tier Alfa (SP/RJ)</option>
+                                  <option value="interior_beta">Interior - Tier Beta (MG/PR/RS...)</option>
+                                  <option value="interior_gama">Interior - Tier Gama (AC/AP/RR...)</option>
+                                </select>
+                              ) : (
+                                <input 
+                                  type="text"
+                                  value={String(rule.value)}
+                                  onChange={(e) => updateRule(rule.id, { value: e.target.value })}
+                                  placeholder="ex: true ou 'Feminino'"
+                                  className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                                />
+                              )}
+                            </div>
+
+                            <div className="md:col-span-3">
+                              <label className="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Multiplicador Final</label>
+                              <div className="relative">
+                                <input 
+                                  type="number"
+                                  step="0.1"
+                                  value={rule.multiplier}
+                                  onChange={(e) => updateRule(rule.id, { multiplier: parseFloat(e.target.value) || 0 })}
+                                  className="w-full bg-slate-800 border border-slate-700/50 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 transition-colors"
+                                />
+                                <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`}>X</span>
+                              </div>
+                            </div>
+
+                            <div className="md:col-span-1 flex justify-end md:pb-1">
+                              <button 
+                                onClick={() => removeRule(rule.id)}
+                                className="p-2 text-slate-500 hover:text-red-500 rounded-lg transition-colors group/del"
+                                title="Remover"
+                              >
+                                <X size={18} className="group-hover/del:scale-110 transition-transform" />
+                              </button>
+                            </div>
+                          </motion.div>
+                        ))
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="rules-empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="h-full flex flex-col items-center justify-center p-6 md:p-12 text-center bg-slate-900/20 border-2 border-dashed border-slate-800/40 rounded-3xl"
+                >
+                  <div className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl flex items-center justify-center mb-4 md:mb-6 ${mode === 'edit' ? 'bg-blue-500/5 border border-blue-500/10' : 'bg-indigo-500/5 border border-indigo-500/10'}`}>
+                    <Database size={32} className={`opacity-20 md:w-10 md:h-10 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`} />
+                  </div>
+                  <h3 className="text-lg md:text-xl font-bold text-white/40 mb-1.5 md:mb-2">
+                    {mode === 'edit' ? 'Selecione um Alvo' : 'Configure a Entidade'}
+                  </h3>
+                  <p className="text-slate-500 text-[11px] md:text-sm max-w-[240px] md:max-w-xs mx-auto">
+                    {mode === 'edit' 
+                      ? 'Escolha um item na lista ao lado para forjar seus pesos contextuais.' 
+                      : 'Preencha os campos obrigatórios para habilitar a forja de pesos.'}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         </div>
       </div>
