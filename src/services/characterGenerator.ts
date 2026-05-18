@@ -121,7 +121,7 @@ export const calculateDeclarativeWeight = (
     }
     
     // Trava de Migração para Rastro Digital
-    if (category === 'rastro' || category === 'etnia') {
+    if (category === 'rastro' || category === 'etnia' || category === 'regiao') {
       return 0; 
     }
 
@@ -690,9 +690,16 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   const idade = initialIdade;
   probs.idade = { prob: normalPdf(idade, 26, 12) };
 
-  const regRoll = rollUniform(['Sudeste', 'Nordeste', 'Sul', 'Norte', 'Centro-Oeste']);
+  const regionOptions = ['Sudeste', 'Nordeste', 'Sul', 'Norte', 'Centro-Oeste'];
+  const regionFallbackWeights = [42, 27, 14, 9, 8];
+
+  const regionWeights = regionOptions.map((name, idx) => 
+    calculateDeclarativeWeight('regiao', name, {} as any, () => regionFallbackWeights[idx], migratedItems)
+  );
+
+  const regRoll = rollWeighted(regionOptions, regionWeights);
   const regiao = options.fixedRegion ?? regRoll.value;
-  probs.regiao = { prob: regRoll.prob, poolSize: regRoll.poolSize };
+  probs.regiao = { prob: regRoll.prob, poolSize: regionOptions.length };
 
   const statesByRegion: Record<string, string[]> = {
     'Sudeste': ['SP', 'RJ', 'MG', 'ES'],

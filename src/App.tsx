@@ -66,6 +66,8 @@ import { ProbabilitySandbox } from './components/ProbabilitySandbox';
 import { CATEGORIES } from './components/RuleForge';
 import { RULES_REGISTRY } from './data/rulesRegistry';
 import { RuleForge } from './components/RuleForge';
+import { BatchGenerator } from './components/BatchGenerator';
+import { BarChart3 } from 'lucide-react';
 
 // --- Types ---
 interface FilterState {
@@ -121,7 +123,7 @@ const MigratedItem = ({ name, migratedList }: { name: string, migratedList?: str
 };
 
 export default function App() {
-  const [activeView, setActiveView] = useState<'simulator' | 'mapper' | 'catalog' | 'sandbox' | 'ruleforge'>('simulator');
+  const [activeView, setActiveView] = useState<'simulator' | 'mapper' | 'catalog' | 'sandbox' | 'ruleforge' | 'batch'>('simulator');
   const [result, setResult] = useState<CharacterResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [isBodyMapEditor, setIsBodyMapEditor] = useState(false);
@@ -598,6 +600,20 @@ export default function App() {
               <span className="hidden md:inline">Sandbox</span>
             </button>
 
+            {/* Batch Tab */}
+            <button 
+              onClick={() => setActiveView('batch')}
+              title="Gerar em Lote (Stress Test)"
+              className={`flex items-center gap-2 px-3 py-2 rounded-md border text-xs md:text-sm font-mono uppercase tracking-widest transition-all duration-200 ${
+                activeView === 'batch' 
+                  ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.1)]' 
+                  : 'border-transparent text-white/40 hover:bg-white/5 hover:text-white/70'
+              }`}
+            >
+              <BarChart3 size={16} />
+              <span className="hidden md:inline">Lote</span>
+            </button>
+
             {/* Stats (Hidden on small mobile) */}
             <div className={`hidden lg:flex px-3 py-1.5 rounded border border-white/5 bg-black/40 items-center gap-2 ml-4`}>
               <span className="text-[9px] font-mono tracking-widest">
@@ -625,6 +641,10 @@ export default function App() {
         ) : activeView === 'ruleforge' ? (
           <div className="flex-1 w-full overflow-hidden flex flex-col">
             <RuleForge />
+          </div>
+        ) : activeView === 'batch' ? (
+          <div className="flex-1 w-full overflow-hidden flex flex-col">
+            <BatchGenerator />
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 pb-24">
@@ -684,7 +704,7 @@ export default function App() {
                           <h2 className="font-display font-black text-3xl md:text-4xl text-ice tracking-tighter uppercase leading-none">{result.metadata.nome}</h2>
                           <div className="flex flex-wrap items-center gap-3">
                             <Badge>{result.metadata.idade} Anos<Prob value={result.metadata.probs.idade} /></Badge>
-                            <Badge color="white">
+                            <Badge color={result.metadata.migratedItems.includes(result.metadata.regiao) ? 'blue' : 'white'}>
                               {result.metadata.regiao} • {result.metadata.estado}
                               {(() => {
                                 const regProb = result.metadata.probs.regiao;

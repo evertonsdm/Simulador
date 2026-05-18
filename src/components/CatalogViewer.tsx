@@ -7,6 +7,7 @@ import {
   Filter, 
   Maximize2, 
   X,
+  MapPin,
   CreditCard,
   Briefcase,
   Users,
@@ -39,6 +40,7 @@ import { NIVEIS_V, NIVEIS_NV, OP_TRIBO, FETICHES_DATA } from '../rules/condition
 type CategoryKey = 
   | 'etnias' 
   | 'classes' 
+  | 'regioes'
   | 'identidades'
   | 'termos'
   | 'generos' 
@@ -71,6 +73,7 @@ export const CatalogViewer: React.FC = () => {
   // Categories Mapping
   const categories: { key: CategoryKey; label: string; icon: React.ElementType }[] = [
     { key: 'profissoes', label: 'Profissões', icon: Briefcase },
+    { key: 'regioes', label: 'Regiões', icon: MapPin },
     { key: 'etnias', label: 'Etnias', icon: Globe },
     { key: 'classes', label: 'Classes Sociais', icon: CreditCard },
     { key: 'identidades', label: 'Identidade de Gênero', icon: Users },
@@ -112,6 +115,7 @@ export const CatalogViewer: React.FC = () => {
       'filhos': 'filhos',
       'logistica': 'logistica',
       'etnias': 'etnia',
+      'regioes': 'regiao',
       'orientacoes': 'orientacao',
       'generos': 'sexo'
     };
@@ -177,6 +181,9 @@ export const CatalogViewer: React.FC = () => {
       case 'etnias':
         rawItems = ["Branca", "Parda", "Preta", "Amarela", "Indígena"];
         break;
+      case 'regioes':
+        rawItems = ['Sudeste', 'Nordeste', 'Sul', 'Norte', 'Centro-Oeste'];
+        break;
       case 'classes':
         rawItems = [
           'Elite / Alta Renda',
@@ -230,7 +237,7 @@ export const CatalogViewer: React.FC = () => {
         rawItems = [
           "Zona Rural/Remota", "Trabalho Braçal", "Setor Agro", "Cargos Altos",
           "Ansiedade", "Estresse", "Trabalha", "Estuda", "Estágio",
-          "Capital", "Interior", "Sul", "Norte", "Nordeste", "Sudeste", "Centro-Oeste",
+          "Capital", "Interior",
           "Preta/Parda", "Branca", "Amarela", "Indígena",
           "tierMetropole: tier_alfa", "tierMetropole: tier_beta", "tierMetropole: tier_gama", "tierMetropole: interior"
         ];
@@ -458,6 +465,17 @@ export const CatalogViewer: React.FC = () => {
                       
                       {migrated && (
                         <div className="pl-3 space-y-0.5 mt-2 border-l border-white/5 ml-1.5">
+                          {(() => {
+                            const info = getRegistryInfo(item.text);
+                            if (!info || info.data.baseWeight === undefined) return null;
+                            return (
+                              <div className="text-[10px] flex items-center gap-1.5 mb-2 mt-1 py-1 px-2 bg-gold/5 border border-gold/10 rounded w-fit text-gold/80 font-mono uppercase tracking-widest">
+                                <Zap size={10} className="text-gold animate-pulse" />
+                                <span>Peso Base:</span>
+                                <span className="text-gold font-black">{info.data.baseWeight}</span>
+                              </div>
+                            );
+                          })()}
                           {getRegistryInfo(item.text)?.data.rules?.map((rule: any, index: number) => renderRuleText(rule, index))}
                         </div>
                       )}

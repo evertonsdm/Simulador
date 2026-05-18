@@ -2989,6 +2989,33 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
       ]
     }
   },
+  regiao: {
+    "sudeste": {
+      "name": "Sudeste",
+      "baseWeight": 42.0,
+      "rules": []
+    },
+    "nordeste": {
+      "name": "Nordeste",
+      "baseWeight": 27.0,
+      "rules": []
+    },
+    "sul": {
+      "name": "Sul",
+      "baseWeight": 14.0,
+      "rules": []
+    },
+    "norte": {
+      "name": "Norte",
+      "baseWeight": 9.0,
+      "rules": []
+    },
+    "centrooeste": {
+      "name": "Centro-Oeste",
+      "baseWeight": 8.0,
+      "rules": []
+    }
+  },
   etnia: {
     "branca": {
       "name": "Branca",
