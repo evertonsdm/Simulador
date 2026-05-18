@@ -878,8 +878,8 @@ export const RuleForge: React.FC = () => {
   }, [searchTrigger]);
 
   return (
-    <div className="min-h-full bg-slate-950 text-slate-200 p-4 md:p-8 font-sans border-l border-slate-800/50 flex flex-col">
-      <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col pb-20">
+    <div className="h-dvh md:h-full flex flex-col overflow-y-auto bg-slate-950 text-slate-200 p-4 md:p-8 font-sans border-l border-slate-800/50">
+      <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col pb-32 md:pb-20">
         {/* Mode Toggle */}
         <div className="flex justify-center mb-6 md:mb-8">
           <div className="bg-slate-900 p-1 rounded-xl border border-slate-800 flex shadow-2xl w-full max-w-sm">
@@ -901,11 +901,11 @@ export const RuleForge: React.FC = () => {
         {/* Header */}
         <header className="mb-6 md:mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-left">
-            <h1 className="text-2xl md:text-3xl font-bold flex items-center justify-center md:justify-start gap-3 text-white">
+            <h1 className="sm:text-3xl text-xl font-bold flex items-center justify-center md:justify-start gap-3 text-white">
               <Settings2 className={mode === 'edit' ? "text-blue-500" : "text-indigo-400"} />
               {mode === 'edit' ? 'Forja de Regras' : 'Fábrica de Entidades'}
             </h1>
-            <p className="text-slate-400 mt-1 text-sm md:text-base">
+            <p className="text-slate-400 mt-1 sm:text-base text-sm">
               {mode === 'edit' ? 'Edição de pesos e modificadores contextuais' : 'Criação de novos itens e regras matemáticas'}
             </p>
           </div>
@@ -921,7 +921,7 @@ export const RuleForge: React.FC = () => {
             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
               <Search className="text-blue-400" size={18} />
             </div>
-            <h2 className="text-lg font-bold text-white tracking-tight">Busca Reversa por Gatilho</h2>
+            <h2 className="sm:text-lg text-sm font-bold text-white tracking-tight">Busca Reversa por Gatilho</h2>
           </div>
           <div className="relative">
             <input 
@@ -963,7 +963,7 @@ export const RuleForge: React.FC = () => {
                             {res.operator} <span className="text-slate-400">{String(res.value)}</span>
                           </span>
                         </div>
-                        <div className="text-lg font-black text-blue-100/90 pl-3">
+                        <div className="sm:text-lg text-sm font-black text-blue-100/90 pl-3">
                           {res.multiplier}x
                         </div>
                       </div>
@@ -1061,7 +1061,7 @@ export const RuleForge: React.FC = () => {
               data-lpignore="true"
               data-1pignore="true"
             >
-               <h2 className={`text-lg font-semibold mb-6 flex items-center gap-2 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`}>
+               <h2 className={`sm:text-lg text-sm font-semibold mb-6 flex items-center gap-2 ${mode === 'edit' ? 'text-blue-400' : 'text-indigo-400'}`}>
                   {mode === 'edit' ? <Database size={20} /> : <Plus size={20} />}
                   {mode === 'edit' ? 'Seleção de Alvo' : 'Nova Entidade'}
                </h2>
@@ -1232,9 +1232,13 @@ export const RuleForge: React.FC = () => {
                </div>
 
                {mode === 'edit' && selectedItem && (
-                 <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                    <p className="text-sm text-blue-300">
-                      Editando peso para <span className="font-bold text-blue-100">{selectedItem}</span>
+                 <div className={`mt-8 p-4 rounded-lg border transition-colors ${
+                   isHydrated 
+                    ? 'bg-blue-500/10 border-blue-500/20' 
+                    : 'bg-slate-800 border-slate-700'
+                 }`}>
+                    <p className={`text-sm ${isHydrated ? 'text-blue-300' : 'text-slate-400'}`}>
+                      Editando peso para <span className={`font-bold ${isHydrated ? 'text-blue-100' : 'text-slate-200'}`}>{selectedItem}</span>
                     </p>
                  </div>
                )}
@@ -1260,10 +1264,10 @@ export const RuleForge: React.FC = () => {
           <section className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex flex-col md:flex-row md:items-center gap-3">
-                <h2 className="text-lg font-semibold text-white">Modificadores Contextuais</h2>
+                <h2 className="sm:text-lg text-sm font-semibold text-white">Modificadores Contextuais</h2>
                 {mode === 'edit' && selectedItem && (
-                  <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${isHydrated ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
-                    {isHydrated ? '🟢 Carregado do Registro Declarativo (JSON)' : '🟡 Item operando no padrão antigo (Código puro). Pronto para migração.'}
+                  <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider transition-colors ${isHydrated ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                    {isHydrated ? '🔵 Versão Declarativa (JSON) Ativa' : '🟡 Item operando no padrão antigo (Código puro)'}
                   </div>
                 )}
               </div>

@@ -94,9 +94,9 @@ export const CatalogViewer: React.FC = () => {
       if (!str) return '';
       return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
     };
-    const key = normalize(itemText);
+    const searchKey = normalize(itemText);
     
-    const categoryMapping: Partial<Record<CategoryKey, string>> = {
+    const categoryMapping: Record<string, string> = {
       'profissoes': 'profissoes',
       'classes': 'classeSocial',
       'v_conditions': 'condicoesVisiveis',
@@ -113,13 +113,53 @@ export const CatalogViewer: React.FC = () => {
       'etnias': 'etnia'
     };
 
-    const registryKey = categoryMapping[selectedCategory];
-    if (!registryKey) return null;
+    const registryCategory = categoryMapping[selectedCategory];
+    if (!registryCategory) return null;
 
-    const data = (RULES_REGISTRY as any)[registryKey]?.[key];
-    if (!data) return null;
+    const categoryData = (RULES_REGISTRY as any)[registryCategory];
+    if (!categoryData) return null;
 
-    return { key, category: registryKey, data };
+    // First try direct lookup with normalized search key
+    let itemData = categoryData[searchKey];
+    let actualKey = searchKey;
+
+    // If not found, try finding the key by normalizing items in the category
+    if (!itemData) {
+      const foundKey = Object.keys(categoryData).find(k => normalize(k) === searchKey);
+      if (foundKey) {
+        itemData = categoryData[foundKey];
+        actualKey = foundKey;
+      }
+    }
+
+    // Fallback for rastros/shiny crossover - sometimes they are mixed in the registry
+    if (!itemData && (selectedCategory === 'rastros' || selectedCategory === 'shiny')) {
+      const otherCategory = selectedCategory === 'rastros' ? 'shinies' : 'rastro';
+      const otherData = (RULES_REGISTRY as any)[otherCategory];
+      if (otherData) {
+        const foundKey = Object.keys(otherData).find(k => normalize(k) === searchKey);
+        if (foundKey) {
+          itemData = otherData[foundKey];
+          actualKey = foundKey;
+        }
+      }
+    }
+
+    // Still not found? Try a partial match if it's a long string
+    if (!itemData && searchKey.length > 5) {
+      const foundKey = Object.keys(categoryData).find(k => {
+        const normalizedK = normalize(k);
+        return normalizedK.includes(searchKey) || searchKey.includes(normalizedK);
+      });
+      if (foundKey) {
+        itemData = categoryData[foundKey];
+        actualKey = foundKey;
+      }
+    }
+
+    if (!itemData) return null;
+
+    return { key: actualKey, category: registryCategory, data: itemData };
   }, [selectedCategory]);
 
   // Data Extraction Logic
@@ -306,34 +346,34 @@ export const CatalogViewer: React.FC = () => {
   const Icon = categories.find(c => c.key === selectedCategory)?.icon || Book;
 
   return (
-    <div className="flex-1 flex flex-col bg-dark-bg h-full overflow-hidden">
+    <div className="flex-1 flex flex-col bg-dark-bg h-dvh md:h-full overflow-hidden">
       {/* Header Hook */}
-      <div className="shrink-0 p-6 border-b border-dark-border bg-dark-surface/30">
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="shrink-0 p-4 md:p-6 border-b border-dark-border bg-dark-surface/30">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
           <div className="space-y-1">
-            <h2 className="text-xl font-display font-black uppercase tracking-widest text-ice flex items-center gap-3">
-              <Icon className="w-6 h-6 text-gold" />
-              Visualizador de Catálogos
+            <h2 className="text-lg md:text-xl font-display font-black uppercase tracking-widest text-ice flex items-center gap-3">
+              <Icon className="w-5 h-5 md:w-6 md:h-6 text-gold" />
+              Catálogo
             </h2>
-            <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Dicionário de dados procedurais e probabilidades estruturadas</p>
+            <p className="text-[9px] font-mono text-white/40 uppercase tracking-widest hidden md:block">Dicionário de dados procedurais e probabilidades estruturadas</p>
           </div>
 
-          <div className="flex flex-wrap gap-3 items-center w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+          <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-3 items-center w-full md:w-auto">
+            <div className="relative flex-1 md:w-48 lg:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/20" />
               <input 
                 type="text" 
-                placeholder="Filtrar catálogo..." 
+                placeholder="Filtrar..." 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-black/40 border border-dark-border rounded px-9 py-2 text-xs font-mono text-gold focus:outline-none focus:border-gold/40"
+                className="w-full bg-black/40 border border-dark-border rounded px-8 py-1.5 text-[10px] font-mono text-gold focus:outline-none focus:border-gold/40"
               />
             </div>
             
             <select 
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value as CategoryKey)}
-              className="bg-black/40 border border-dark-border rounded px-4 py-2 text-xs font-mono text-gold focus:outline-none focus:border-gold/40 appearance-none min-w-[180px]"
+              className="flex-1 md:flex-none bg-black/40 border border-dark-border rounded px-3 py-1.5 text-[10px] font-mono text-gold focus:outline-none focus:border-gold/40 appearance-none min-w-[140px]"
             >
               {categories.map(cat => (
                 <option key={cat.key} value={cat.key}>{cat.label}</option>
@@ -342,19 +382,19 @@ export const CatalogViewer: React.FC = () => {
 
             <button 
               onClick={handleCopyAll}
-              className={`flex items-center gap-2 px-4 py-2 rounded font-mono text-[10px] uppercase tracking-widest transition-all ${
+              className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded font-mono text-[9px] uppercase tracking-widest transition-all w-full md:w-auto ${
                 copied ? 'bg-emerald-500 text-black font-bold' : 'bg-gold text-black hover:bg-gold-hover font-bold shadow-lg'
               }`}
             >
-              {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-              {copied ? 'Copiado!' : 'Copiar Tudo'}
+              {copied ? <Check className="w-2.5 h-2.5" /> : <Copy className="w-2.5 h-2.5" />}
+              {copied ? 'Copiado!' : 'Copiar'}
             </button>
           </div>
         </div>
       </div>
 
       {/* Main List Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6 pb-20 md:pb-6">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {data.length > 0 ? (
@@ -420,8 +460,10 @@ export const CatalogViewer: React.FC = () => {
       </div>
 
       {/* Footer Info */}
-      <div className="shrink-0 p-4 border-t border-dark-border bg-black/40 text-center">
-        <p className="text-[9px] font-mono text-white/10 uppercase tracking-[0.5em]">Total de {data.length} entradas detectadas no setor {selectedCategory.toUpperCase()}</p>
+      <div className="shrink-0 py-2.5 px-4 border-t border-dark-border bg-black/40 text-center">
+        <p className="text-[8px] md:text-[9px] font-mono text-white/20 uppercase tracking-[0.3em] md:tracking-[0.5em]">
+          Total de {data.length} entradas <span className="hidden md:inline">detectadas no setor {selectedCategory.toUpperCase()}</span>
+        </p>
       </div>
     </div>
   );

@@ -99,8 +99,19 @@ export const calculateDeclarativeWeight = (
   };
   const itemKey = normalize(itemName);
   
-  const registryItem = RULES_REGISTRY[category]?.[itemKey];
+  const categoryData = (RULES_REGISTRY as any)[category];
+  if (!categoryData) return fallbackWeightFn(ctx);
+
+  let registryItem = categoryData[itemKey];
   
+  // If not found by direct normalized key, search through keys with normalization
+  if (!registryItem) {
+    const foundKey = Object.keys(categoryData).find(k => normalize(k) === itemKey);
+    if (foundKey) {
+      registryItem = categoryData[foundKey];
+    }
+  }
+
   // Se NÃO existir no registro, executa o fallback (código antigo)
   if (!registryItem) {
     // SHORT-CIRCUIT: Trava de Migração para Níveis 1 e 2 de Condições Visíveis
@@ -901,7 +912,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   if (!options.fixedShiny && Math.random() < 0.05) {
      const validEvents = SHINY_EVENTS.filter(e => !e.condition || e.condition(initialCtx));
      const weights = validEvents.map(e => {
-         let w = calculateDeclarativeWeight('shinies', e.text, initialCtx, e.weight);
+         let w = calculateDeclarativeWeight('shinies', e.text, initialCtx, e.weight, migratedItems);
          if (e.text === "Foi vítima de um stalker obsessivo que destruiu sua paz durante anos") {
              if (bioSex === "Feminino") w *= 5.0;
              if (idade >= 16 && idade <= 22) w *= 3.0;
@@ -1241,7 +1252,7 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   // 4. Draft Context for Condition Picking
   const ctx: ConditionContext = {
     ...initialCtx,
-    idade: finalIdade, sexo: bioSex, orientacao, classe: finalClasse, regiao, 
+    idade: finalIdade, sexo: bioSex, orientacao, classe: finalClasse, classeSocial: finalClasse, regiao, 
     identidadeGenero, termoIdentidade, transgenero: !isCis,
     capital: perfilUrbanoStr.includes("Capital"), 
     trabalha: false,
@@ -1263,23 +1274,147 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     obeso: imc >= 30.0 && !massaMagra,
     biotipoAnomalia, 
     massaMagra, 
-    corporativo: false,
-    sobreviventeDesastre, ruinaFinanceira, protecaoTestemunha, paranoiaFortuna,
-    comaPosAcidente, incestoAbuso, incestoConsentido, matouAlguem, exDetento,
-    abandonadoAltar, segundaFamiliaConjuge, filhoFugiu, trocadoMaternidade, 
-    casamentoInteressePaixao, expulsaGravidez, criouFilhoAmigo, escolhaFamiliarPerigo, 
-    irmaoGemeoAdotado, guardaIrmaosPrisaoPais,
-    alergiaSolar, perdeuMembroAcidente, amnesiaRetrografa, catalepsiaCronica,
-    paraplegiaEsporte, mutacoesCobaia, anacusiaTotal, transplanteCoracaoCriminoso,
-    ataqueAnimalSelvagem, erroMedicoGrosseiro,
-    refemAssalto, acusadoFalsamente, casaInvadida, acidenteFatalPedestre,
-    testemunhouQuedaAviao, seitaExtremistaAbusiva, vitimaStalker, saberCrimeFamoso,
-    falenciaEmpresaFamilia, piramideFinanceira, demissaoHumilhante, vendeuPatenteBarato,
-    vicioJogoPerdaCasa, traicaoSocioDivida, doouPatrimonioFarsa, malaDinheiroSujo,
-    ataqueHackerZerouContas, obraArteDestruida: initialCtx.obraArteDestruida,
-    restosMortaisQuintal, herancaDesconhecido, herdeiroImperioCriminoso, naufragioDeriva,
-    atingidoRaio, carroEsmagadoCarreta, canceladoInternet, isolamentoRemoto,
-    deportadoErroBurocratico, heroiAnonimo,
+    corporativo: initialCtx.corporativo,
+    isolamentoTotal: initialCtx.isolamentoTotal || isolamentoRemoto,
+    falenciaLuto: initialCtx.falenciaLuto, 
+    infartoPrevio: infartoPrevioShiny,
+    drogasPesadas: initialCtx.drogasPesadas,
+    fumanteQuimico: initialCtx.fumanteQuimico,
+    atletaMilitar: initialCtx.atletaMilitar,
+    trabalhadorNuclear: initialCtx.trabalhadorNuclear,
+    baixaSaudeMental: initialCtx.baixaSaudeMental,
+    intoxicacaoMedicamentosa: initialCtx.intoxicacaoMedicamentosa,
+    tecnologia: initialCtx.tecnologia,
+    setor: initialCtx.setor,
+    estado: initialCtx.estado,
+    geneticaFamiliar: initialCtx.geneticaFamiliar,
+    braçal: options.fixedManualLabor ?? initialCtx.braçal, 
+    sop: initialCtx.sop,
+    peleClara: initialCtx.peleClara,
+    tdah: initialCtx.tdah,
+    insonia: initialCtx.insonia,
+    turnosNoturnos: initialCtx.turnosNoturnos,
+    idoso: initialCtx.idoso,
+    botox: initialCtx.botox,
+    lutador: initialCtx.lutador,
+    violencia: initialCtx.violencia,
+    lutoSevero: initialCtx.lutoSevero,
+    corticoides: initialCtx.corticoides,
+    exPresidiario: initialCtx.exPresidiario,
+    gangue: initialCtx.gangue,
+    autoimune: initialCtx.autoimune,
+    sedentario: initialCtx.sedentario,
+    trabalhoRisco: initialCtx.trabalhoRisco,
+    alcoolicoAbstinencia: initialCtx.alcoolicoAbstinencia,
+    fogo: initialCtx.fogo,
+    hepatite: initialCtx.hepatite,
+    miopiaCongenita: initialCtx.miopiaCongenita,
+    fumantePesado: initialCtx.fumantePesado,
+    professorCantor: initialCtx.professorCantor,
+    acidenteTransito: initialCtx.acidenteTransito,
+    doencaPulmonarCoracao: initialCtx.doencaPulmonarCoracao,
+    ensolarado: initialCtx.ensolarado,
+    moradorRua: initialCtx.moradorRua,
+    dependenteQuimicoAtivo: initialCtx.dependenteQuimicoAtivo,
+    trabalhoBarulhento: initialCtx.trabalhoBarulhento,
+    acidenteMotorLesao: initialCtx.acidenteMotorLesao,
+    baixaIodo: initialCtx.baixaIodo,
+    diabeticoLesaoPe: initialCtx.diabeticoLesaoPe,
+    colesterolAlto: initialCtx.colesterolAlto,
+    zonaRuralRemota: options.fixedRemoteArea ?? initialCtx.zonaRuralRemota,
+    herniaDisco: initialCtx.herniaDisco,
+    internacaoUTI: initialCtx.internacaoUTI || internacaoUTI,
+    mausHabitos: initialCtx.mausHabitos,
+    traumaViolento: initialCtx.traumaViolento,
+    interrogatorioIntimidacao: initialCtx.interrogatorioIntimidacao,
+    quimioterapia: initialCtx.quimioterapia,
+    avcExtenso: initialCtx.avcExtenso,
+    glaucoma: initialCtx.glaucoma,
+    cancerLaringe: initialCtx.cancerLaringe,
+    retinopatia: initialCtx.retinopatia,
+    cancerMama: initialCtx.cancerMama,
+    cancerMamaMetastatico: initialCtx.cancerMamaMetastatico,
+    cancerProstataMetastatico: initialCtx.cancerProstataMetastatico,
+    posBariatrica: initialCtx.posBariatrica,
+    depressaoProfunda: initialCtx.depressaoProfunda,
+    cancerIntestinalCrohn: initialCtx.cancerIntestinalCrohn,
+    zonaTropical: initialCtx.zonaTropical,
+    escleroseMultipla: initialCtx.escleroseMultipla,
+    tumorHipofisario: initialCtx.tumorHipofisario,
+    transtornoBorderlineDepressao: initialCtx.transtornoBorderlineDepressao,
+    anorexiaContext: initialCtx.anorexiaContext,
+    neurologico: initialCtx.neurologico,
+    veteranoGuerra: initialCtx.veteranoGuerra,
+    explosao: initialCtx.explosao,
+    bombeiro: initialCtx.bombeiro,
+    traumaGrave: initialCtx.traumaGrave || traumaGraveShiny,
+    catarataContext: initialCtx.catarataContext,
+    endemiaRural: initialCtx.endemiaRural,
+    compulsaoTrauma: initialCtx.compulsaoTrauma,
+    duchenneContext: initialCtx.duchenneContext,
+    talidomidaContext: initialCtx.talidomidaContext,
+    mergulhoVelocidade: initialCtx.mergulhoVelocidade,
+    lesaoTronco: initialCtx.lesaoTronco,
+    sepse: initialCtx.sepse,
+    marginalizado: initialCtx.marginalizado,
+    cancerPeleNaoTratado: initialCtx.cancerPeleNaoTratado,
+    sobreviventeDesastre,
+    ruinaFinanceira,
+    protecaoTestemunha,
+    paranoiaFortuna,
+    comaPosAcidente,
+    incestoAbuso,
+    incestoConsentido,
+    matouAlguem,
+    exDetento,
+    abandonadoAltar,
+    segundaFamiliaConjuge,
+    filhoFugiu,
+    trocadoMaternidade,
+    casamentoInteressePaixao,
+    expulsaGravidez,
+    criouFilhoAmigo,
+    escolhaFamiliarPerigo,
+    irmaoGemeoAdotado,
+    guardaIrmaosPrisaoPais,
+    alergiaSolar,
+    perdeuMembroAcidente,
+    amnesiaRetrografa,
+    catalepsiaCronica,
+    paraplegiaEsporte,
+    mutacoesCobaia,
+    anacusiaTotal,
+    transplanteCoracaoCriminoso,
+    ataqueAnimalSelvagem,
+    erroMedicoGrosseiro,
+    refemAssalto,
+    acusadoFalsamente,
+    casaInvadida,
+    acidenteFatalPedestre,
+    testemunhouQuedaAviao,
+    seitaExtremistaAbusiva,
+    vitimaStalker,
+    saberCrimeFamoso,
+    falenciaEmpresaFamilia,
+    piramideFinanceira,
+    demissaoHumilhante,
+    vendeuPatenteBarato,
+    vicioJogoPerdaCasa,
+    traicaoSocioDivida,
+    doouPatrimonioFarsa,
+    malaDinheiroSujo,
+    ataqueHackerZerouContas,
+    obraArteDestruida: initialCtx.obraArteDestruida,
+    restosMortaisQuintal,
+    herancaDesconhecido,
+    herdeiroImperioCriminoso,
+    naufragioDeriva,
+    atingidoRaio,
+    carroEsmagadoCarreta,
+    canceladoInternet,
+    isolamentoRemoto,
+    deportadoErroBurocratico,
+    heroiAnonimo,
     vingativo: initialCtx.vingativo,
     imigranteRefugiado: initialCtx.imigranteRefugiado,
     altruista: initialCtx.altruista,
@@ -1288,22 +1423,17 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
     agorafobia: initialCtx.agorafobia,
     nerd: initialCtx.nerd,
     depressao: initialCtx.depressao,
-    infartoPrevio: infartoPrevioShiny,
-    doouOrgaoVital, exMilitarDesertor,
-    braçal: options.fixedManualLabor ?? initialCtx.braçal,
-    zonaRuralRemota: options.fixedRemoteArea ?? initialCtx.zonaRuralRemota,
+    doouOrgaoVital,
+    exMilitarDesertor,
     vulneravel: finalClasse.includes("Classe E") || finalClasse.includes("Vulnerável"),
     hipertenso: initialCtx.hipertenso,
     tierMetropole: initialCtx.tierMetropole,
     traumaArquivado: initialCtx.traumaArquivado,
     drogasInjetaveis: initialCtx.drogasInjetaveis,
     proSe: initialCtx.proSe,
-    transporte: "", // Will be set after roll below
+    transporte: "",
     habitacao: faker.location.streetAddress()
   };
-
-  const transRoll = getLogistics(finalClasse, regiao, perfilUrbanoStr, ctx, migratedItems);
-  ctx.transporte = transRoll.value;
 
   const pickCondition = (pool: Record<number, CharacterCondition[]>, minLevel: number = 0, type: 'v' | 'nv', currentV: string[], currentNV: string[]) => {
     const selected: { name: string, prob: ProbData }[] = [];
@@ -1504,6 +1634,21 @@ export function generateCharacterData(options: GenerationOptions = {}): Characte
   probs.vConditions = vProbs;
   probs.nvConditions = nvProbs;
   probs.vConditionsNone = { prob: 88.0 };
+
+  // Check for locomotion issues after conditions are settled
+  ctx.locomocaoComprometida = [...conditionsV, ...conditionsNV].some(c => {
+    const lower = c.toLowerCase();
+    return lower.includes("paraplegia") || 
+           lower.includes("tetraplegia") || 
+           lower.includes("cadeirante") || 
+           lower.includes("cadeira de rodas") ||
+           lower.includes("amputação de membro inferior") ||
+           lower.includes("amputação bilateral");
+  });
+
+  const transRoll = getLogistics(finalClasse, regiao, perfilUrbanoStr, ctx, migratedItems);
+  ctx.transporte = transRoll.value;
+
   probs.nvConditionsNone = { prob: 80.0 };
   probs.fetichesNone = { prob: 70.0 };
 

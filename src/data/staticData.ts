@@ -194,7 +194,7 @@ export const SHINY_EVENTS: ShinyEvent[] = [
   { text: "Vendeu a patente de uma invenção bilionária por um valor irrisório antes do sucesso", weight: (ctx) => 1.0 },
   { text: "Desenvolveu um vício incontrolável em jogos de azar e perdeu a própria casa", condition: (ctx) => ctx.idade > 21, weight: (ctx) => 1.0 },
   { text: "Foi traído pelo parceiro de negócios e assumiu sozinho uma dívida milionária", condition: (ctx) => ctx.idade > 25 && (ctx.classe.includes("Classe Média Baixa") || ctx.classe.includes("Classe Média Alta") || ctx.classe.includes("Elite")), weight: (ctx) => 1.0 },
-  { text: "Doou todo o seu patrimônio para uma organização que se revelou uma farsa", condition: (ctx) => ctx.idade > 25, weight: (ctx) => 1.0 },
+  { text: "Doou todo o seu patrimônio para uma organização que se revelou uma farsa", weight: (ctx) => 1.0 },
   { text: "Encontrou uma mala cheia de dinheiro sujo e vive fugindo dos verdadeiros donos", weight: (ctx) => 1.0 },
   { text: "Foi vítima de um ataque hacker que zerou suas contas e destruiu seu crédito", weight: (ctx) => 1.0 },
   { text: "Trabalhou anos em uma obra de arte-prima que foi destruída em um incêndio", weight: (ctx) => 1.0 },

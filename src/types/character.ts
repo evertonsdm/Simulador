@@ -229,6 +229,8 @@ export interface ConditionContext {
   transporte: string;
   habitacao: string;
   profissao: string;
+  classeSocial?: string;
+  locomocaoComprometida?: boolean;
   tierMetropole: 'tier_alfa' | 'tier_beta' | 'tier_gama' | 'interior_alfa' | 'interior_beta' | 'interior_gama';
 }
 

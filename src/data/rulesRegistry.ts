@@ -1498,6 +1498,15 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
         { "property": "cancerMamaMetastatico", "operator": "!=", "value": true, "multiplier": 0.0 }
       ]
     },
+    "dooutodooseupatrimônioparaumaorganizaçãoqueserevelouumafarsa": {
+      "name": "Doou todo o seu patrimônio para uma organização que se revelou uma farsa",
+      "baseWeight": 1,
+      "rules": [
+        { "property": "idade", "operator": "<=", "value": 25, "multiplier": 0 },
+        { "property": "altruista", "operator": "==", "value": true, "multiplier": 3 },
+        { "property": "isolamentoTotal", "operator": "==", "value": true, "multiplier": 2 }
+      ]
+    },
     "cuidadospaliativoscâncerdepróstata": {
       baseWeight: 1.0,
       rules: [
@@ -1951,37 +1960,92 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
     "mobilidadeativaapebicicleta": {
       "name": "Mobilidade Ativa (A pé / Bicicleta)",
       "baseWeight": 1.0,
-      "rules": []
+      "rules": [
+        { "property": "tierMetropole", "operator": "==", "value": "interior_gama", "multiplier": 2.5 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_beta", "multiplier": 1.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe E (Extrema Pobreza)", "multiplier": 3.0 },
+        { "property": "classeSocial", "operator": "includes", "value": "Base Precarizada", "multiplier": 1.5 },
+        { "property": "etnia", "operator": "==", "value": "Indígena", "multiplier": 2.0 },
+        { "property": "locomocaoComprometida", "operator": "==", "value": true, "multiplier": 0.0 }
+      ]
     },
     "coletivodemassametrotrembrt": {
       "name": "Coletivo de Massa (Metrô / Trem / BRT)",
       "baseWeight": 1.0,
-      "rules": []
+      "rules": [
+        { "property": "tierMetropole", "operator": "==", "value": "tier_alfa", "multiplier": 2.5 },
+        { "property": "tierMetropole", "operator": "==", "value": "tier_beta", "multiplier": 1.5 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_alfa", "multiplier": 0.8 },
+        { "property": "tierMetropole", "operator": "==", "value": "tier_gama", "multiplier": 0.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_beta", "multiplier": 0.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_gama", "multiplier": 0.0 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe Média Baixa", "multiplier": 2.0 },
+        { "property": "classeSocial", "operator": "includes", "value": "Base Precarizada", "multiplier": 1.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Elite", "multiplier": 0.1 },
+        { "property": "etnia", "operator": "==", "value": "Parda", "multiplier": 1.2 },
+        { "property": "etnia", "operator": "==", "value": "Preta", "multiplier": 1.2 }
+      ]
     },
     "publicosobrepneusonibusurbanolotacao": {
       "name": "Público sobre Pneus (Ônibus urbano / Lotação)",
       "baseWeight": 1.0,
-      "rules": []
+      "rules": [
+        { "property": "tierMetropole", "operator": "==", "value": "tier_gama", "multiplier": 2.5 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_beta", "multiplier": 2.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "tier_beta", "multiplier": 2.0 },
+        { "property": "classeSocial", "operator": "includes", "value": "Base Precarizada", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe Média Baixa", "multiplier": 2.0 },
+        { "property": "classeSocial", "operator": "includes", "value": "Elite", "multiplier": 0.1 }
+      ]
     },
     "transportesobdemandaapptaxi": {
       "name": "Transporte Sob Demanda (App / Táxi)",
       "baseWeight": 1.0,
-      "rules": []
+      "rules": [
+        { "property": "tierMetropole", "operator": "==", "value": "tier_alfa", "multiplier": 2.5 },
+        { "property": "tierMetropole", "operator": "==", "value": "tier_beta", "multiplier": 1.5 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_gama", "multiplier": 0.2 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe Média Alta", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Elite", "multiplier": 1.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe E (Extrema Pobreza)", "multiplier": 0.0 }
+      ]
     },
     "fretadocorporativoindustrial": {
       "name": "Fretado Corporativo / Industrial",
       "baseWeight": 1.0,
-      "rules": []
+      "rules": [
+        { "property": "tierMetropole", "operator": "==", "value": "interior_alfa", "multiplier": 3.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_beta", "multiplier": 1.5 },
+        { "property": "tierMetropole", "operator": "==", "value": "tier_alfa", "multiplier": 1.2 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe Média Baixa", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe Média Alta", "multiplier": 1.2 }
+      ]
     },
     "veiculopropriomotocicleta": {
       "name": "Veículo Próprio (Motocicleta)",
       "baseWeight": 1.0,
-      "rules": []
+      "rules": [
+        { "property": "tierMetropole", "operator": "==", "value": "interior_gama", "multiplier": 3.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "interior_beta", "multiplier": 2.5 },
+        { "property": "regiao", "operator": "==", "value": "Norte", "multiplier": 2.0 },
+        { "property": "regiao", "operator": "==", "value": "Nordeste", "multiplier": 1.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Base Precarizada", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe Média Baixa", "multiplier": 1.8 },
+        { "property": "classeSocial", "operator": "includes", "value": "Elite", "multiplier": 0.2 }
+      ]
     },
     "veiculopropriocarro": {
       "name": "Veículo Próprio (Carro)",
       "baseWeight": 1.0,
-      "rules": []
+      "rules": [
+        { "property": "tierMetropole", "operator": "==", "value": "interior_alfa", "multiplier": 2.0 },
+        { "property": "tierMetropole", "operator": "==", "value": "tier_beta", "multiplier": 1.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Elite", "multiplier": 3.0 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe Média Alta", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "includes", "value": "Base Precarizada", "multiplier": 0.1 },
+        { "property": "classeSocial", "operator": "includes", "value": "Classe E (Extrema Pobreza)", "multiplier": 0.0 },
+        { "property": "etnia", "operator": "==", "value": "Branca", "multiplier": 1.5 }
+      ]
     }
   },
   relacional: {

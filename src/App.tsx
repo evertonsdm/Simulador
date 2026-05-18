@@ -599,19 +599,19 @@ export default function App() {
 
         {/* Content Scroll Area */}
         {activeView === 'mapper' ? (
-          <div className="flex-1 w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-24">
+          <div className="flex-1 w-full overflow-hidden flex flex-col">
             <ConditionMapperTool />
           </div>
         ) : activeView === 'catalog' ? (
-          <div className="flex-1 w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-24">
+          <div className="flex-1 w-full overflow-hidden flex flex-col">
             <CatalogViewer />
           </div>
         ) : activeView === 'sandbox' ? (
-          <div className="flex-1 w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-24">
+          <div className="flex-1 w-full overflow-hidden flex flex-col">
             <ProbabilitySandbox onFinish={handleSandboxFinish} />
           </div>
         ) : activeView === 'ruleforge' ? (
-          <div className="flex-1 w-full h-full overflow-y-auto flex flex-col custom-scrollbar pb-24">
+          <div className="flex-1 w-full overflow-hidden flex flex-col">
             <RuleForge />
           </div>
         ) : (
