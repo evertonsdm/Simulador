@@ -118,6 +118,7 @@ export const NIVEIS_NV: Record<number, CharacterCondition[]> = {
     }
   ],
   4: [
+    { name: "Lombalgia Crônica (Nível 4 - Moderada)", weight: (ctx) => (ctx.profissao === "Repositor de Supermercado" ? 6.0 : 1.0) },
     { name: "Apneia do Sono Gravidade Média", weight: (ctx) => {
       let weight = 1.0;
       if (ctx.obesidadeII || ctx.obesidadeIII) weight *= 4.0;
@@ -395,6 +396,7 @@ export const NIVEIS_V: Record<number, CharacterCondition[]> = {
     { name: "Sobrepeso Visível", weight: (ctx) => (ctx.sobrepeso ? 2.5 : ctx.doouOrgaoVital ? 1.5 : 1.0) }
   ],
   4: [
+    { name: "Tendinite Ocupacional de Punho", weight: (ctx) => (ctx.profissao === "Repositor de Supermercado" ? 5.5 : ctx.profissao === "Recepcionista e Atendente" ? 4.8 : 1.0) },
     { name: "Estrabismo Divergente", weight: (ctx) => 1.0 },
     { name: "Tremor Essencial (Mãos)", weight: (ctx) => (ctx.atingidoRaio || ctx.malaDinheiroSujo || ctx.escolhaFamiliarPerigo ? 15.0 : ctx.idoso || ctx.ansiedade ? 2.5 : 1.0) },
     { name: "Claudicação Leve ao Andar", weight: (ctx) => (ctx.comaPosAcidente ? 6.0 : ctx.exMilitarDesertor ? 3.0 : 1.0) }
@@ -432,6 +434,10 @@ export const NIVEIS_V: Record<number, CharacterCondition[]> = {
         if (ctx.trabalhoRisco) weight *= 2.5;
         if (ctx.braçal) weight *= 2.0;
         if (ctx.acidenteTransito) weight *= 3.0;
+        if (ctx.profissao === "Repositor de Supermercado") weight *= 2.5;
+        if (ctx.classeSocial === "Base Precarizada / Vulnerável") weight *= 1.6;
+        if (ctx.classeSocial === "Classe Média Baixa / A Engrenagem") weight *= 1.2;
+        if (ctx.idade < 18) weight *= 0.1;
         return weight;
       }
     },

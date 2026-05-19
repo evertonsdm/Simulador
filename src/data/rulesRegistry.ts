@@ -339,9 +339,28 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
           "multiplier": 2
         }
       ]
+    },
+    "tendiniteocupacionaldepunho": {
+      "name": "Tendinite Ocupacional de Punho",
+      "baseWeight": 0.25,
+      "rules": [
+        { "property": "profissao", "operator": "==", "value": "Repositor de Supermercado", "multiplier": 5.5 },
+        { "property": "profissao", "operator": "==", "value": "Recepcionista e Atendente", "multiplier": 4.8 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 1.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 1.2 },
+        { "property": "idade", "operator": "<", "value": 18, "multiplier": 0.2 }
+      ]
     }
   },
   condicoesNaoVisiveis: {
+    "lombalgiacronicanivel4moderada": {
+      "name": "Lombalgia Crônica (Nível 4 - Moderada)",
+      "baseWeight": 0.4,
+      "rules": [
+        { "property": "profissao", "operator": "==", "value": "Repositor de Supermercado", "multiplier": 6.0 },
+        { "property": "idade", "operator": ">=", "value": 30, "multiplier": 1.4 }
+      ]
+    },
     "tdahgrave(disfunçãoexecutivaehiperfocorotativo)": {
       "name": "TDAH Grave (Disfunção Executiva e Hiperfoco Rotativo)",
       "baseWeight": 0.006,
@@ -598,34 +617,18 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
         { "property": "negroPardo", "operator": "==", "value": true, "multiplier": 1.8 }
       ]
     },
-    "amputação(dedosoupartedamão)": {
+    "amputacaodedosoupartedamao": {
       "name": "Amputação (Dedos ou Parte da Mão)",
-      "baseWeight": 1,
+      "baseWeight": 0.65,
       "rules": [
-        {
-          "property": "perdeuMembroAcidente",
-          "operator": "==",
-          "value": true,
-          "multiplier": 15
-        },
-        {
-          "property": "trabalhoRisco",
-          "operator": "==",
-          "value": true,
-          "multiplier": 2.5
-        },
-        {
-          "property": "braçal",
-          "operator": "==",
-          "value": true,
-          "multiplier": 2
-        },
-        {
-          "property": "acidenteTransito",
-          "operator": "==",
-          "value": true,
-          "multiplier": 3
-        }
+        { "property": "perdeuMembroAcidente", "operator": "==", "value": true, "multiplier": 15.0 },
+        { "property": "trabalhoRisco", "operator": "==", "value": true, "multiplier": 2.5 },
+        { "property": "braçal", "operator": "==", "value": true, "multiplier": 2.0 },
+        { "property": "acidenteTransito", "operator": "==", "value": true, "multiplier": 3.0 },
+        { "property": "profissao", "operator": "==", "value": "Repositor de Supermercado", "multiplier": 2.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 1.6 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 1.2 },
+        { "property": "idade", "operator": "<", "value": 18, "multiplier": 0.1 }
       ]
     },
     "câncerdepróstata(estágioinicial)": {
@@ -825,6 +828,53 @@ export const RULES_REGISTRY: Record<string, Record<string, RegistryItem>> = {
     }
   },
   profissoes: {
+    "repositordesupermercado": {
+      "name": "Repositor de Supermercado",
+      "baseWeight": 6.0,
+      "rules": [
+        { "property": "idade", "operator": "<", "value": 18, "multiplier": 0.0 },
+        { "property": "idade", "operator": ">=", "value": 18, "multiplier": 1.6 },
+        { "property": "idade", "operator": "<=", "value": 30, "multiplier": 1.4 },
+        { "property": "idade", "operator": ">", "value": 50, "multiplier": 0.4 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 1.8 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 1.3 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Alta / Estabilidade", "multiplier": 0.1 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.0 }
+      ]
+    },
+    "recepcionistaatendente": {
+      "name": "Recepcionista e Atendente",
+      "baseWeight": 7.5,
+      "rules": [
+        { "property": "idade", "operator": "<", "value": 18, "multiplier": 1.2 },
+        { "property": "idade", "operator": ">=", "value": 18, "multiplier": 1.7 },
+        { "property": "idade", "operator": "<=", "value": 28, "multiplier": 1.4 },
+        { "property": "idade", "operator": ">", "value": 45, "multiplier": 0.5 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 1.3 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 1.8 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Alta / Estabilidade", "multiplier": 0.3 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.0 }
+      ]
+    },
+    "auxiliarassistenteadministrativo": {
+      "name": "Auxiliar/Assistente Administrativo",
+      "baseWeight": 8.5,
+      "rules": [
+        { "property": "idade", "operator": "<", "value": 18, "multiplier": 1.2 },
+        { "property": "idade", "operator": ">=", "value": 18, "multiplier": 1.8 },
+        { "property": "idade", "operator": "<=", "value": 25, "multiplier": 1.5 },
+        { "property": "idade", "operator": ">", "value": 45, "multiplier": 0.6 },
+        { "property": "regiao", "operator": "==", "value": "Sudeste", "multiplier": 1.7 },
+        { "property": "regiao", "operator": "==", "value": "Sul", "multiplier": 1.3 },
+        { "property": "estado", "operator": "==", "value": "SP", "multiplier": 1.5 },
+        { "property": "estado", "operator": "==", "value": "RJ", "multiplier": 1.2 },
+        { "property": "estado", "operator": "==", "value": "DF", "multiplier": 1.6 },
+        { "property": "classeSocial", "operator": "==", "value": "Base Precarizada / Vulnerável", "multiplier": 1.2 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Baixa / A Engrenagem", "multiplier": 1.7 },
+        { "property": "classeSocial", "operator": "==", "value": "Classe Média Alta / Estabilidade", "multiplier": 0.4 },
+        { "property": "classeSocial", "operator": "==", "value": "Elite / Alta Renda", "multiplier": 0.0 }
+      ]
+    },
     "trabalhadordazonafranca": {
       "name": "Trabalhador da Zona Franca",
       "baseWeight": 0.5,

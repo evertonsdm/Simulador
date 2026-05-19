@@ -27,6 +27,68 @@ interface BatchStats {
 }
 
 self.onmessage = (e: MessageEvent) => {
+  if (e.data.type === 'calculator') {
+    const { criteria } = e.data;
+    const count = 10000;
+    let matches = 0;
+    
+    for (let i = 0; i < count; i++) {
+      const res = generateCharacterData();
+      const meta = res.metadata;
+      
+      let allMatch = true;
+      for (const criterion of criteria) {
+        const { category, key, value } = criterion;
+        
+        switch (category) {
+          case 'profissoes':
+            if (meta.profissao !== value) allMatch = false;
+            break;
+          case 'condicoesVisiveis':
+            if (!meta.vConditions.includes(value)) allMatch = false;
+            break;
+          case 'condicoesNaoVisiveis':
+            if (!meta.nvConditions.includes(value)) allMatch = false;
+            break;
+          case 'regiao':
+            if (meta.regiao !== value) allMatch = false;
+            break;
+          case 'classeSocial':
+            if (meta.classe !== value) allMatch = false;
+            break;
+          case 'etnia':
+            if (meta.etnia !== value) allMatch = false;
+            break;
+          case 'orientacao':
+            if (meta.orientacao !== value) allMatch = false;
+            break;
+          case 'bioSex':
+            if (meta.bioSex !== value) allMatch = false;
+            break;
+          case 'identidade':
+            if (!meta.genero.startsWith(value)) allMatch = false;
+            break;
+          case 'tribos':
+            if (meta.triboUrbana !== value) allMatch = false;
+            break;
+          default:
+            break;
+        }
+        
+        if (!allMatch) break;
+      }
+      
+      if (allMatch) matches++;
+      
+      if ((i + 1) % 500 === 0) {
+        self.postMessage({ type: 'progress', current: i + 1, total: count });
+      }
+    }
+    
+    self.postMessage({ type: 'calculator_complete', matches, total: count });
+    return;
+  }
+
   const { count } = e.data;
   
   const stats: BatchStats = {

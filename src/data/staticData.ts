@@ -23,9 +23,9 @@ export const PROFISSOES_CATEGORIZADAS = {
     "Ajudante de Carga e Descarga", "Atendente de Padaria", "Padeiro", "Auxiliar de Cozinha", "Auxiliar de Limpeza", 
     "Costureira de Facção (Trabalho Informal)", "Cuidador de Idosos (Sem Formação)", "Entregador de Aplicativo", 
     "Frentista", "Gari / Coletor de Resíduos", "Motorista de Aplicativo (Tempo Integral)", 
-    "Operador de Caixa", "Porteiro", "Repositor de Supermercado", "Motorista de Lotação / Van Escolar",
+    "Operador de Caixa", "Porteiro", "Repositor de Supermercado", "Recepcionista e Atendente", "Motorista de Lotação / Van Escolar",
     "Operador de Empilhadeira", "Recepcionista de Clínica Médica", "Técnico em Enfermagem",
-    "Técnico de Manutenção Predial", "Eletricista Predial", "Assistente Administrativo",
+    "Técnico de Manutenção Predial", "Eletricista Predial", "Auxiliar/Assistente Administrativo",
     "Promotor de Vendas", "Vendedor Lojista"
   ],
   "Regional Norte": [

@@ -10,10 +10,14 @@ import {
   Briefcase, 
   Zap, 
   Info,
-  ChevronDown,
-  ChevronUp,
+  Plus,
+  Trash2,
+  Calculator,
+  Layers,
+  ShieldCheck,
   AlertTriangle,
-  ShieldCheck
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
 import { RULES_REGISTRY } from '../data/rulesRegistry';
 import { generateCharacterData } from '../services/characterGenerator';
@@ -107,6 +111,7 @@ const StatCard = ({ title, icon: Icon, children, className = "" }: { title: stri
 );
 
 export const BatchGenerator: React.FC = () => {
+  const [activeMenuMode, setActiveMenuMode] = useState<'mass' | 'calculator'>('mass');
   const [count, setCount] = useState(100);
   const [isRolling, setIsRolling] = useState(false);
   const [progressCount, setProgressCount] = useState(0);
@@ -114,6 +119,100 @@ export const BatchGenerator: React.FC = () => {
   const [workerStats, setWorkerStats] = useState<BatchStats | null>(null);
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
   const [showAllProfessions, setShowAllProfessions] = useState(false);
+
+  // Calculator State
+  const [targetCriteria, setTargetCriteria] = useState<{ category: string, key: string, name: string, value: string }[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedItemKey, setSelectedItemKey] = useState<string>('');
+  const [calcResult, setCalcResult] = useState<{ matches: number, total: number } | null>(null);
+
+  const categories = useMemo(() => ([
+    { id: 'regiao', name: 'Região' },
+    { id: 'classeSocial', name: 'Classe Social' },
+    { id: 'etnia', name: 'Etnia' },
+    { id: 'orientacao', name: 'Orientação Sexual' },
+    { id: 'bioSex', name: 'Sexo Biológico' },
+    { id: 'identidade', name: 'Identidade de Gênero' },
+    { id: 'profissoes', name: 'Profissão' },
+    { id: 'condicoesVisiveis', name: 'Condição Visível' },
+    { id: 'condicoesNaoVisiveis', name: 'Condição Não Visível' },
+    { id: 'tribos', name: 'Tribo Urbana' }
+  ]), []);
+
+  const extraCategoryOptions: Record<string, string[]> = {
+    regiao: ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"],
+    classeSocial: ["Base Precarizada / Vulnerável", "Classe Média Baixa / A Engrenagem", "Classe Média Alta / Estabilidade", "Elite / Alta Renda", "Morador de Rua / Extrema Pobreza"],
+    etnia: ["Parda", "Preta", "Branca", "Amarela", "Indígena"],
+    orientacao: ["Heterossexual", "Homossexual", "Bissexual", "Pansexual", "Assexual"],
+    bioSex: ["Masculino", "Feminino"],
+    identidade: ["Homem", "Mulher", "Não-Binário"],
+    tribos: ["Religioso Fervoroso", "Militarista / Ordem em Primeiro Lugar", "Alternativo / Underground", "Faria Limer / Performance", "Acadêmico / Intelectual", "Do Gueto / Correria", "Agro / Interiorano"]
+  };
+
+  const currentCategoryItems = useMemo(() => {
+    if (!selectedCategory) return [];
+    
+    if (RULES_REGISTRY[selectedCategory]) {
+      return Object.entries(RULES_REGISTRY[selectedCategory]).map(([key, item]) => ({
+        key,
+        name: item.name || key
+      }));
+    }
+    
+    if (extraCategoryOptions[selectedCategory]) {
+      return extraCategoryOptions[selectedCategory].map(val => ({
+        key: val,
+        name: val
+      }));
+    }
+    
+    return [];
+  }, [selectedCategory]);
+
+  const handleAddCriterion = () => {
+    if (!selectedCategory || !selectedItemKey) return;
+    
+    const item = currentCategoryItems.find(i => i.key === selectedItemKey);
+    if (!item) return;
+
+    if (targetCriteria.some(c => c.category === selectedCategory && c.key === selectedItemKey)) return;
+
+    setTargetCriteria(prev => [...prev, { 
+      category: selectedCategory, 
+      key: selectedItemKey, 
+      name: item.name,
+      value: item.name // Use the display name for matching in worker if it's a registry item
+    }]);
+    
+    setSelectedItemKey('');
+  };
+
+  const removeCriterion = (index: number) => {
+    setTargetCriteria(prev => prev.filter((_, i) => i !== index));
+    setCalcResult(null);
+  };
+
+  const handleRunCalculator = () => {
+    if (targetCriteria.length === 0) return;
+    setIsRolling(true);
+    setCalcResult(null);
+    setProgressCount(0);
+
+    const worker = new Worker(new URL('../services/batchWorker.ts', import.meta.url), { type: 'module' });
+    
+    worker.onmessage = (e) => {
+      const { type, matches, total, current } = e.data;
+      if (type === 'progress') {
+        setProgressCount(current);
+      } else if (type === 'calculator_complete') {
+        setCalcResult({ matches, total });
+        setIsRolling(false);
+        worker.terminate();
+      }
+    };
+    
+    worker.postMessage({ type: 'calculator', criteria: targetCriteria });
+  };
 
   const handleRollBatch = () => {
     setIsRolling(true);
@@ -349,62 +448,167 @@ export const BatchGenerator: React.FC = () => {
 
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 bg-[#070707] text-ice pb-24">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-4">
         
-        {/* Header / Controls */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-black/40 border border-white/5 p-6 rounded-2xl">
-          <div className="space-y-1">
-            <h1 className="text-xl md:text-2xl font-display font-black uppercase tracking-widest text-indigo-400">
-              Analítico de Lote
-            </h1>
-            <p className="text-xs text-white/20 font-mono">Stress Test e Verificação de Amostragem (BI Mode).</p>
-            {Object.keys(activeFilters).length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
-                <button 
-                  onClick={clearFilters}
-                  className="px-2 py-1 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded text-[9px] font-mono uppercase font-bold hover:bg-rose-500/30 transition-all"
-                >
-                  Limpar {Object.keys(activeFilters).length} Filtros
-                </button>
-                {Object.entries(activeFilters).map(([cat, val]) => (
-                  <span key={cat} className="px-2 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded text-[9px] font-mono uppercase">
-                    {cat}: {val}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Mode Switcher */}
+        <div className="flex gap-2 p-1 bg-slate-900 border border-white/5 rounded-xl w-fit mb-4">
+          <button 
+            onClick={() => { setActiveMenuMode('mass'); setCalcResult(null); }}
+            className={`px-6 py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all flex items-center gap-2 ${activeMenuMode === 'mass' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/40' : 'text-white/40 hover:text-white/60'}`}
+          >
+            <Layers size={14} />
+            Modo em Massa
+          </button>
+          <button 
+            onClick={() => { setActiveMenuMode('calculator'); }}
+            className={`px-6 py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all flex items-center gap-2 ${activeMenuMode === 'calculator' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/40' : 'text-white/40 hover:text-white/60'}`}
+          >
+            <Calculator size={14} />
+            Calculadora de Probabilidade
+          </button>
+        </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="text-[9px] font-mono uppercase tracking-widest text-white/40 ml-1">Quantidade</label>
-              <input 
-                type="number" 
-                value={count}
-                disabled={isRolling}
-                onChange={(e) => setCount(Math.min(999999, Math.max(10, parseInt(e.target.value) || 0)))}
-                className={`bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-sm font-mono text-indigo-300 w-32 focus:outline-none focus:border-indigo-500/50 transition-all ${isRolling ? 'opacity-50 cursor-not-allowed' : ''}`}
-              />
+        {/* Header / Controls */}
+        <div className="bg-black/40 border border-white/5 p-6 rounded-2xl">
+          {activeMenuMode === 'mass' ? (
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-1">
+                <h1 className="text-xl md:text-2xl font-display font-black uppercase tracking-widest text-indigo-400 flex items-center gap-3">
+                  <Layers className="text-indigo-500" />
+                  Analítico de Lote
+                </h1>
+                <p className="text-xs text-white/20 font-mono">Stress Test e Verificação de Amostragem (BI Mode).</p>
+                {Object.keys(activeFilters).length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <button 
+                      onClick={clearFilters}
+                      className="px-2 py-1 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded text-[9px] font-mono uppercase font-bold hover:bg-rose-500/30 transition-all"
+                    >
+                      Limpar {Object.keys(activeFilters).length} Filtros
+                    </button>
+                    {Object.entries(activeFilters).map(([cat, val]) => (
+                      <span key={cat} className="px-2 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded text-[9px] font-mono uppercase">
+                        {cat}: {val}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[9px] font-mono uppercase tracking-widest text-white/40 ml-1">Quantidade</label>
+                  <input 
+                    type="number" 
+                    value={count}
+                    disabled={isRolling}
+                    onChange={(e) => setCount(Math.min(999999, Math.max(10, parseInt(e.target.value) || 0)))}
+                    className={`bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-sm font-mono text-indigo-300 w-32 focus:outline-none focus:border-indigo-500/50 transition-all ${isRolling ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  />
+                </div>
+                {count > 50000 && (
+                   <div className="hidden lg:flex items-center gap-2 text-amber-500 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg">
+                     <AlertTriangle size={14} />
+                     <span className="text-[9px] font-mono leading-none uppercase font-bold">Lote Crítico: Filtros Desativados</span>
+                   </div>
+                )}
+                <button 
+                  onClick={handleRollBatch}
+                  disabled={isRolling}
+                  className={`h-12 px-8 rounded-lg flex items-center gap-3 text-xs font-mono uppercase tracking-widest font-black transition-all shadow-xl active:scale-95 ${
+                    isRolling 
+                      ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed' 
+                      : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-900/20'
+                  }`}
+                >
+                  {isRolling ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                  {isRolling ? 'Simulando...' : 'Rolar em Massa'}
+                </button>
+              </div>
             </div>
-            {count > 50000 && (
-               <div className="hidden lg:flex items-center gap-2 text-amber-500 bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg">
-                 <AlertTriangle size={14} />
-                 <span className="text-[9px] font-mono leading-none uppercase font-bold">Lote Crítico: Filtros Desativados</span>
-               </div>
-            )}
-            <button 
-              onClick={handleRollBatch}
-              disabled={isRolling}
-              className={`h-12 px-8 rounded-lg flex items-center gap-3 text-xs font-mono uppercase tracking-widest font-black transition-all shadow-xl active:scale-95 ${
-                isRolling 
-                  ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed' 
-                  : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-900/20'
-              }`}
-            >
-              {isRolling ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-              {isRolling ? 'Simulando...' : 'Rolar em Massa'}
-            </button>
-          </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="space-y-1">
+                <h1 className="text-xl md:text-2xl font-display font-black uppercase tracking-widest text-emerald-400 flex items-center gap-3">
+                  <Calculator className="text-emerald-500" />
+                  Calculadora de Interseção
+                </h1>
+                <p className="text-xs text-white/20 font-mono">Calcula a probabilidade real de ocorrência cruzando múltiplos critérios (Monte Carlo 10k).</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-mono uppercase tracking-widest text-white/40 ml-1">Categoria</label>
+                  <select 
+                    value={selectedCategory}
+                    onChange={(e) => { setSelectedCategory(e.target.value); setSelectedItemKey(''); }}
+                    className="w-full bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-sm font-mono text-white focus:outline-none focus:border-emerald-500/50 appearance-none"
+                  >
+                    <option value="">Selecione...</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[9px] font-mono uppercase tracking-widest text-white/40 ml-1">Item / Valor</label>
+                  <select 
+                    value={selectedItemKey}
+                    disabled={!selectedCategory}
+                    onChange={(e) => setSelectedItemKey(e.target.value)}
+                    className="w-full bg-black/60 border border-white/10 rounded-lg px-4 py-2 text-sm font-mono text-white focus:outline-none focus:border-emerald-500/50 appearance-none disabled:opacity-20"
+                  >
+                    <option value="">Selecione...</option>
+                    {currentCategoryItems.map(item => (
+                      <option key={item.key} value={item.key}>{item.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-end">
+                  <button 
+                    onClick={handleAddCriterion}
+                    disabled={!selectedItemKey}
+                    className="w-full h-10 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 rounded-lg flex items-center justify-center gap-2 text-[10px] font-mono uppercase hover:bg-emerald-600/30 transition-all disabled:opacity-20"
+                  >
+                    <Plus size={14} />
+                    Adicionar Critério
+                  </button>
+                </div>
+              </div>
+
+              {/* Criteria Chips */}
+              {targetCriteria.length > 0 && (
+                <div className="flex flex-wrap gap-2 py-2">
+                  {targetCriteria.map((c, idx) => (
+                    <div key={idx} className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1 text-[10px] font-mono text-emerald-300">
+                      <span className="opacity-40 uppercase">{categories.find(cat => cat.id === c.category)?.name}:</span>
+                      <span className="font-bold uppercase tracking-tight">{c.name}</span>
+                      <button onClick={() => removeCriterion(idx)} className="hover:text-rose-400 transition-colors">
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex justify-center pt-4">
+                <button 
+                  onClick={handleRunCalculator}
+                  disabled={isRolling || targetCriteria.length === 0}
+                  className={`h-12 px-12 rounded-full flex items-center gap-3 text-xs font-mono uppercase tracking-[0.2em] font-black transition-all shadow-xl active:scale-95 ${
+                    isRolling || targetCriteria.length === 0
+                      ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed opacity-50' 
+                      : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/20'
+                  }`}
+                >
+                  {isRolling ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
+                  {isRolling ? 'Calculando Probabilidades...' : 'Calcular Probabilidade Cruzada'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Results Panel */}
@@ -445,7 +649,46 @@ export const BatchGenerator: React.FC = () => {
                 </p>
               </div>
             </motion.div>
-          ) : stats ? (
+          ) : calcResult ? (
+            <motion.div 
+              key="calc_results"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-black/40 border border-emerald-500/20 rounded-3xl p-12 flex flex-col items-center justify-center gap-6"
+            >
+              <div className="p-6 bg-emerald-500/10 rounded-full ring-4 ring-emerald-500/5">
+                <Calculator size={48} className="text-emerald-400" />
+              </div>
+              
+              <div className="text-center space-y-2">
+                <div className="flex items-center gap-3 justify-center">
+                  <span className="text-5xl font-mono font-black text-white">{calcResult.matches.toLocaleString()}</span>
+                  <span className="text-white/20 text-2xl font-mono">/ {calcResult.total.toLocaleString()}</span>
+                </div>
+                <p className="text-[10px] font-mono text-emerald-400/60 uppercase tracking-[0.3em] font-bold">Matches Encontrados em Simulação Monte Carlo</p>
+              </div>
+
+              <div className="bg-white/5 border border-white/10 px-8 py-4 rounded-2xl text-center">
+                <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest mb-1">Probabilidade Estimada</p>
+                <p className="text-6xl font-mono font-black text-emerald-400">
+                  {((calcResult.matches / calcResult.total) * 100).toFixed(2)}%
+                </p>
+              </div>
+
+              <div className="max-w-md text-center">
+                <p className="text-[10px] font-mono text-white/20 leading-relaxed uppercase">
+                  Este cálculo representa a probabilidade cruzada baseada em 10.000 iterações do motor de geração randômica com pesos declarativos.
+                </p>
+              </div>
+
+              <button 
+                onClick={() => setCalcResult(null)}
+                className="mt-4 text-[10px] font-mono text-white/40 hover:text-white uppercase tracking-widest underline underline-offset-4"
+              >
+                Voltar para Configuração
+              </button>
+            </motion.div>
+          ) : activeMenuMode === 'mass' && stats ? (
             <motion.div 
               key="results"
               initial={{ opacity: 0, y: 20 }}

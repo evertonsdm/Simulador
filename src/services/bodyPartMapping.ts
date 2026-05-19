@@ -68,6 +68,10 @@ export const CONDITION_TO_PARTS: Record<string, string[] | string[][] | RandomMa
   "Paraplegia (Cadeirante)": ['right-leg', 'left-leg', 'right-foot', 'left-foot'],
   "Cegueira Total": ['orbit'],
   "Tetraplegia": ['neck', 'chest', 'abdomen', 'right-arm', 'left-arm', 'right-hand', 'left-hand', 'right-leg', 'left-leg', 'right-foot', 'left-foot'],
+  "Tendinite Ocupacional de Punho": {
+    options: ['right-hand', 'left-hand'],
+    roll: 1
+  },
   "Necrose extensa de tecidos moles (Visível)": {
     options: ['right-leg', 'left-leg', 'right-arm', 'left-arm', 'left-hand', 'right-hand', 'right-foot', 'left-foot'],
     roll: 6
